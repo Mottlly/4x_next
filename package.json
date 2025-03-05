@@ -10,13 +10,17 @@
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.0.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.7",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "jsonwebtoken": "^9.0.2",
     "next": "15.2.0",
     "pg": "^8.13.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.174.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
