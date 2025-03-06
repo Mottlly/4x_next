@@ -2,12 +2,13 @@
 
 import { useAuth0 } from "@auth0/auth0-react";
 import Image from "next/image";
+import "./splash.css"; // ✅ Import the CSS file
 
 export default function SplashPage() {
   const { loginWithPopup, loginWithRedirect, isAuthenticated } = useAuth0();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black text-white px-6">
+    <div className="splash-container">
       {/* Logo */}
       <Image
         src="/next.svg"
@@ -15,43 +16,31 @@ export default function SplashPage() {
         width={150}
         height={150}
         priority
-        className="mb-8 animate-fade-in"
+        className="splash-logo"
       />
 
       {/* Welcome Message */}
-      <h1 className="text-4xl font-bold text-center mb-4 animate-fade-in">
-        Welcome to My App
-      </h1>
-      <p className="text-lg text-gray-300 text-center mb-8 animate-fade-in">
+      <h1 className="splash-heading">Welcome to My App</h1>
+      <p className="splash-text">
         Log in to access your account and start exploring.
       </p>
 
       {/* Login Buttons */}
       {!isAuthenticated ? (
-        <div className="space-y-4">
-          <button
-            onClick={loginWithRedirect}
-            className="w-64 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold transition-all duration-300 shadow-lg animate-fade-in"
-          >
+        <div className="splash-buttons">
+          <button onClick={loginWithRedirect} className="splash-button blue">
             Login (Redirect)
           </button>
-          <button
-            onClick={loginWithPopup}
-            className="w-64 py-3 bg-green-600 hover:bg-green-700 rounded-lg text-white font-semibold transition-all duration-300 shadow-lg animate-fade-in"
-          >
+          <button onClick={loginWithPopup} className="splash-button green">
             Login (Popup)
           </button>
         </div>
       ) : (
-        <p className="text-lg text-green-400 mt-6 animate-fade-in">
-          ✅ You are logged in! Redirecting...
-        </p>
+        <p className="success-message">✅ You are logged in! Redirecting...</p>
       )}
 
       {/* Footer */}
-      <footer className="absolute bottom-6 text-gray-400 text-sm">
-        Built with ❤️ using Next.js & Tailwind CSS
-      </footer>
+      <footer className="splash-footer">Built with ❤️ using Next.js</footer>
     </div>
   );
 }

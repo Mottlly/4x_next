@@ -1,0 +1,97 @@
+/* Background gradient */
+.splash-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1a1a1a, #000000);
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Logo */
+  .splash-logo {
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Heading and paragraph */
+  .splash-heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  .splash-text {
+    font-size: 1.2rem;
+    color: #bbb;
+    margin-bottom: 20px;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Buttons */
+  .splash-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .splash-button {
+    width: 250px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .splash-button.blue {
+    background-color: #007bff;
+  }
+  
+  .splash-button.blue:hover {
+    background-color: #0056b3;
+  }
+  
+  .splash-button.green {
+    background-color: #28a745;
+  }
+  
+  .splash-button.green:hover {
+    background-color: #1e7e34;
+  }
+  
+  /* Success Message */
+  .success-message {
+    font-size: 1.2rem;
+    color: #4caf50;
+    margin-top: 20px;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  /* Footer */
+  .splash-footer {
+    position: absolute;
+    bottom: 10px;
+    font-size: 0.9rem;
+    color: #888;
+  }
+  
+  /* Fade-in Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
