@@ -4,12 +4,14 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  console.log("Session:", session);
+  console.log("Auth Status:", status);
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        {/* Logo */}
         <Image
           className="dark:invert"
           src="/next.svg"
@@ -19,7 +21,6 @@ export default function Home() {
           priority
         />
 
-        {/* Welcome Message */}
         <h1 className="text-2xl font-semibold text-center sm:text-left">
           Welcome to My App
         </h1>
@@ -27,7 +28,6 @@ export default function Home() {
           Log in to access your account and start exploring.
         </p>
 
-        {/* Authentication Buttons */}
         {!session ? (
           <div className="flex gap-4">
             <button
@@ -40,7 +40,8 @@ export default function Home() {
         ) : (
           <div className="text-center">
             <p className="text-green-600 font-semibold">
-              ✅ You are logged in as {session.user.email}!
+              ✅ You are logged in as{" "}
+              {session?.user?.email || session?.user?.name || "Unknown"}!
             </p>
             <button
               onClick={() => signOut()}
