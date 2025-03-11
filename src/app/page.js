@@ -15,7 +15,7 @@ export default function Home() {
   // Redirect to the main game page once authenticated
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/game"); // Change "/game" to your actual game page route
+      router.push("/menu"); // Change "/game" to your actual game page route
     }
   }, [status, router]);
 
