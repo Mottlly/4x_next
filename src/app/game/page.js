@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import ThreeScene from "@/app/components/mainScene";
+import HexBoard from "@/app/components/HexBoard";
 
 export default function GamePage() {
   const { data: session, status } = useSession();
@@ -17,7 +17,7 @@ export default function GamePage() {
 
   return (
     <div className="h-screen w-screen">
-      <ThreeScene />
+      <HexBoard />
     </div>
   );
 }
