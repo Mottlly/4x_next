@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route"; // Ensure correct path
+import { getToken } from "next-auth/jwt"; // ✅ Import JWT decryption utility
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // ✅ Ensure correct import
 import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
@@ -26,25 +26,28 @@ const getUserRoleQuery = fs.readFileSync(
 // ✅ GET: Fetch user by Auth0 ID
 export async function GET(req) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session)
+    console.log("🔹 Extracting JWT from Authorization header...");
+
+    // ✅ Decrypt JWT using next-auth
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    console.log("🔍 Extracted Token:", token);
+
+    if (!token || !token.id) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
 
-    const auth_id = session.user.id;
-    if (!auth_id)
-      return NextResponse.json(
-        { error: "Auth0 ID required." },
-        { status: 400 }
-      );
+    const auth_id = token.id; // ✅ Extract Auth0 User ID from JWT
+    console.log("🔹 Fetching user:", auth_id);
 
-    console.log("Fetching user:", auth_id);
     const { rows } = await pool.query(getUserByAuthIdQuery, [auth_id]);
 
-    if (rows.length === 0)
+    if (rows.length === 0) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
+    }
 
     return NextResponse.json(rows[0], { status: 200 });
   } catch (error) {
+    console.error("🔴 Server error:", error);
     return NextResponse.json(
       { error: "Internal server error." },
       { status: 500 }
@@ -55,17 +58,12 @@ export async function GET(req) {
 // ✅ POST: Create a new user
 export async function POST(req) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session)
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token || !token.id) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
 
-    const auth_id = session.user.id;
-    if (!auth_id)
-      return NextResponse.json(
-        { error: "Auth0 ID required." },
-        { status: 400 }
-      );
-
+    const auth_id = token.id;
     console.log("🔹 Creating user:", auth_id);
 
     const newUser = await pool.query(insertUserQuery, [auth_id]);
@@ -84,23 +82,20 @@ export async function POST(req) {
 // ✅ DELETE: Remove a user by Auth0 ID (Admin only)
 export async function DELETE(req) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session)
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (!token || !token.id) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
 
-    const requestorAuthId = session.user.id;
-    if (!requestorAuthId)
-      return NextResponse.json(
-        { error: "Auth0 ID required." },
-        { status: 400 }
-      );
-
+    const requestorAuthId = token.id;
     const { auth_id } = await req.json();
-    if (!auth_id)
+
+    if (!auth_id) {
       return NextResponse.json(
         { error: "Auth0 ID to delete is required." },
         { status: 400 }
       );
+    }
 
     console.log("Deleting user:", auth_id);
 
@@ -113,8 +108,9 @@ export async function DELETE(req) {
     }
 
     const deleteResult = await pool.query(deleteUserQuery, [auth_id]);
-    if (deleteResult.rowCount === 0)
+    if (deleteResult.rowCount === 0) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
+    }
 
     return NextResponse.json(
       { message: "User deleted.", deletedUserId: auth_id },

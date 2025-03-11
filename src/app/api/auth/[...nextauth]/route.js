@@ -9,24 +9,25 @@ export const authOptions = {
       issuer: `https://${process.env.AUTH0_DOMAIN}`,
       authorization: {
         params: {
-          scope: "openid profile email", // Ensure 'email' scope is included
+          scope: "openid profile email",
         },
       },
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user, account, profile }) {
-      // Store email in token if available
-      if (profile) {
-        token.email = profile.email;
+    async jwt({ token, account, user }) {
+      if (account) {
+        token.accessToken = account.access_token; // ✅ Store the access token
+      }
+      if (user) {
+        token.id = user.id || user.sub; // ✅ Ensure we get the Auth0 ID
       }
       return token;
     },
     async session({ session, token }) {
-      // Pass email from token to session
-      session.user.id = token.sub;
-      session.user.email = token.email || null; // Ensure email is passed
+      session.user.id = token.id; // ✅ Ensure user ID is included
+      session.accessToken = token.accessToken; // ✅ Expose the JWT
       return session;
     },
   },
