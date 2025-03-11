@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { MapControls } from "@react-three/drei";
 import Bestagon from "@/app/components/bestagon";
 
 // Sample JSON board definition
@@ -72,7 +72,7 @@ const HexBoard = ({ board }) => {
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 20, 10]} />
       {elements}
-      <OrbitControls />
+      <MapControls />
     </Canvas>
   );
 };
