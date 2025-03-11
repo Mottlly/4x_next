@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo } from "react";
 import { Edges } from "@react-three/drei";
-import Cactus from "../components/cactus";
 
 const Bestagon = ({ position, color }) => {
   const [selected, setSelected] = useState(false);
