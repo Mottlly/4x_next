@@ -36,7 +36,8 @@ const HexBoard = () => {
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 20, 10]} />
       {createLayer(10, 10, 1.05, 0, "blue")} {/* Bottom blue layer */}
-      {createLayer(7, 7, 1.05, 0.6, "green")} {/* Middle green layer */}
+      {createLayer(7, 7, 1.05, 0.6, "#90EE90")}{" "}
+      {/* Middle lighter green layer */}
       {createLayer(5, 5, 1.05, 1.2, "yellow")} {/* Top yellow layer */}
       <OrbitControls />
     </Canvas>
