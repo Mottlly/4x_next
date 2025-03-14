@@ -2,11 +2,12 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function MainMenu() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [userData, setUserData] = useState(null);
 
   // Redirect to home page if user is not authenticated
   useEffect(() => {
@@ -15,12 +16,31 @@ export default function MainMenu() {
     }
   }, [status, router]);
 
+  // Fetch user data when session is available
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      fetchUserData(session.user.id);
+    }
+  }, [status, session]);
+
+  const fetchUserData = async (authID) => {
+    try {
+      const response = await fetch(`/api/userTable?authID=${authID}`);
+      if (!response.ok) throw new Error("Failed to fetch user data");
+
+      const data = await response.json();
+      setUserData(data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
   const handleStartGame = () => {
-    router.push("/game"); // Redirect to the game page
+    router.push("/game");
   };
 
   const handleSettings = () => {
-    router.push("/settings"); // Redirect to settings page
+    router.push("/settings");
   };
 
   return (
@@ -29,6 +49,13 @@ export default function MainMenu() {
         <h1 className="text-2xl font-semibold text-center sm:text-left">
           Main Menu
         </h1>
+
+        {userData ? (
+          <p className="text-lg">Welcome, {userData.name}!</p>
+        ) : (
+          <p className="text-lg text-gray-500">Loading user data...</p>
+        )}
+
         <div className="flex flex-col gap-4 w-full max-w-xs">
           <button
             onClick={handleStartGame}

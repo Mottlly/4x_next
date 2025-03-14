@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt"; // ✅ Import JWT decryption utility
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // ✅ Ensure correct import
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken"; // ✅ Import JWT decoder
 import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
@@ -28,15 +30,32 @@ export async function GET(req) {
   try {
     console.log("🔹 Extracting JWT from Authorization header...");
 
-    // ✅ Decrypt JWT using next-auth
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    console.log("🔍 Extracted Token:", token);
+    // ✅ Try getting the token from NextAuth (JWT stored session)
+    let token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!token || !token.id) {
-      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    // ✅ If token is still null, log an error
+    if (!token) {
+      console.error(
+        "🔴 No valid JWT token found. Ensure session strategy is set to 'jwt'."
+      );
+      return NextResponse.json(
+        { error: "Unauthorized. No valid token found." },
+        { status: 401 }
+      );
     }
 
-    const auth_id = token.id; // ✅ Extract Auth0 User ID from JWT
+    console.log("🔍 Extracted Token:", token);
+
+    // ✅ Extract user ID from the token
+    const auth_id = token.id || token.sub;
+    if (!auth_id || typeof auth_id !== "string") {
+      console.error("🔴 Invalid auth_id extracted:", auth_id);
+      return NextResponse.json(
+        { error: "Invalid token structure." },
+        { status: 401 }
+      );
+    }
+
     console.log("🔹 Fetching user:", auth_id);
 
     const { rows } = await pool.query(getUserByAuthIdQuery, [auth_id]);

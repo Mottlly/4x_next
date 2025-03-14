@@ -14,23 +14,35 @@ export const authOptions = {
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt", // ✅ Store session as a JWT instead of encrypted cookies
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET, // ✅ Ensure JWTs are signed properly
+  },
   callbacks: {
     async jwt({ token, account, user }) {
+      console.log("🔵 JWT Callback - account:", account);
+      console.log("🔵 JWT Callback - user:", user);
+
       if (account) {
-        token.accessToken = account.access_token; // ✅ Store the access token
+        token.accessToken = account.access_token; // ✅ Store access token
+        token.id = account.providerAccountId; // ✅ Store Auth0 ID
       }
       if (user) {
-        token.id = user.id || user.sub; // ✅ Ensure we get the Auth0 ID
+        token.id = user.id || user.sub; // ✅ Ensure user ID is stored
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.id; // ✅ Ensure user ID is included
-      session.accessToken = token.accessToken; // ✅ Expose the JWT
+      console.log("🟢 Session Callback - token:", token);
+
+      session.user.id = token.id; // ✅ Expose user ID
+      session.accessToken = token.accessToken; // ✅ Ensure token is included
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
