@@ -3,6 +3,7 @@ import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
 
+// Read SQL files at runtime (keeping your original approach)
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
   "utf8"
@@ -28,8 +29,10 @@ export async function GET(req) {
     const { rows } = await pool.query(getBoardQuery, [id]);
     if (rows.length === 0)
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
-    return NextResponse.json(rows[0], { status: 200 });
+
+    return NextResponse.json(rows[0].board_data, { status: 200 });
   } catch (error) {
+    console.error("GET Error:", error);
     return NextResponse.json(
       { error: "Internal server error." },
       { status: 500 }
@@ -40,21 +43,23 @@ export async function GET(req) {
 // ✅ POST: Generate and insert board
 export async function POST(req) {
   try {
-    const boardState = generateBoard();
     const { user_id } = await req.json();
-
     if (!user_id)
       return NextResponse.json({ error: "User ID required." }, { status: 400 });
 
+    const boardState = generateBoard(); // ✅ Now includes `z`
+
     const { rows } = await pool.query(postBoardQuery, [
       user_id,
-      JSON.stringify(boardState),
+      JSON.stringify(boardState), // ✅ Includes `z`
     ]);
+
     return NextResponse.json(
       { message: "Board created.", board: rows[0] },
       { status: 201 }
     );
   } catch (error) {
+    console.error("POST Error:", error);
     return NextResponse.json(
       { error: "Internal server error." },
       { status: 500 }
@@ -81,6 +86,7 @@ export async function DELETE(req) {
       { status: 200 }
     );
   } catch (error) {
+    console.error("DELETE Error:", error);
     return NextResponse.json(
       { error: "Internal server error." },
       { status: 500 }
@@ -88,15 +94,14 @@ export async function DELETE(req) {
   }
 }
 
-// Function to generate board state
 function generateBoard() {
   const board = { tiles: [] };
-  for (let x = 1; x <= 10; x++) {
-    for (let y = 1; y <= 10; y++) {
+  for (let q = 1; q <= 10; q++) {
+    for (let r = 1; r <= 10; r++) {
       board.tiles.push({
-        x,
-        y,
-        z: Math.floor(Math.random() * 4) + 1,
+        q,
+        r,
+        z: Math.floor(Math.random() * 4) + 1, // ✅ Random elevation
         type: "terrain_type",
       });
     }

@@ -1,21 +1,36 @@
 import { Pool } from "pg";
 
-// Ensure environment variables are loaded
-if (!process.env.DB_USER || !process.env.DB_HOST) {
-  throw new Error("Missing database environment variables!");
-}
+// Validate required environment variables
+const requiredEnv = ["DB_USER", "DB_HOST", "DB_NAME", "DB_PASS", "DB_PORT"];
+requiredEnv.forEach((key) => {
+  if (!process.env[key]) {
+    throw new Error(`Missing environment variable: ${key}`);
+  }
+});
 
-const pool = new Pool({
+const poolConfig = {
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PASS,
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
-});
+  port: Number(process.env.DB_PORT) || 5432,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+};
 
-// Singleton pattern to prevent multiple connections
-if (!global.pgPool) {
-  global.pgPool = pool;
+// Ensure a single database pool instance
+let pool;
+if (!global._pgPool) {
+  global._pgPool = new Pool(poolConfig);
+  console.log("✅ Database pool initialized");
 }
 
-export default global.pgPool;
+pool = global._pgPool;
+
+// Handle pool errors
+pool.on("error", (err) => {
+  console.error("Unexpected database error:", err);
+});
+
+export default pool;
