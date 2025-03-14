@@ -30,14 +30,10 @@ export async function GET(req) {
   try {
     console.log("🔹 Extracting JWT from Authorization header...");
 
-    // ✅ Try getting the token from NextAuth (JWT stored session)
     let token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
-    // ✅ If token is still null, log an error
     if (!token) {
-      console.error(
-        "🔴 No valid JWT token found. Ensure session strategy is set to 'jwt'."
-      );
+      console.error("🔴 No valid JWT token found.");
       return NextResponse.json(
         { error: "Unauthorized. No valid token found." },
         { status: 401 }
@@ -56,15 +52,19 @@ export async function GET(req) {
       );
     }
 
-    console.log("🔹 Fetching user:", auth_id);
+    console.log("🔹 Fetching user from database:", auth_id);
 
-    const { rows } = await pool.query(getUserByAuthIdQuery, [auth_id]);
+    // ✅ Execute the query and log the result
+    const result = await pool.query(getUserByAuthIdQuery, [auth_id]);
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
+      console.warn("⚠️ No user found for auth_id:", auth_id);
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    return NextResponse.json(rows[0], { status: 200 });
+    console.log("✅ User found:", result.rows[0]); // ✅ Log the user details
+
+    return NextResponse.json(result.rows[0], { status: 200 });
   } catch (error) {
     console.error("🔴 Server error:", error);
     return NextResponse.json(

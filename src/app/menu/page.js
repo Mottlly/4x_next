@@ -51,7 +51,7 @@ export default function MainMenu() {
         </h1>
 
         {userData ? (
-          <p className="text-lg">Welcome, {userData.name}!</p>
+          <p className="text-lg">Welcome, {session.user.id}!</p>
         ) : (
           <p className="text-lg text-gray-500">Loading user data...</p>
         )}

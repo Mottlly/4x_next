@@ -22,9 +22,6 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, account, user }) {
-      console.log("🔵 JWT Callback - account:", account);
-      console.log("🔵 JWT Callback - user:", user);
-
       if (account) {
         token.accessToken = account.access_token; // ✅ Store access token
         token.id = account.providerAccountId; // ✅ Store Auth0 ID
