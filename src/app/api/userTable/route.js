@@ -82,7 +82,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
-    const auth_id = token.id;
+    const auth_id = token.sub;
     console.log("🔹 Creating user:", auth_id);
 
     const newUser = await pool.query(insertUserQuery, [auth_id]);

@@ -2,7 +2,7 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export default function MainMenu() {
   const { data: session, status } = useSession();
@@ -17,21 +17,48 @@ export default function MainMenu() {
   }, [status, router]);
 
   // Fetch user data when session is available
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.id) {
-      fetchUserData(session.user.id);
-    }
-  }, [status, session]);
-
-  const fetchUserData = async (authID) => {
+  const fetchUserData = useCallback(async (authID) => {
     try {
       const response = await fetch(`/api/userTable?authID=${authID}`);
+
+      if (response.status === 404) {
+        console.warn("⚠️ User not found, creating new user...");
+        await createNewUser(); // Call the POST request function
+        return;
+      }
+
       if (!response.ok) throw new Error("Failed to fetch user data");
 
       const data = await response.json();
       setUserData(data);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("❌ Error fetching user data:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      fetchUserData(session.user.id);
+    }
+  }, [status, session, fetchUserData]); // ✅ Now fetchUserData is safely included
+
+  const createNewUser = async () => {
+    try {
+      const response = await fetch("/api/userTable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to create user");
+
+      const data = await response.json();
+      console.log("✅ User created:", data);
+
+      setUserData(data.user); // Update state with new user data
+    } catch (error) {
+      console.error("❌ Error creating user:", error);
     }
   };
 
