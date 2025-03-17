@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route"; // Ensure correct path
+import { authOptions } from "../auth/[...nextauth]/route"; // Ensure correct path
 import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
@@ -55,13 +55,15 @@ export async function POST(req) {
     if (!user_id)
       return NextResponse.json({ error: "User ID required." }, { status: 400 });
 
-    console.log("🔹 Creating game for user:", user_id);
+    console.log("🔹 Checking for User:", user_id);
 
-    const userCheckResult = await pool.query(userCheckQuery, [user_id]);
+    const userCheckResult = await pool.query(userCheckQuery, [session.user.id]);
     if (userCheckResult.rows.length === 0)
       return NextResponse.json({ error: "User not found." }, { status: 404 });
 
-    const newGame = await pool.query(insertGameQuery, [user_id]);
+    console.log("🔹 Creating game for user:", user_id);
+
+    const newGame = await pool.query(insertGameQuery, [session.user.id]);
     return NextResponse.json(
       { message: "Game created.", game: newGame.rows[0] },
       { status: 201 }

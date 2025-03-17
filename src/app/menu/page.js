@@ -62,8 +62,32 @@ export default function MainMenu() {
     }
   };
 
-  const handleStartGame = () => {
-    router.push("/game");
+  const handleStartGame = async () => {
+    if (!userData) {
+      console.error("❌ User data not loaded yet.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/gameTable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create a new game");
+      }
+
+      const { game } = await response.json();
+      console.log("✅ New Game Created:", game);
+
+      // Redirect to game page with the new game ID
+      router.push(`/game?gameID=${game.id}`);
+    } catch (error) {
+      console.error("❌ Error starting game:", error);
+    }
   };
 
   const handleContinueGame = () => {

@@ -1,4 +1,3 @@
-SELECT id 
+SELECT * 
 FROM users 
-WHERE id = $1
-;
+WHERE auth_id = $1;
