@@ -17,7 +17,7 @@ export default function GamePage() {
       router.push("/");
     }
   }, [status, router]);
-
+  //Use Ref and/or context provider!!!
   useEffect(() => {
     if (status === "authenticated" && session?.user?.id) {
       const createAndFetchBoard = async () => {
