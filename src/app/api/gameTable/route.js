@@ -10,6 +10,12 @@ const getGameDetailsQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/gameTable/getGameDetails.sql"),
   "utf8"
 );
+
+const getLatestGameQuery = fs.readFileSync(
+  path.join(process.cwd(), "src/library/sql/gameTable/getGameDetails.sql"),
+  "utf8"
+);
+
 const insertGameQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/gameTable/insertGame.sql"),
   "utf8"
@@ -28,15 +34,40 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
 
-  if (!id)
-    return NextResponse.json({ error: "Game ID required." }, { status: 400 });
-
   try {
-    const { rows } = await pool.query(getGameDetailsQuery, [id]);
-    if (rows.length === 0)
-      return NextResponse.json({ error: "Game not found." }, { status: 404 });
-    return NextResponse.json(rows[0], { status: 200 });
+    if (id) {
+      // Fetch game by ID
+      const { rows } = await pool.query(getGameDetailsQuery, [id]);
+      if (rows.length === 0)
+        return NextResponse.json({ error: "Game not found." }, { status: 404 });
+      return NextResponse.json(rows[0], { status: 200 });
+    } else {
+      // Fetch the most recent game for the logged-in user
+      const session = await getServerSession(authOptions);
+      if (!session)
+        return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
+      const auth_id = session.user.id;
+      if (!auth_id)
+        return NextResponse.json(
+          { error: "User ID required." },
+          { status: 400 }
+        );
+
+      console.log("🔹 Fetching most recent game for user:", auth_id);
+
+      const latestGame = await pool.query(getLatestGameQuery, [auth_id]);
+
+      if (latestGame.rows.length === 0) {
+        return NextResponse.json({ error: "No game found." }, { status: 404 });
+      }
+
+      console.log("🔹 Latest game retrieved:", latestGame);
+
+      return NextResponse.json({ game: latestGame.rows[0] }, { status: 200 });
+    }
   } catch (error) {
+    console.error("Error fetching game:", error);
     return NextResponse.json(
       { error: "Internal server error." },
       { status: 500 }

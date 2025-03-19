@@ -90,8 +90,22 @@ export default function MainMenu() {
     }
   };
 
-  const handleContinueGame = () => {
-    router.push("/game");
+  const handleContinueGame = async () => {
+    try {
+      const response = await fetch("/api/gameTable", { method: "GET" });
+
+      if (!response.ok) {
+        throw new Error("No previous game found.");
+      }
+
+      const { game } = await response.json();
+      console.log("🔹 Continuing most recent game:", game);
+
+      // Redirect to the game page with the retrieved game ID
+      router.push(`/game?gameID=${game.id}`);
+    } catch (error) {
+      console.error("❌ Error continuing game:", error);
+    }
   };
 
   const handleSettings = () => {
