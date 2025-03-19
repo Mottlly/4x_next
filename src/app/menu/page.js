@@ -116,11 +116,9 @@ export default function MainMenu() {
   };
   //locales file with keys for plain text "I8N"
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <h1 className="text-2xl font-semibold text-center sm:text-left">
-          Main Menu
-        </h1>
+    <div className={menuStyles.menuContainer}>
+      <main className={menuStyles.menuMain}>
+        <h1 className={menuStyles.menuHeader}>Main Menu</h1>
 
         {userData ? (
           <p className="text-lg">Welcome, {session.user.id}!</p>
@@ -128,12 +126,8 @@ export default function MainMenu() {
           <p className="text-lg text-gray-500">Loading user data...</p>
         )}
 
-        <div className="flex flex-col gap-4 w-full max-w-xs">
-          <button
-            onClick={handleContinueGame}
-            //import classNames
-            className={menuStyles.continue}
-          >
+        <div className={menuStyles.menuButtonContainer}>
+          <button onClick={handleContinueGame} className={menuStyles.continue}>
             Continue Game
           </button>
 
