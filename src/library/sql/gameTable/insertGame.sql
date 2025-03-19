@@ -1,3 +1,3 @@
-INSERT INTO gametable (auth_id) 
-VALUES ($1) RETURNING *
+INSERT INTO gametable (auth_id, created_at) 
+VALUES ($1, NOW()) RETURNING *
 ;
