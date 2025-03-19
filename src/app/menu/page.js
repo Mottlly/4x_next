@@ -99,6 +99,7 @@ export default function MainMenu() {
       }
 
       const { game } = await response.json();
+
       console.log("🔹 Continuing most recent game:", game);
 
       // Redirect to the game page with the retrieved game ID

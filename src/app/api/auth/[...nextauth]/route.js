@@ -29,6 +29,10 @@ export const authOptions = {
       if (user) {
         token.id = user.id || user.sub; // ✅ Ensure user ID is stored
       }
+
+      if (!token.gameID) {
+        token.gameID = null; // Initialize if not set
+      }
       return token;
     },
     async session({ session, token }) {
@@ -36,6 +40,7 @@ export const authOptions = {
 
       session.user.id = token.id; // ✅ Expose user ID
       session.accessToken = token.accessToken; // ✅ Ensure token is included
+      session.user.gameID = token.gameID;
       return session;
     },
   },

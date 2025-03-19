@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { getToken } from "next-auth/jwt";
 import { authOptions } from "../auth/[...nextauth]/route"; // Ensure correct path
 import pool from "@/library/middleware/db";
 import fs from "fs";
@@ -64,6 +65,11 @@ export async function GET(req) {
 
       console.log("🔹 Latest game retrieved:", latestGame);
 
+      const token = await getToken({ req });
+      if (token) {
+        token.gameID = latestGame.rows[0].id;
+      }
+
       return NextResponse.json({ game: latestGame.rows[0] }, { status: 200 });
     }
   } catch (error) {
@@ -95,6 +101,12 @@ export async function POST(req) {
     console.log("🔹 Creating game for user:", user_id);
 
     const newGame = await pool.query(insertGameQuery, [session.user.id]);
+
+    const token = await getToken({ req });
+    if (token) {
+      token.gameID = newGame.rows[0].id;
+    }
+
     return NextResponse.json(
       { message: "Game created.", game: newGame.rows[0] },
       { status: 201 }
