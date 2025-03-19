@@ -12,7 +12,7 @@ const getGameDetailsQuery = fs.readFileSync(
 );
 
 const getLatestGameQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/gameTable/getGameDetails.sql"),
+  path.join(process.cwd(), "src/library/sql/gameTable/getLatestGame.sql"),
   "utf8"
 );
 
