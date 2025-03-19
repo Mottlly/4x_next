@@ -1,9 +1,17 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { menuStyles } from "../../library/styles/menu/menustyles";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import {
+  fetchUserData,
+  createNewUser,
+  handleStartGame,
+  handleContinueGame,
+  handleSettings,
+  handleLogout,
+} from "../../library/utililies/menu/menuUtilities"; // ✅ Import Utility Functions
 
 export default function MainMenu() {
   const { data: session, status } = useSession();
@@ -18,103 +26,21 @@ export default function MainMenu() {
   }, [status, router]);
 
   // Fetch user data when session is available
-  const fetchUserData = useCallback(async (authID) => {
-    try {
-      const response = await fetch(`/api/userTable?authID=${authID}`);
-
-      if (response.status === 404) {
-        console.warn("⚠️ User not found, creating new user...");
-        await createNewUser(); // Call the POST request function
-        return;
-      }
-
-      if (!response.ok) throw new Error("Failed to fetch user data");
-
-      const data = await response.json();
-      setUserData(data);
-    } catch (error) {
-      console.error("❌ Error fetching user data:", error);
-    }
-  }, []);
+  const fetchUserDataCallback = useCallback(
+    async (authID) => {
+      await fetchUserData(authID, setUserData, () =>
+        createNewUser(setUserData)
+      );
+    },
+    [setUserData]
+  );
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.id) {
-      fetchUserData(session.user.id);
+      fetchUserDataCallback(session.user.id);
     }
-  }, [status, session, fetchUserData]); // ✅ Now fetchUserData is safely included
+  }, [status, session, fetchUserDataCallback]);
 
-  const createNewUser = async () => {
-    try {
-      const response = await fetch("/api/userTable", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to create user");
-
-      const data = await response.json();
-      console.log("✅ User created:", data);
-
-      setUserData(data.user); // Update state with new user data
-    } catch (error) {
-      console.error("❌ Error creating user:", error);
-    }
-  };
-
-  const handleStartGame = async () => {
-    if (!userData) {
-      console.error("❌ User data not loaded yet.");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/gameTable", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create a new game");
-      }
-
-      const { game } = await response.json();
-      console.log("✅ New Game Created:", game);
-
-      // Redirect to game page with the new game ID
-      router.push(`/game?gameID=${game.id}`);
-    } catch (error) {
-      console.error("❌ Error starting game:", error);
-    }
-  };
-
-  const handleContinueGame = async () => {
-    try {
-      const response = await fetch("/api/gameTable", { method: "GET" });
-
-      //Code dialog popup
-      if (!response.ok) {
-        throw new Error("No previous game found.");
-      }
-
-      const { game } = await response.json();
-
-      console.log("🔹 Continuing most recent game:", game);
-
-      // Redirect to the game page with the retrieved game ID
-      router.push(`/game?gameID=${game.id}`);
-    } catch (error) {
-      console.error("❌ Error continuing game:", error);
-    }
-  };
-
-  const handleSettings = () => {
-    router.push("/settings");
-  };
-  //locales file with keys for plain text "I8N"
   return (
     <div className={menuStyles.menuContainer}>
       <main className={menuStyles.menuMain}>
@@ -127,19 +53,28 @@ export default function MainMenu() {
         )}
 
         <div className={menuStyles.menuButtonContainer}>
-          <button onClick={handleContinueGame} className={menuStyles.continue}>
+          <button
+            onClick={() => handleContinueGame(router)}
+            className={menuStyles.continue}
+          >
             Continue Game
           </button>
 
-          <button onClick={handleStartGame} className={menuStyles.start}>
+          <button
+            onClick={() => handleStartGame(userData, router)}
+            className={menuStyles.start}
+          >
             Start Game
           </button>
 
-          <button onClick={handleSettings} className={menuStyles.settings}>
+          <button
+            onClick={() => handleSettings(router)}
+            className={menuStyles.settings}
+          >
             Settings
           </button>
 
-          <button onClick={() => signOut()} className={menuStyles.logout}>
+          <button onClick={handleLogout} className={menuStyles.logout}>
             Logout
           </button>
         </div>
