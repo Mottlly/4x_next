@@ -1,0 +1,9 @@
+{
+    "mainMenu": "主菜单",
+    "welcome": "欢迎, {{user}}!",
+    "loading": "正在加载用户数据...",
+    "continue": "继续游戏",
+    "start": "开始游戏",
+    "settings": "设置",
+    "logout": "退出"
+  }

@@ -1,0 +1,9 @@
+{
+    "mainMenu": "메인 메뉴",
+    "welcome": "환영합니다, {{user}}!",
+    "loading": "사용자 데이터를 불러오는 중...",
+    "continue": "게임 계속하기",
+    "start": "게임 시작",
+    "settings": "설정",
+    "logout": "로그아웃"
+  }

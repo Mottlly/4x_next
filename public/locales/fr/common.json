@@ -1,4 +1,9 @@
 {
-    "greeting": "Bonjour!",
-    "welcome": "Bienvenue dans l'application"
-  }
+  "mainMenu": "Menu Principal",
+  "welcome": "Bienvenue, {{user}}!",
+  "loading": "Chargement des données utilisateur...",
+  "continue": "Continuer le Jeu",
+  "start": "Démarrer le Jeu",
+  "settings": "Paramètres",
+  "logout": "Déconnexion"
+}

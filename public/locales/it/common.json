@@ -1,0 +1,9 @@
+{
+    "mainMenu": "Menu Principale",
+    "welcome": "Benvenuto, {{user}}!",
+    "loading": "Caricamento dati utente...",
+    "continue": "Continua il Gioco",
+    "start": "Avvia il Gioco",
+    "settings": "Impostazioni",
+    "logout": "Disconnetti"
+  }
