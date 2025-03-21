@@ -1,0 +1,9 @@
+{
+  "mainMenu": "Main Menu",
+  "welcome": "Welcome, {{user}}!",
+  "loading": "Loading user data...",
+  "continue": "Continue Game",
+  "start": "Start Game",
+  "settings": "Settings",
+  "logout": "Logout"
+}
