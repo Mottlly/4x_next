@@ -1,6 +1,6 @@
 "use client";
 
-import "../../i18n"; // 👈 Load i18next once per app
+import i18n from "../../i18n"; // 👈 Load i18next once per app
 import { useTranslation } from "react-i18next";
 import { useSession } from "next-auth/react";
 import { menuStyles } from "../../library/styles/menu/menustyles";
@@ -20,6 +20,11 @@ export default function MainMenu() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [userData, setUserData] = useState(null);
+
+  //for playing with languages
+  //useEffect(() => {
+  //  i18n.changeLanguage("en"); // 👈 Force language on mount
+  //}, []);
 
   // Redirect to home page if user is not authenticated
   useEffect(() => {
