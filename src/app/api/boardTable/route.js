@@ -3,9 +3,12 @@ import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
 
-// Read SQL files at runtime (keeping your original approach)
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
+  "utf8"
+);
+const getBoardByGameIDQuery = fs.readFileSync(
+  path.join(process.cwd(), "src/library/sql/boardTable/getBoardByGameID.sql"),
   "utf8"
 );
 const postBoardQuery = fs.readFileSync(
@@ -21,12 +24,25 @@ const deleteBoardQuery = fs.readFileSync(
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const game_id = searchParams.get("game_id");
 
-  if (!id)
-    return NextResponse.json({ error: "Board ID required." }, { status: 400 });
+  if (!id && !game_id)
+    return NextResponse.json(
+      { error: "Board ID or Game ID required." },
+      { status: 400 }
+    );
+
+  let query, param;
+  if (id) {
+    query = getBoardQuery;
+    param = [id];
+  } else {
+    query = getBoardByGameIDQuery;
+    param = [game_id];
+  }
 
   try {
-    const { rows } = await pool.query(getBoardQuery, [id]);
+    const { rows } = await pool.query(query, param);
     if (rows.length === 0)
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
 
@@ -43,15 +59,20 @@ export async function GET(req) {
 // ✅ POST: Generate and insert board
 export async function POST(req) {
   try {
-    const { user_id } = await req.json();
-    if (!user_id)
-      return NextResponse.json({ error: "User ID required." }, { status: 400 });
+    const { user_id, game_id } = await req.json();
 
-    const boardState = generateBoard(); // ✅ Now includes `z`
+    if (!user_id || !game_id)
+      return NextResponse.json(
+        { error: "User ID and Game ID required." },
+        { status: 400 }
+      );
+
+    const boardState = generateBoard();
 
     const { rows } = await pool.query(postBoardQuery, [
       user_id,
-      JSON.stringify(boardState), // ✅ Includes `z`
+      game_id,
+      JSON.stringify(boardState),
     ]);
 
     return NextResponse.json(
