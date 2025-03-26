@@ -30,6 +30,7 @@ export default function GamePage() {
 
         if (getResponse.ok) {
           const boardData = await getResponse.json();
+          console.log(boardData);
           setBoard(boardData);
         } else if (getResponse.status === 404) {
           // ✅ If not found, POST a new board

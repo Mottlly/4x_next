@@ -43,6 +43,7 @@ export async function GET(req) {
 
   try {
     const { rows } = await pool.query(query, param);
+    console.log("Query result rows:", rows);
     if (rows.length === 0)
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
 

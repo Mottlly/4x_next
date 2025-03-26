@@ -22,9 +22,9 @@ export default function MainMenu() {
   const [userData, setUserData] = useState(null);
 
   //for playing with languages
-  //useEffect(() => {
-  //  i18n.changeLanguage("en"); // 👈 Force language on mount
-  //}, []);
+  //  useEffect(() => {
+  //    i18n.changeLanguage("en"); // 👈 Force language on mount
+  //  }, []);
 
   // Redirect to home page if user is not authenticated
   useEffect(() => {
