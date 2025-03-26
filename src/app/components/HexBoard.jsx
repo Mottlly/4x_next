@@ -1,18 +1,15 @@
-"use client";
-
-import React from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import Bestagon from "@/app/components/bestagon";
 import boardData from "../../library/defaultBoard";
 
-// Function to map tile types to colors
 const getColorForType = (type) => {
   switch (type) {
     case "water":
       return "blue";
     case "forest":
-      return "#90EE90"; // Light green
+      return "#90EE90";
     case "desert":
       return "yellow";
     default:
@@ -20,57 +17,142 @@ const getColorForType = (type) => {
   }
 };
 
-// Function to convert hex grid (q, r) to 3D positions
 const hexToPosition = (q, r, spacing) => {
   const xOffset = spacing * 1.65;
   const zOffset = spacing * 1.42;
   return [q * xOffset + (r % 2) * (xOffset / 2), 0, -r * zOffset];
 };
 
-const HexBoard = ({ board }) => {
+const TileInfoPanel = ({ tile }) => {
+  if (!tile) return null;
+  return (
+    <div className="absolute top-4 left-4 p-4 bg-white text-black rounded shadow-lg z-10 pointer-events-none w-64">
+      <h2 className="text-lg font-bold mb-2">Tile Info</h2>
+      <ul className="text-sm">
+        <li>
+          <strong>Q:</strong> {tile.q}
+        </li>
+        <li>
+          <strong>R:</strong> {tile.r}
+        </li>
+        <li>
+          <strong>Type:</strong> {tile.type || "water"}
+        </li>
+      </ul>
+    </div>
+  );
+};
+
+const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
+  const groupRef = useRef();
+
+  const previousTileRef = useRef(null);
+
+  const handlePointerMove = (event) => {
+    if (isDraggingRef.current) return; // 🧠 Do nothing while dragging
+
+    event.stopPropagation();
+    const intersect = event.intersections?.[0];
+    const tile = intersect?.object?.userData?.tile || null;
+
+    const prev = previousTileRef.current;
+
+    const sameTile =
+      tile &&
+      prev &&
+      tile.q === prev.q &&
+      tile.r === prev.r &&
+      tile.type === prev.type;
+
+    if (sameTile || (!tile && !prev)) return;
+
+    previousTileRef.current = tile;
+    setHoveredTile(tile);
+  };
+
   const elements = [];
 
-  // Create a set of land tile positions to prevent water rendering underneath
   const landTilePositions = new Set(board.tiles.map(({ q, r }) => `${q},${r}`));
 
-  // Generate water tiles, excluding ones that match land tiles
   for (let q = 0; q < board.cols; q++) {
     for (let r = 0; r < board.rows; r++) {
       if (!landTilePositions.has(`${q},${r}`)) {
-        const position = hexToPosition(q, r, board.spacing);
+        const pos = hexToPosition(q, r, board.spacing);
+        const tile = { q, r, type: "water" };
         elements.push(
-          <Bestagon key={`water-${q}-${r}`} position={position} color="blue" />
+          <Bestagon
+            key={`water-${q}-${r}`}
+            position={pos}
+            color="blue"
+            userData={{ tile }}
+          />
         );
       }
     }
   }
 
-  // Place land tiles
   board.tiles.forEach(({ q, r, type }) => {
-    const position = hexToPosition(q, r, board.spacing);
+    const pos = hexToPosition(q, r, board.spacing);
     const color = getColorForType(type);
+    const tile = { q, r, type };
     elements.push(
       <Bestagon
         key={`tile-${q}-${r}`}
-        position={[position[0], 0.3, position[2]]}
+        position={[pos[0], 0.3, pos[2]]}
         color={color}
+        userData={{ tile }}
       />
     );
   });
 
   return (
-    <Canvas
-      camera={{ position: [10, 10, 15] }}
-      style={{ width: "100vw", height: "100vh" }}
-    >
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 20, 10]} />
+    <group ref={groupRef} onPointerMove={handlePointerMove}>
       {elements}
-      <MapControls />
-    </Canvas>
+    </group>
   );
 };
 
 export default function App() {
-  return <HexBoard board={boardData} />;
+  const [hoveredTile, setHoveredTile] = useState(null);
+  const isDraggingRef = useRef(false);
+  const dragTimeoutRef = useRef(null); // 🆕 Store timeout ID
+
+  const handlePointerDown = () => {
+    isDraggingRef.current = true;
+
+    // Clear any previous timeout
+    if (dragTimeoutRef.current) {
+      clearTimeout(dragTimeoutRef.current);
+      dragTimeoutRef.current = null;
+    }
+  };
+
+  const handlePointerUp = () => {
+    // Set a delay before allowing hover again
+    dragTimeoutRef.current = setTimeout(() => {
+      isDraggingRef.current = false;
+      dragTimeoutRef.current = null;
+    }, 800); // ⏳ Adjust this for inertia feel
+  };
+
+  return (
+    <div className="relative">
+      <Canvas
+        camera={{ position: [10, 10, 15] }}
+        style={{ width: "100vw", height: "100vh" }}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+      >
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 20, 10]} />
+        <InteractiveBoard
+          board={boardData}
+          setHoveredTile={setHoveredTile}
+          isDraggingRef={isDraggingRef}
+        />
+        <MapControls enableDamping />
+      </Canvas>
+      <TileInfoPanel tile={hoveredTile} />
+    </div>
+  );
 }
