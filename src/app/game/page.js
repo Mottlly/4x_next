@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import HexBoard from "@/app/components/HexBoard";
 
 export default function GamePage() {
@@ -20,6 +20,31 @@ export default function GamePage() {
     }
   }, [status, router]);
   //Use Ref and/or context provider!!!
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    const audio = new Audio("/music/sci-fi_loop.wav");
+    audio.loop = true;
+    audio.volume = 0.3;
+    audioRef.current = audio;
+
+    // Wait for user interaction
+    const tryPlay = () => {
+      audio.play().catch((err) => {
+        console.log("Still blocked:", err);
+      });
+      window.removeEventListener("click", tryPlay);
+    };
+
+    window.addEventListener("click", tryPlay);
+
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+      window.removeEventListener("click", tryPlay);
+    };
+  }, []);
+
   useEffect(() => {
     const fetchOrCreateBoard = async () => {
       if (status !== "authenticated" || !session?.user?.id || !gameID) return;
