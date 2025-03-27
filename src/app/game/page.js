@@ -25,7 +25,11 @@ export default function GamePage() {
   useEffect(() => {
     const audio = new Audio("/music/sci-fi_loop.wav");
     audio.loop = true;
-    audio.volume = 0.3;
+
+    const savedVolume = localStorage.getItem("musicVolume");
+    const volume = savedVolume ? parseFloat(savedVolume) : 0.3;
+    audio.volume = volume;
+
     audioRef.current = audio;
 
     // Wait for user interaction
