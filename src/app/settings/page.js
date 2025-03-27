@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import i18n from "@/i18n"; // make sure this path matches your setup
+import i18n from "@/i18n";
 
 const supportedLanguages = {
   en: "English",
@@ -34,7 +34,7 @@ export default function SettingsPage() {
     if (typeof window !== "undefined") {
       return (
         localStorage.getItem("language") ||
-        i18n.language || // <-- Use i18n-detected language
+        i18n.language || // Use i18n-detected language
         "en"
       );
     }
