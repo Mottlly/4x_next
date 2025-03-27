@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import Bestagon from "@/app/components/bestagon";
 import boardData from "../../library/defaultBoard";
+import TileInfoPanel from "../components/gameUI/infoTile";
 
 const getColorForType = (type) => {
   switch (type) {
@@ -21,26 +22,6 @@ const hexToPosition = (q, r, spacing) => {
   const xOffset = spacing * 1.65;
   const zOffset = spacing * 1.42;
   return [q * xOffset + (r % 2) * (xOffset / 2), 0, -r * zOffset];
-};
-
-const TileInfoPanel = ({ tile }) => {
-  if (!tile) return null;
-  return (
-    <div className="absolute top-4 left-4 p-4 bg-white text-black rounded shadow-lg z-10 pointer-events-none w-64">
-      <h2 className="text-lg font-bold mb-2">Tile Info</h2>
-      <ul className="text-sm">
-        <li>
-          <strong>Q:</strong> {tile.q}
-        </li>
-        <li>
-          <strong>R:</strong> {tile.r}
-        </li>
-        <li>
-          <strong>Type:</strong> {tile.type || "water"}
-        </li>
-      </ul>
-    </div>
-  );
 };
 
 const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
