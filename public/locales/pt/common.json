@@ -5,5 +5,11 @@
     "continue": "Continuar Jogo",
     "start": "Iniciar Jogo",
     "settings": "Configurações",
-    "logout": "Sair"
+    "logout": "Sair",
+    "settingsPage": {
+      "title": "Configurações do Jogo",
+      "musicVolume": "Volume da Música",
+      "language": "Idioma",
+      "backToMenu": "Voltar ao Menu"
+    }
   }

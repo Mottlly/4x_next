@@ -5,5 +5,11 @@
     "continue": "متابعة اللعبة",
     "start": "بدء اللعبة",
     "settings": "الإعدادات",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "settingsPage": {
+      "title": "إعدادات اللعبة",
+      "musicVolume": "مستوى صوت الموسيقى",
+      "language": "اللغة",
+      "backToMenu": "العودة إلى القائمة"
+    }
   }

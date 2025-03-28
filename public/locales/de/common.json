@@ -5,5 +5,11 @@
     "continue": "Spiel Fortsetzen",
     "start": "Spiel Starten",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "settingsPage": {
+      "title": "Spieleinstellungen",
+      "musicVolume": "Musiklautstärke",
+      "language": "Sprache",
+      "backToMenu": "Zurück zum Menü"
+    }
   }

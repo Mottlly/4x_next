@@ -5,5 +5,11 @@
     "continue": "खेल जारी रखें",
     "start": "खेल शुरू करें",
     "settings": "सेटिंग्स",
-    "logout": "लॉगआउट"
+    "logout": "लॉगआउट",
+    "settingsPage": {
+      "title": "खेल सेटिंग्स",
+      "musicVolume": "संगीत की आवाज़",
+      "language": "भाषा",
+      "backToMenu": "मेनू पर वापस जाएँ"
+    }
   }

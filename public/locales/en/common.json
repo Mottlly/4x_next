@@ -5,5 +5,11 @@
   "continue": "Continue Game",
   "start": "Start Game",
   "settings": "Settings",
-  "logout": "Logout"
+  "logout": "Logout",
+  "settingsPage": {
+    "title": "Game Settings",
+    "musicVolume": "Music Volume",
+    "language": "Language",
+    "backToMenu": "Back to Menu"
+  }
 }

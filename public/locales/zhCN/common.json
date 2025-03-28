@@ -5,5 +5,11 @@
     "continue": "继续游戏",
     "start": "开始游戏",
     "settings": "设置",
-    "logout": "退出"
+    "logout": "退出",
+    "settingsPage": {
+      "title": "游戏设置",
+      "musicVolume": "音乐音量",
+      "language": "语言",
+      "backToMenu": "返回菜单"
+    }
   }

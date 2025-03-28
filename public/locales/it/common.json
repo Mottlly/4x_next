@@ -5,5 +5,11 @@
     "continue": "Continua il Gioco",
     "start": "Avvia il Gioco",
     "settings": "Impostazioni",
-    "logout": "Disconnetti"
+    "logout": "Disconnetti",
+    "settingsPage": {
+      "title": "Impostazioni di Gioco",
+      "musicVolume": "Volume della Musica",
+      "language": "Lingua",
+      "backToMenu": "Torna al Menu"
+    }
   }

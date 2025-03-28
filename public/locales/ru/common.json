@@ -5,5 +5,11 @@
     "continue": "Продолжить Игру",
     "start": "Начать Игру",
     "settings": "Настройки",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "settingsPage": {
+      "title": "Настройки Игры",
+      "musicVolume": "Громкость Музыки",
+      "language": "Язык",
+      "backToMenu": "Назад в Меню"
+    }
   }

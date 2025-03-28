@@ -5,5 +5,11 @@
   "continue": "Continuer le Jeu",
   "start": "Démarrer le Jeu",
   "settings": "Paramètres",
-  "logout": "Déconnexion"
+  "logout": "Déconnexion",
+  "settingsPage": {
+    "title": "Paramètres du Jeu",
+    "musicVolume": "Volume de la Musique",
+    "language": "Langue",
+    "backToMenu": "Retour au Menu"
+  }
 }

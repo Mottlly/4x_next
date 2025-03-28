@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 
 const supportedLanguages = {
@@ -21,6 +22,7 @@ const supportedLanguages = {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { t } = useTranslation(); // 👈 Hook into translations
 
   const [volume, setVolume] = useState(() => {
     if (typeof window !== "undefined") {
@@ -54,11 +56,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen p-6">
-      <h1 className="text-3xl font-bold mb-6">Game Settings</h1>
+      <h1 className="text-3xl font-bold mb-6">{t("settingsPage.title")}</h1>
 
       <div className="w-full max-w-md mb-6">
         <label className="block mb-2">
-          Music Volume: {Math.round(volume * 100)}%
+          {t("settingsPage.musicVolume")} {Math.round(volume * 100)}%
         </label>
         <input
           type="range"
@@ -72,7 +74,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="w-full max-w-md mb-6">
-        <label className="block mb-2">Language</label>
+        <label className="block mb-2">{t("settingsPage.language")}</label>
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
@@ -90,7 +92,7 @@ export default function SettingsPage() {
         onClick={() => router.back()}
         className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
-        Back to Menu
+        {t("settingsPage.backToMenu")}
       </button>
     </div>
   );

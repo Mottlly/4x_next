@@ -5,5 +5,11 @@
   "continue": "Continuar Juego",
   "start": "Iniciar Juego",
   "settings": "Configuraciones",
-  "logout": "Cerrar Sesión"
+  "logout": "Cerrar Sesión",
+  "settingsPage": {
+    "title": "Configuración del Juego",
+    "musicVolume": "Volumen de la Música",
+    "language": "Idioma",
+    "backToMenu": "Volver al Menú"
+  }
 }
