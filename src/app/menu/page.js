@@ -14,7 +14,7 @@ import {
   handleSettings,
   handleLogout,
 } from "../../library/utililies/menu/menuUtilities";
-import Header from "../components/SplashUI/header"; // ✅ Header import
+import Header from "../components/SplashUI/header";
 
 export default function MainMenu() {
   const { t } = useTranslation();
@@ -45,7 +45,6 @@ export default function MainMenu() {
 
   return (
     <div className={menuStyles.menuContainer}>
-      {/* ✅ Add header to top */}
       <Header />
 
       <main className={menuStyles.menuMain}>
