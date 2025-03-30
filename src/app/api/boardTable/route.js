@@ -47,7 +47,7 @@ export async function GET(req) {
     if (rows.length === 0)
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
 
-    return NextResponse.json({ board: rows[0].board_data }, { status: 200 });
+    return NextResponse.json({ board: rows[0].boardref }, { status: 200 });
   } catch (error) {
     console.error("GET Error:", error);
     return NextResponse.json(

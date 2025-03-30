@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import Bestagon from "@/app/components/bestagon";
-import boardData from "../../library/defaultBoard";
 import TileInfoPanel from "../components/gameUI/infoTile";
 
+// Utility: Map tile type to color
 const getColorForType = (type) => {
   switch (type) {
     case "water":
@@ -18,24 +18,27 @@ const getColorForType = (type) => {
   }
 };
 
+// Convert axial coordinates to 3D position
 const hexToPosition = (q, r, spacing) => {
   const xOffset = spacing * 1.65;
   const zOffset = spacing * 1.42;
   return [q * xOffset + (r % 2) * (xOffset / 2), 0, -r * zOffset];
 };
 
+// Board component that renders all tiles
 const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
   const groupRef = useRef();
-
   const previousTileRef = useRef(null);
+  const elements = [];
+
+  const landTilePositions = new Set(board.tiles.map(({ q, r }) => `${q},${r}`));
 
   const handlePointerMove = (event) => {
-    if (isDraggingRef.current) return; // 🧠 Do nothing while dragging
-
+    if (isDraggingRef.current) return;
     event.stopPropagation();
+
     const intersect = event.intersections?.[0];
     const tile = intersect?.object?.userData?.tile || null;
-
     const prev = previousTileRef.current;
 
     const sameTile =
@@ -50,10 +53,6 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
     previousTileRef.current = tile;
     setHoveredTile(tile);
   };
-
-  const elements = [];
-
-  const landTilePositions = new Set(board.tiles.map(({ q, r }) => `${q},${r}`));
 
   for (let q = 0; q < board.cols; q++) {
     for (let r = 0; r < board.rows; r++) {
@@ -93,15 +92,14 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
   );
 };
 
-export default function App() {
+// 👇 This is the exported HexBoard
+export default function HexBoard({ board }) {
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
-  const dragTimeoutRef = useRef(null); // 🆕 Store timeout ID
+  const dragTimeoutRef = useRef(null);
 
   const handlePointerDown = () => {
     isDraggingRef.current = true;
-
-    // Clear any previous timeout
     if (dragTimeoutRef.current) {
       clearTimeout(dragTimeoutRef.current);
       dragTimeoutRef.current = null;
@@ -109,11 +107,10 @@ export default function App() {
   };
 
   const handlePointerUp = () => {
-    // Set a delay before allowing hover again
     dragTimeoutRef.current = setTimeout(() => {
       isDraggingRef.current = false;
       dragTimeoutRef.current = null;
-    }, 800); // ⏳ Adjust this for inertia feel
+    }, 800);
   };
 
   return (
@@ -127,7 +124,7 @@ export default function App() {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 20, 10]} />
         <InteractiveBoard
-          board={boardData}
+          board={board}
           setHoveredTile={setHoveredTile}
           isDraggingRef={isDraggingRef}
         />

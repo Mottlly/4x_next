@@ -10,18 +10,21 @@ export default function GamePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const gameID = searchParams.get("gameID");
+
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const audioRef = useRef(null);
+
+  // Redirect unauthenticated users
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
-  //Use Ref and/or context provider!!!
-  const audioRef = useRef(null);
 
+  // Setup background music
   useEffect(() => {
     const audio = new Audio("/music/sci-fi_loop.wav");
     audio.loop = true;
@@ -32,7 +35,6 @@ export default function GamePage() {
 
     audioRef.current = audio;
 
-    // Wait for user interaction
     const tryPlay = () => {
       audio.play().catch((err) => {
         console.log("Still blocked:", err);
@@ -49,20 +51,19 @@ export default function GamePage() {
     };
   }, []);
 
+  // Fetch or create board data
   useEffect(() => {
     const fetchOrCreateBoard = async () => {
       if (status !== "authenticated" || !session?.user?.id || !gameID) return;
 
       try {
-        // ✅ Try to GET the board for this gameID
         const getResponse = await fetch(`/api/boardTable?game_id=${gameID}`);
 
         if (getResponse.ok) {
           const boardData = await getResponse.json();
-          console.log(boardData);
+          console.log("Fetched board:", boardData);
           setBoard(boardData);
         } else if (getResponse.status === 404) {
-          // ✅ If not found, POST a new board
           const postResponse = await fetch("/api/boardTable", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -77,6 +78,7 @@ export default function GamePage() {
           }
 
           const newBoard = await postResponse.json();
+          console.log("Created new board:", newBoard);
           setBoard(newBoard);
         } else {
           throw new Error("Failed to fetch board data.");
@@ -91,13 +93,25 @@ export default function GamePage() {
     fetchOrCreateBoard();
   }, [status, session, gameID]);
 
+  // Handle loading/error/empty states
   if (loading) return <div>Loading game...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!board) return <div>No board data available</div>;
+  if (!board || !board.board || !Array.isArray(board.board.tiles)) {
+    return <div>No tile data available</div>;
+  }
+
+  const boardTiles = {
+    ...board.board,
+    cols: 25,
+    rows: 25,
+    spacing: 1.05,
+  };
+
+  console.log(boardTiles);
 
   return (
     <div className="h-screen w-screen">
-      <HexBoard board={board} />
+      <HexBoard board={boardTiles} />
     </div>
   );
 }
