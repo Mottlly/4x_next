@@ -1,67 +1,65 @@
 "use client";
 
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import ProjectCard from "./components/SplashUI/projectCard";
+import Header from "./components/SplashUI/header";
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
-  console.log("Session:", session);
-  console.log("Auth Status:", status);
-
-  // Redirect to the main game page once authenticated
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/menu");
-    }
-  }, [status, router]);
+  const handleEnterGame = () => router.push("/menu");
+  const handleProjectClick = (url) => router.push(url);
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
+    <div className="relative min-h-screen px-6 pb-20 pt-24 sm:px-12 sm:pt-28 font-[family-name:var(--font-geist-sans)]">
+      <Header />
 
-        <h1 className="text-2xl font-semibold text-center sm:text-left">
-          Welcome to My App
-        </h1>
-        <p className="text-sm text-center sm:text-left">
-          Log in to access your account and start exploring.
+      {/* Page Title */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold">Welcome to My App Hub</h1>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+          Dive into the main experience or explore some of my other projects
+          below.
         </p>
+      </div>
 
-        {!session ? (
-          <div className="flex gap-4">
-            <button
-              onClick={() => signIn("auth0")}
-              className="rounded-full bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 transition"
-            >
-              Login
-            </button>
+      {/* Card Row */}
+      {session && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl mx-auto items-end">
+          {/* Left - Project Two */}
+          <div className="flex justify-end md:mr-12">
+            <ProjectCard
+              title="Obscurum"
+              imageSrc="/galBack.jpg"
+              description="An experimental AI art generator powered by prompts."
+              onClick={() => handleProjectClick("/project-two")}
+            />
           </div>
-        ) : (
-          <div className="text-center">
-            <p className="text-green-600 font-semibold">
-              ✅ You are logged in as{" "}
-              {session?.user?.email || session?.user?.name || "Unknown"}!
-            </p>
-            <button
-              onClick={() => signOut()}
-              className="mt-4 rounded-full bg-red-600 text-white px-4 py-2 hover:bg-red-700 transition"
-            >
-              Logout
-            </button>
+
+          {/* Center - Main Game */}
+          <div className="flex justify-center">
+            <ProjectCard
+              title="Enter the Game"
+              imageSrc="/game-thumbnail.jpg"
+              highlighted={true}
+              description="A tactical board game where strategy meets fantasy. Jump in!"
+              onClick={handleEnterGame}
+            />
           </div>
-        )}
-      </main>
+
+          {/* Right - Project Three */}
+          <div className="flex justify-start md:ml-12">
+            <ProjectCard
+              title="SeekIt: Pantry Manager"
+              imageSrc="/SeekIt-Logo_MultiColour.png"
+              description="A playful search-and-find puzzle game for quick breaks."
+              onClick={() => handleProjectClick("/project-three")}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
