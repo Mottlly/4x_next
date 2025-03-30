@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
+import { createNoise2D } from "simplex-noise";
 
+// SQL queries (unchanged)
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
   "utf8"
@@ -20,7 +22,7 @@ const deleteBoardQuery = fs.readFileSync(
   "utf8"
 );
 
-// ✅ GET: Fetch board state by ID
+// ✅ GET (unchanged)
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
@@ -43,7 +45,6 @@ export async function GET(req) {
 
   try {
     const { rows } = await pool.query(query, param);
-    console.log("Query result rows:", rows);
     if (rows.length === 0)
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
 
@@ -57,18 +58,22 @@ export async function GET(req) {
   }
 }
 
-// ✅ POST: Generate and insert board
+// ✅ POST (Procedural Generation on Backend)
 export async function POST(req) {
   try {
     const { user_id, game_id } = await req.json();
 
-    if (!user_id || !game_id)
+    if (!user_id || !game_id) {
       return NextResponse.json(
-        { error: "User ID and Game ID required." },
+        { error: "User ID and Game ID are required." },
         { status: 400 }
       );
+    }
 
-    const boardState = generateBoard();
+    // Generate biome map directly on backend
+    const tiles = generateBiomeMap(25, 25);
+
+    const boardState = { tiles };
 
     const { rows } = await pool.query(postBoardQuery, [
       user_id,
@@ -89,7 +94,7 @@ export async function POST(req) {
   }
 }
 
-// ✅ DELETE: Remove a board by ID
+// DELETE (unchanged)
 export async function DELETE(req) {
   try {
     const { board_id } = await req.json();
@@ -116,17 +121,27 @@ export async function DELETE(req) {
   }
 }
 
-function generateBoard() {
-  const board = { tiles: [] };
-  for (let q = 1; q <= 10; q++) {
-    for (let r = 1; r <= 10; r++) {
-      board.tiles.push({
-        q,
-        r,
-        z: Math.floor(Math.random() * 4) + 1, // ✅ Random elevation
-        type: "terrain_type",
-      });
+// 🎲 Backend biome generation function
+function generateBiomeMap(cols, rows, seed = Math.random()) {
+  const noise2D = createNoise2D(() => seed);
+  const scale = 0.08;
+  const tiles = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const elevation = noise2D(q * scale, r * scale);
+      const moisture = noise2D(q * scale + 100, r * scale + 100);
+
+      let type = "plains";
+
+      if (elevation < -0.3) type = "water";
+      else if (elevation < 0) type = moisture > 0 ? "plains" : "desert";
+      else if (elevation < 0.4) type = moisture > 0.2 ? "forest" : "plains";
+      else type = "mountain";
+
+      tiles.push({ q, r, type });
     }
   }
-  return board;
+
+  return tiles;
 }

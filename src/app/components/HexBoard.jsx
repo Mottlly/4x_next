@@ -8,13 +8,17 @@ import TileInfoPanel from "../components/gameUI/infoTile";
 const getColorForType = (type) => {
   switch (type) {
     case "water":
-      return "blue";
+      return "#4169E1"; // Royal Blue
     case "forest":
-      return "#90EE90";
+      return "#228B22"; // Forest Green
     case "desert":
-      return "yellow";
+      return "#EDC9Af"; // Sandy Desert
+    case "mountain":
+      return "#A9A9A9"; // Dark Gray
+    case "plains":
+      return "#90EE90"; // Light Green
     default:
-      return "gray";
+      return "#CCCCCC"; // Fallback gray
   }
 };
 

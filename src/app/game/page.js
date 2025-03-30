@@ -51,7 +51,7 @@ export default function GamePage() {
     };
   }, []);
 
-  // Fetch or create board data
+  // Fetch or create board data (Backend now generates tiles)
   useEffect(() => {
     const fetchOrCreateBoard = async () => {
       if (status !== "authenticated" || !session?.user?.id || !gameID) return;
@@ -64,6 +64,7 @@ export default function GamePage() {
           console.log("Fetched board:", boardData);
           setBoard(boardData);
         } else if (getResponse.status === 404) {
+          // Backend handles procedural generation, no client generation needed
           const postResponse = await fetch("/api/boardTable", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
