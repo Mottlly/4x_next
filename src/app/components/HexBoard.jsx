@@ -8,17 +8,17 @@ import TileInfoPanel from "../components/gameUI/infoTile";
 const getColorForType = (type) => {
   switch (type) {
     case "water":
-      return "#4169E1"; // Royal Blue
+      return "#4169E1";
     case "forest":
-      return "#228B22"; // Forest Green
+      return "#228B22";
     case "desert":
-      return "#EDC9Af"; // Sandy Desert
+      return "#EDC9Af";
     case "mountain":
-      return "#A9A9A9"; // Dark Gray
+      return "#A9A9A9";
     case "plains":
-      return "#90EE90"; // Light Green
+      return "#90EE90";
     default:
-      return "#CCCCCC"; // Fallback gray
+      return "#CCCCCC";
   }
 };
 
@@ -29,13 +29,10 @@ const hexToPosition = (q, r, spacing) => {
   return [q * xOffset + (r % 2) * (xOffset / 2), 0, -r * zOffset];
 };
 
-// Board component that renders all tiles
 const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
   const groupRef = useRef();
   const previousTileRef = useRef(null);
   const elements = [];
-
-  const landTilePositions = new Set(board.tiles.map(({ q, r }) => `${q},${r}`));
 
   const handlePointerMove = (event) => {
     if (isDraggingRef.current) return;
@@ -58,33 +55,15 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
     setHoveredTile(tile);
   };
 
-  for (let q = 0; q < board.cols; q++) {
-    for (let r = 0; r < board.rows; r++) {
-      if (!landTilePositions.has(`${q},${r}`)) {
-        const pos = hexToPosition(q, r, board.spacing);
-        const tile = { q, r, type: "water" };
-        elements.push(
-          <Bestagon
-            key={`water-${q}-${r}`}
-            position={pos}
-            color="blue"
-            userData={{ tile }}
-          />
-        );
-      }
-    }
-  }
-
-  board.tiles.forEach(({ q, r, type }) => {
+  board.tiles.forEach(({ q, r, type, height }) => {
     const pos = hexToPosition(q, r, board.spacing);
     const color = getColorForType(type);
-    const tile = { q, r, type };
     elements.push(
       <Bestagon
         key={`tile-${q}-${r}`}
-        position={[pos[0], 0.3, pos[2]]}
+        position={[pos[0], height, pos[2]]}
         color={color}
-        userData={{ tile }}
+        userData={{ tile: { q, r, type, height } }}
       />
     );
   });
@@ -96,7 +75,6 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
   );
 };
 
-// 👇 This is the exported HexBoard
 export default function HexBoard({ board }) {
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);

@@ -64,7 +64,6 @@ export default function GamePage() {
           console.log("Fetched board:", boardData);
           setBoard(boardData);
         } else if (getResponse.status === 404) {
-          // Backend handles procedural generation, no client generation needed
           const postResponse = await fetch("/api/boardTable", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -78,7 +77,13 @@ export default function GamePage() {
             throw new Error("Failed to create new board.");
           }
 
-          const newBoard = await postResponse.json();
+          const createdData = await postResponse.json();
+
+          // Fix: explicitly set the expected board structure here
+          const newBoard = {
+            board: createdData.board.boardref, // Ensure this matches your backend response structure
+          };
+
           console.log("Created new board:", newBoard);
           setBoard(newBoard);
         } else {
