@@ -2,6 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { splashStyles } from "../../library/styles/splash/splashstyles";
 import ProjectCard from "./components/SplashUI/projectCard";
 import Header from "./components/SplashUI/header";
 
@@ -13,7 +14,7 @@ export default function Home() {
   const handleProjectClick = (url) => router.push(url);
 
   return (
-    <div className="relative min-h-screen px-6 pb-20 pt-24 sm:px-12 sm:pt-28 font-[family-name:var(--font-geist-sans)]">
+    <div className={splashStyles.pageContainer}>
       <Header />
 
       {/* Page Title */}
