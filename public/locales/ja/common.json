@@ -11,5 +11,10 @@
       "musicVolume": "音楽の音量",
       "language": "言語",
       "backToMenu": "メニューに戻る"
-    }
+    },
+    "gamePage": {
+      "Loading": "ゲームを読み込み中...",
+      "LoadingError": "ゲームの読み込みエラー",
+      "NoMapData": "マップデータがありません"
+  }
   }

@@ -11,5 +11,10 @@
       "musicVolume": "Громкость Музыки",
       "language": "Язык",
       "backToMenu": "Назад в Меню"
-    }
+    },
+    "gamePage": {
+      "Loading": "Загрузка игры...",
+      "LoadingError": "Ошибка загрузки игры",
+      "NoMapData": "Нет данных карты"
+  }
   }

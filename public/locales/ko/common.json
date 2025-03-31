@@ -11,5 +11,10 @@
       "musicVolume": "음악 볼륨",
       "language": "언어",
       "backToMenu": "메뉴로 돌아가기"
-    }
+    },
+    "gamePage": {
+      "Loading": "게임 로딩 중...",
+      "LoadingError": "게임 로딩 오류",
+      "NoMapData": "지도 데이터 없음"
+  }
   }

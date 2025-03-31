@@ -11,5 +11,10 @@
       "musicVolume": "संगीत की आवाज़",
       "language": "भाषा",
       "backToMenu": "मेनू पर वापस जाएँ"
-    }
+    },
+    "gamePage": {
+      "Loading": "गेम लोड हो रहा है...",
+      "LoadingError": "गेम लोड करने में त्रुटि",
+      "NoMapData": "कोई नक्शा डेटा नहीं"
+  }
   }

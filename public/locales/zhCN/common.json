@@ -11,5 +11,10 @@
       "musicVolume": "音乐音量",
       "language": "语言",
       "backToMenu": "返回菜单"
-    }
+    },
+    "gamePage": {
+      "Loading": "正在加载游戏...",
+      "LoadingError": "加载游戏时出错",
+      "NoMapData": "没有地图数据"
+  }
   }

@@ -11,5 +11,10 @@
       "musicVolume": "Volume della Musica",
       "language": "Lingua",
       "backToMenu": "Torna al Menu"
-    }
+    },
+    "gamePage": {
+      "Loading": "Caricamento del gioco...",
+      "LoadingError": "Errore nel caricamento del gioco",
+      "NoMapData": "Nessun dato della mappa"
+  }
   }
