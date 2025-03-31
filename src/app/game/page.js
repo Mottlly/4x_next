@@ -1,11 +1,13 @@
 "use client";
 
+import i18n from "../../i18n";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import HexBoard from "@/app/components/HexBoard";
 
 export default function GamePage() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -100,10 +102,16 @@ export default function GamePage() {
   }, [status, session, gameID]);
 
   // Handle loading/error/empty states
-  if (loading) return <div>Loading game...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>{t("gamePage.Loading")}</div>;
+  if (error)
+    return (
+      <div>
+        {t("gamePage.LoadingError")}
+        {error}
+      </div>
+    );
   if (!board || !board.board || !Array.isArray(board.board.tiles)) {
-    return <div>No tile data available</div>;
+    return <div>{t("gamePage.NoMapData")}</div>;
   }
 
   const boardTiles = {
