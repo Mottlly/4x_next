@@ -6,6 +6,7 @@
     "start": "Avvia il Gioco",
     "settings": "Impostazioni",
     "logout": "Disconnetti",
+    "login": "Accesso",
     "settingsPage": {
       "title": "Impostazioni di Gioco",
       "musicVolume": "Volume della Musica",

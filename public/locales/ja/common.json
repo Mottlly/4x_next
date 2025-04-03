@@ -6,6 +6,7 @@
     "start": "ゲームを開始",
     "settings": "設定",
     "logout": "ログアウト",
+    "login": "ログイン",
     "settingsPage": {
       "title": "ゲーム設定",
       "musicVolume": "音楽の音量",

@@ -6,6 +6,7 @@
     "start": "게임 시작",
     "settings": "설정",
     "logout": "로그아웃",
+    "login": "로그인",
     "settingsPage": {
       "title": "게임 설정",
       "musicVolume": "음악 볼륨",

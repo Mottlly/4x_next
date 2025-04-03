@@ -6,6 +6,7 @@
     "start": "Spiel Starten",
     "settings": "Einstellungen",
     "logout": "Abmelden",
+    "login": "Anmeldung",
     "settingsPage": {
       "title": "Spieleinstellungen",
       "musicVolume": "Musiklautstärke",

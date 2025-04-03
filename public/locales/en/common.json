@@ -6,6 +6,7 @@
   "start": "Start Game",
   "settings": "Settings",
   "logout": "Logout",
+  "login": "login", 
   "settingsPage": {
     "title": "Game Settings",
     "musicVolume": "Music Volume",

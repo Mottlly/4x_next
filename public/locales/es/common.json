@@ -6,6 +6,7 @@
   "start": "Iniciar Juego",
   "settings": "Configuraciones",
   "logout": "Cerrar Sesión",
+  "login": "Iniciar sesión",
   "settingsPage": {
     "title": "Configuración del Juego",
     "musicVolume": "Volumen de la Música",

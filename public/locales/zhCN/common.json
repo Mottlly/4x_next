@@ -6,6 +6,7 @@
     "start": "开始游戏",
     "settings": "设置",
     "logout": "退出",
+    "login": "登录",
     "settingsPage": {
       "title": "游戏设置",
       "musicVolume": "音乐音量",

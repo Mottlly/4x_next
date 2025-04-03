@@ -6,6 +6,7 @@
     "start": "Начать Игру",
     "settings": "Настройки",
     "logout": "Выйти",
+    "login": "Войти",
     "settingsPage": {
       "title": "Настройки Игры",
       "musicVolume": "Громкость Музыки",
