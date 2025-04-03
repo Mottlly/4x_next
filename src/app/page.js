@@ -2,7 +2,7 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { splashStyles } from "../../library/styles/splash/splashstyles";
+import { splashStyles } from "../library/styles/splash/splashstyles";
 import ProjectCard from "./components/SplashUI/projectCard";
 import Header from "./components/SplashUI/header";
 
@@ -18,9 +18,9 @@ export default function Home() {
       <Header />
 
       {/* Page Title */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold">Welcome to My App Hub</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+      <div className={splashStyles.titleContainer}>
+        <h1 className={splashStyles.title}>Welcome to My App Hub</h1>
+        <p className={splashStyles.subtitle}>
           Dive into the main experience or explore some of my other projects
           below.
         </p>
@@ -28,9 +28,9 @@ export default function Home() {
 
       {/* Card Row */}
       {session && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl mx-auto items-end">
+        <div className={splashStyles.cardGrid}>
           {/* Left - Project Two */}
-          <div className="flex justify-end md:mr-12">
+          <div className={splashStyles.leftCard}>
             <ProjectCard
               title="Obscurum"
               imageSrc="/galBack.jpg"
@@ -40,7 +40,7 @@ export default function Home() {
           </div>
 
           {/* Center - Main Game */}
-          <div className="flex justify-center">
+          <div className={splashStyles.centerCard}>
             <ProjectCard
               title="Enter the Game"
               imageSrc="/game-thumbnail.jpg"
@@ -51,7 +51,7 @@ export default function Home() {
           </div>
 
           {/* Right - Project Three */}
-          <div className="flex justify-start md:ml-12">
+          <div className={splashStyles.rightCard}>
             <ProjectCard
               title="SeekIt: Pantry Manager"
               imageSrc="/SeekIt-Logo_MultiColour.png"
