@@ -2,6 +2,7 @@
 
 import i18n from "../../i18n";
 import { useSession } from "next-auth/react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import HexBoard from "@/app/components/HexBoard";
