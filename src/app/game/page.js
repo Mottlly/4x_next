@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import HexBoard from "@/app/components/HexBoard";
+import { useUserData } from "../../library/utililies/hooks/useUserData";
 
 export default function GamePage() {
   const { t } = useTranslation();
@@ -13,6 +14,8 @@ export default function GamePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const gameID = searchParams.get("gameID");
+
+  const userData = useUserData(session);
 
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,7 +60,7 @@ export default function GamePage() {
   // Fetch or create board data (Backend now generates tiles)
   useEffect(() => {
     const fetchOrCreateBoard = async () => {
-      if (status !== "authenticated" || !session?.user?.id || !gameID) return;
+      if (status !== "authenticated" || !userData || !gameID) return;
 
       try {
         const getResponse = await fetch(`/api/boardTable?game_id=${gameID}`);
