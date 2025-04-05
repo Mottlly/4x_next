@@ -7,6 +7,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import HexBoard from "@/app/components/HexBoard";
 import { useUserData } from "../../library/utililies/hooks/useUserData";
+import LoadingScreen from "../components/gameUI/loadingScreen";
 
 export default function GamePage() {
   const { t } = useTranslation();
@@ -85,9 +86,8 @@ export default function GamePage() {
 
           const createdData = await postResponse.json();
 
-          // Fix: explicitly set the expected board structure here
           const newBoard = {
-            board: createdData.board.boardref, // Ensure this matches your backend response structure
+            board: createdData.board.boardref,
           };
 
           console.log("Created new board:", newBoard);
@@ -106,7 +106,7 @@ export default function GamePage() {
   }, [status, session, gameID]);
 
   // Handle loading/error/empty states
-  if (loading) return <div>{t("gamePage.Loading")}</div>;
+  if (loading) return <LoadingScreen />;
   if (error)
     return (
       <div>
