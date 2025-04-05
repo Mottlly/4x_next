@@ -1,52 +1,35 @@
 "use client";
 
-import i18n from "../../i18n";
 import { useTranslation } from "react-i18next";
 import { useSession } from "next-auth/react";
 import { menuStyles } from "../../library/styles/menu/menustyles";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect } from "react";
 import {
-  fetchUserData,
-  createNewUser,
   handleStartGame,
   handleContinueGame,
   handleSettings,
   handleLogout,
 } from "../../library/utililies/menu/menuUtilities";
 import Header from "../components/SplashUI/header";
+import { useUserData } from "../../library/utililies/hooks/useUserData";
 
 export default function MainMenu() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [userData, setUserData] = useState(null);
+  const userData = useUserData(session);
 
+  // Redirect unauthenticated users once
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
 
-  const fetchUserDataCallback = useCallback(
-    async (authID) => {
-      await fetchUserData(authID, setUserData, () =>
-        createNewUser(setUserData)
-      );
-    },
-    [setUserData]
-  );
-
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.id) {
-      fetchUserDataCallback(session.user.id);
-    }
-  }, [status, session, fetchUserDataCallback]);
-
   return (
     <div className={menuStyles.menuContainer}>
       <Header />
-
       <main className={menuStyles.menuMain}>
         <h1 className={menuStyles.menuHeader}>{t("mainMenu")}</h1>
 
