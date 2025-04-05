@@ -15,6 +15,11 @@ const TileInfoPanel = ({ tile }) => {
         <li>
           <strong>Type:</strong> {tile.type || "water"}
         </li>
+        {tile.river && (
+          <li>
+            <strong>River:</strong> Present
+          </li>
+        )}
       </ul>
     </div>
   );

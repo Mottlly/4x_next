@@ -9,6 +9,8 @@ const getColorForType = (type) => {
   switch (type) {
     case "water":
       return "#4169E1";
+    case "lake":
+      return "#007BA7";
     case "forest":
       return "#228B22";
     case "desert":
@@ -55,16 +57,24 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
     setHoveredTile(tile);
   };
 
-  board.tiles.forEach(({ q, r, type, height }) => {
+  board.tiles.forEach((tile) => {
+    const { q, r, type, height, river } = tile;
     const pos = hexToPosition(q, r, board.spacing);
     const color = getColorForType(type);
     elements.push(
-      <Bestagon
-        key={`tile-${q}-${r}`}
-        position={[pos[0], height, pos[2]]}
-        color={color}
-        userData={{ tile: { q, r, type, height } }}
-      />
+      <group key={`tile-${q}-${r}`}>
+        <Bestagon
+          position={[pos[0], height, pos[2]]}
+          color={color}
+          userData={{ tile: { q, r, type, height, river } }} // include river explicitly
+        />
+        {river && (
+          <mesh position={[pos[0], height + 0.1, pos[2]]}>
+            <sphereGeometry args={[0.2, 16, 16]} />
+            <meshStandardMaterial color="#0000FF" />
+          </mesh>
+        )}
+      </group>
     );
   });
 
