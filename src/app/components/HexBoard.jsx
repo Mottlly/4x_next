@@ -17,6 +17,8 @@ const getColorForType = (type) => {
       return "#EDC9Af";
     case "mountain":
       return "#A9A9A9";
+    case "impassable mountain":
+      return "#555555"; // New color for impassable mountain tiles
     case "plains":
       return "#90EE90";
     default:
@@ -66,7 +68,7 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
         <Bestagon
           position={[pos[0], height, pos[2]]}
           color={color}
-          userData={{ tile: { q, r, type, height, river } }} // include river explicitly
+          userData={{ tile: { q, r, type, height, river } }}
         />
         {river && (
           <mesh position={[pos[0], height + 0.1, pos[2]]}>

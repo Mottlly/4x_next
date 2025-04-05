@@ -102,6 +102,34 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
     }
   }
 
+  // Convert mountain tiles to impassable mountains if they are completely surrounded by other mountain tiles.
+  const impassableMountainTiles = [];
+  for (const tile of tiles) {
+    if (tile.type === "mountain") {
+      let isSurrounded = true;
+      for (const offset of neighborOffsets) {
+        const neighbor = tileMap.get(
+          `${tile.q + offset.q},${tile.r + offset.r}`
+        );
+        // If the neighbor doesn't exist (edge of the map) or isn't a mountain,
+        // then this tile isn’t fully surrounded.
+        if (!neighbor || neighbor.type !== "mountain") {
+          isSurrounded = false;
+          break;
+        }
+      }
+      if (isSurrounded) {
+        impassableMountainTiles.push(tile);
+      }
+    }
+  }
+  // Update the type of all fully surrounded mountain tiles to "impassable mountain"
+  // and recalculate their height to be higher.
+  impassableMountainTiles.forEach((tile) => {
+    tile.type = "impassable mountain";
+    tile.height = mapElevationToHeight(tile.elevation, "impassable mountain");
+  });
+
   // Generate occasional rivers from mountain tiles.
   // Instead of changing the tile's type, we add a "river" property.
   const riverProbability = 0.05; // 5% chance a mountain tile becomes a river source
@@ -157,6 +185,7 @@ function mapElevationToHeight(elevation, type) {
     desert: 0.25,
     forest: 0.4,
     mountain: 0.8,
+    "impassable mountain": 1.0, // Higher base height for impassable mountains
   };
 
   // Fine-tune height based on elevation noise
