@@ -43,7 +43,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
 - **Frontend:** React, Next.js, Tailwind CSS  
 - **Backend (planned):** Node.js, PostgreSQL (RDS), Prisma  
-- **Deployment:** Vercel (Frontend), Supabase or Render (Backend)
+- **Deployment:** TBD
 
 ## 📄 License
 
