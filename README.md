@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌌 Project Armaggedon: A Sci-Fi Survival 4X Strategy Game
 
-## Getting Started
+**Project Armageddon** is a sci-fi survival 4X strategy game set on a hostile alien world, where players must **Explore**, **Expand**, **Exploit**, and **Exterminate** — all while managing scarce resources, unpredictable conditions, and their own faction’s will to survive.
 
-First, run the development server:
+---
+
+## 🚀 Features (Planned & In Development)
+
+- 🧭 **Hex-Based Map System** – Procedurally generated terrain, resources, and hazards  
+- 🌱 **Survival Mechanics** – Manage food, energy, morale, and weather-related threats  
+- 🏛️ **Faction Diversity** – Each faction brings unique traits, technologies, and goals  
+- ⚔️ **Turn-Based Combat & Fog of War** – Strategic depth with unit roles and loadouts  
+- 🔬 **Dynamic Tech Tree** – Adapt research to environment and faction playstyle  
+- 🌍 **Event System** – Alien invasions, solar flares, and unexpected crises challenge your plans  
+- 🏗️ **Base & Colony Building** – Establish and grow settlements with population and morale mechanics  
+
+---
+
+## 🛠️ Getting Started
+
+To run the game in development mode:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+> **Note:** This project uses the [Next.js App Router](https://nextjs.org/docs/app) and modern frontend technologies like React and Tailwind CSS.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🌐 Live Demo & Dev Log
 
-To learn more about Next.js, take a look at the following resources:
+- 🔗 **Live Preview (Coming Soon)**  
+- 💻 **GitHub Repo:** [https://github.com/Mottlly](https://github.com/Mottlly)  
+- 🛠️ **Dev Blog & Progress Updates:** _TBD_  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📚 Tech Stack
 
-## Deploy on Vercel
+- **Frontend:** React, Next.js, Tailwind CSS  
+- **Backend (planned):** Node.js, PostgreSQL (RDS), Prisma  
+- **Deployment:** Vercel (Frontend), Supabase or Render (Backend)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT License. Attribution appreciated!
+
