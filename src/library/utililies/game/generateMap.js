@@ -1,58 +1,97 @@
 import { createNoise2D } from "simplex-noise";
 
-export function generateBiomeMap(cols, rows, seed = Math.random()) {
-  const elevationNoise = createNoise2D(() => seed);
-  const moistureNoise = createNoise2D(() => seed + 500);
+/**
+ * Returns the neighbors of a tile at (q, r) for an odd‑r horizontal layout.
+ */
+function getNeighbors(q, r) {
+  if (r % 2 === 0) {
+    // Even rows
+    return [
+      { q: q - 1, r: r - 1 }, // NW
+      { q: q, r: r - 1 }, // NE
+      { q: q - 1, r: r }, // W
+      { q: q + 1, r: r }, // E
+      { q: q - 1, r: r + 1 }, // SW
+      { q: q, r: r + 1 }, // SE
+    ];
+  } else {
+    // Odd rows
+    return [
+      { q: q, r: r - 1 }, // NW
+      { q: q + 1, r: r - 1 }, // NE
+      { q: q - 1, r: r }, // W
+      { q: q + 1, r: r }, // E
+      { q: q, r: r + 1 }, // SW
+      { q: q + 1, r: r + 1 }, // SE
+    ];
+  }
+}
 
-  const elevationScale = 0.05; // Controls mountain/hill size
-  const moistureScale = 0.08;
+export function generateBiomeMap(cols, rows, seed = Math.random()) {
+  // Create noise functions for elevation and biome distribution.
+  const elevationNoise = createNoise2D(() => seed);
+  const biomeNoise = createNoise2D(() => seed + 500);
+
+  // Noise scales determine the size of clusters.
+  const elevationScale = 0.05;
+  const biomeScale = 0.08;
+
+  // Base height values for various biome types.
+  const baseHeights = {
+    water: 0.1,
+    desert: 0.25,
+    plains: 0.3,
+    forest: 0.4,
+    mountain: 0.8,
+    "impassable mountain": 1.0,
+    lake: 0.1,
+  };
 
   const tiles = [];
 
-  // Generate initial tiles and store raw elevation value
+  // --- Step 1: Generate Tiles with Discrete Elevation Levels 1 to 4 ---
+  // Level 1 is sea level (water); level 4 is set to mountain.
+  // For levels 2 and 3 we use biome noise to produce clusters of desert, plains, or forest.
   for (let r = 0; r < rows; r++) {
     for (let q = 0; q < cols; q++) {
-      // Elevation noise (for height)
-      const elevation =
-        (elevationNoise(q * elevationScale, r * elevationScale) +
-          0.5 *
-            elevationNoise(q * elevationScale * 2, r * elevationScale * 2)) /
-        1.5;
+      // Normalize elevation noise from [-1, 1] to [0, 1]
+      const rawElev =
+        (elevationNoise(q * elevationScale, r * elevationScale) + 1) / 2;
+      // Map to discrete levels 1–4.
+      let elevationLevel = Math.floor(rawElev * 4) + 1;
+      if (elevationLevel > 4) elevationLevel = 4; // safeguard
 
-      // Moisture noise (for biome determination)
-      const moisture = moistureNoise(q * moistureScale, r * moistureScale);
+      let type;
+      if (elevationLevel === 1) {
+        type = "water";
+      } else if (elevationLevel === 4) {
+        type = "mountain";
+      } else {
+        const normalizedBiome =
+          (biomeNoise(q * biomeScale, r * biomeScale) + 1) / 2;
+        if (normalizedBiome < 0.33) {
+          type = "desert";
+        } else if (normalizedBiome < 0.66) {
+          type = "plains";
+        } else {
+          type = "forest";
+        }
+      }
 
-      let type = "plains";
-      if (elevation < -0.3) type = "water";
-      else if (elevation < 0) type = moisture > 0 ? "plains" : "desert";
-      else if (elevation < 0.4) type = moisture > 0.2 ? "forest" : "plains";
-      else type = "mountain";
+      const height = baseHeights[type];
 
-      // Map elevation to a suitable tile height
-      const height = mapElevationToHeight(elevation, type);
-
-      // Store the tile with raw elevation data for river simulation
-      tiles.push({ q, r, type, height, elevation });
+      tiles.push({ q, r, type, height, elevationLevel });
     }
   }
 
-  // Build a lookup table for quick neighbor access
+  // --- Step 2: Build a Lookup Table for Fast Neighbor Access ---
   const tileMap = new Map();
-  tiles.forEach((tile) => {
+  for (const tile of tiles) {
     tileMap.set(`${tile.q},${tile.r}`, tile);
-  });
+  }
 
-  // Define axial neighbor offsets for a hex grid
-  const neighborOffsets = [
-    { q: 1, r: 0 },
-    { q: 1, r: -1 },
-    { q: 0, r: -1 },
-    { q: -1, r: 0 },
-    { q: -1, r: 1 },
-    { q: 0, r: 1 },
-  ];
-
-  // Flood-fill connected water regions and mark enclosed ones as "lake"
+  // --- Step 3: Flood-Fill Water Regions to Identify Lakes ---
+  // Any water region (level 1) that does not touch the map border becomes a lake.
   const visited = new Set();
   for (const tile of tiles) {
     const key = `${tile.q},${tile.r}`;
@@ -61,7 +100,6 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
       let touchesBorder = false;
       const stack = [tile];
 
-      // Perform DFS to get the full water region
       while (stack.length > 0) {
         const current = stack.pop();
         const currentKey = `${current.q},${current.r}`;
@@ -69,7 +107,6 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
         visited.add(currentKey);
         region.push(current);
 
-        // If any water tile is at the edge, the region touches the border
         if (
           current.q === 0 ||
           current.r === 0 ||
@@ -79,116 +116,103 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
           touchesBorder = true;
         }
 
-        // Check all neighbors in the hex grid
-        for (const offset of neighborOffsets) {
-          const neighborKey = `${current.q + offset.q},${current.r + offset.r}`;
-          const neighbor = tileMap.get(neighborKey);
-          if (
-            neighbor &&
-            neighbor.type === "water" &&
-            !visited.has(neighborKey)
-          ) {
-            stack.push(neighbor);
+        const neighbors = getNeighbors(current.q, current.r);
+        for (const neighbor of neighbors) {
+          const nKey = `${neighbor.q},${neighbor.r}`;
+          const nTile = tileMap.get(nKey);
+          if (nTile && nTile.type === "water" && !visited.has(nKey)) {
+            stack.push(nTile);
           }
         }
       }
 
-      // If the water region doesn't touch the border, it's fully enclosed—mark it as a lake.
       if (!touchesBorder) {
-        region.forEach((t) => {
+        for (const t of region) {
           t.type = "lake";
-        });
+          t.height = baseHeights.lake;
+        }
       }
     }
   }
 
-  // Convert mountain tiles to impassable mountains if they are completely surrounded by other mountain tiles.
-  const impassableMountainTiles = [];
+  // --- Step 4: Upgrade Fully Surrounded Mountain Tiles to Impassable Mountains ---
+  // Only mountain tiles (from level 4) are eligible.
   for (const tile of tiles) {
-    if (tile.type === "mountain") {
+    if (tile.type === "mountain" && tile.elevationLevel === 4) {
       let isSurrounded = true;
-      for (const offset of neighborOffsets) {
-        const neighbor = tileMap.get(
-          `${tile.q + offset.q},${tile.r + offset.r}`
-        );
-        // If the neighbor doesn't exist (edge of the map) or isn't a mountain,
-        // then this tile isn’t fully surrounded.
-        if (!neighbor || neighbor.type !== "mountain") {
+      const neighbors = getNeighbors(tile.q, tile.r);
+      for (const neighbor of neighbors) {
+        const nKey = `${neighbor.q},${neighbor.r}`;
+        const nTile = tileMap.get(nKey);
+        // If any neighbor is missing or not a mountain, then this tile is not fully surrounded.
+        if (!nTile || nTile.type !== "mountain") {
           isSurrounded = false;
           break;
         }
       }
       if (isSurrounded) {
-        impassableMountainTiles.push(tile);
+        tile.type = "impassable mountain";
+        tile.elevationLevel = 5; // Upgrade level to 5.
+        tile.height = baseHeights["impassable mountain"];
       }
     }
   }
-  // Update the type of all fully surrounded mountain tiles to "impassable mountain"
-  // and recalculate their height to be higher.
-  impassableMountainTiles.forEach((tile) => {
-    tile.type = "impassable mountain";
-    tile.height = mapElevationToHeight(tile.elevation, "impassable mountain");
-  });
 
-  // Generate occasional rivers from mountain tiles.
-  // Instead of changing the tile's type, we add a "river" property.
-  const riverProbability = 0.05; // 5% chance a mountain tile becomes a river source
+  // --- Step 5: River Generation ---
+  // For mountain tiles (but not impassable mountains), with a fixed probability generate a river source.
+  // Rivers will flow to a neighbor with a lower elevation level; if none exists, then to a tile with equal elevation.
+  // If neither is available, the current tile becomes a lake.
+  const riverProbability = 0.05; // 5% chance to start a river.
   for (const tile of tiles) {
     if (tile.type === "mountain" && Math.random() < riverProbability) {
       let current = tile;
       let iterations = 0;
-
-      // Simulate river flow until reaching water/lake or max iterations
       while (current && iterations < 100) {
-        // Mark the current tile as having a river (set a flag) without changing its type
+        // Mark the current tile as a river tile unless it's water/lake.
         if (current.type !== "water" && current.type !== "lake") {
           current.river = true;
         }
 
-        // Stop if we've reached sea or a lake
-        if (current.type === "water" || current.type === "lake") {
-          break;
-        }
+        if (current.type === "water" || current.type === "lake") break;
 
-        // Determine the neighbor with the lowest elevation (simulate downhill flow)
         let lowestNeighbor = null;
-        for (const offset of neighborOffsets) {
-          const neighborKey = `${current.q + offset.q},${current.r + offset.r}`;
-          const neighbor = tileMap.get(neighborKey);
-          if (neighbor) {
+        let equalNeighbor = null;
+        const neighbors = getNeighbors(current.q, current.r);
+        for (const neighbor of neighbors) {
+          const nKey = `${neighbor.q},${neighbor.r}`;
+          const nTile = tileMap.get(nKey);
+          if (nTile) {
             if (
               !lowestNeighbor ||
-              neighbor.elevation < lowestNeighbor.elevation
+              nTile.elevationLevel < lowestNeighbor.elevationLevel
             ) {
-              lowestNeighbor = neighbor;
+              lowestNeighbor = nTile;
+            }
+            if (
+              nTile.elevationLevel === current.elevationLevel &&
+              !equalNeighbor
+            ) {
+              equalNeighbor = nTile;
             }
           }
         }
-        // Break if no valid downhill neighbor exists or no further downhill drop is found
-        if (!lowestNeighbor || lowestNeighbor.elevation >= current.elevation) {
+
+        if (
+          lowestNeighbor &&
+          lowestNeighbor.elevationLevel < current.elevationLevel
+        ) {
+          current = lowestNeighbor;
+        } else if (equalNeighbor) {
+          current = equalNeighbor;
+        } else {
+          current.type = "lake";
+          current.height = baseHeights.lake;
           break;
         }
-        current = lowestNeighbor;
         iterations++;
       }
     }
   }
 
   return tiles;
-}
-
-// Helper to translate elevation values to tile height
-function mapElevationToHeight(elevation, type) {
-  const baseHeights = {
-    water: 0.1,
-    plains: 0.3,
-    desert: 0.25,
-    forest: 0.4,
-    mountain: 0.8,
-    "impassable mountain": 1.0, // Higher base height for impassable mountains
-  };
-
-  // Fine-tune height based on elevation noise
-  const variation = Math.max(0, elevation * 0.5);
-  return baseHeights[type] + variation;
 }
