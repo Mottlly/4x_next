@@ -122,7 +122,11 @@ export default function HexBoard({ board }) {
           setHoveredTile={setHoveredTile}
           isDraggingRef={isDraggingRef}
         />
-        <MapControls enableDamping />
+        <MapControls
+          enableDamping
+          minPolarAngle={0}
+          maxPolarAngle={Math.PI / 3}
+        />
       </Canvas>
       <TileInfoPanel tile={hoveredTile} />
     </div>
