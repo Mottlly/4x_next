@@ -4,7 +4,7 @@ import i18n from "../../i18n";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import HexBoard from "@/app/components/HexBoard";
 import { useUserData } from "../../library/utililies/hooks/useUserData";
 import LoadingScreen from "../components/gameUI/loadingScreen";
@@ -22,41 +22,12 @@ export default function GamePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const audioRef = useRef(null);
-
   // Redirect unauthenticated users
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/");
     }
   }, [status, router]);
-
-  // Setup background music
-  useEffect(() => {
-    const audio = new Audio("/music/sci-fi_loop.wav");
-    audio.loop = true;
-
-    const savedVolume = localStorage.getItem("musicVolume");
-    const volume = savedVolume ? parseFloat(savedVolume) : 0.3;
-    audio.volume = volume;
-
-    audioRef.current = audio;
-
-    const tryPlay = () => {
-      audio.play().catch((err) => {
-        console.log("Still blocked:", err);
-      });
-      window.removeEventListener("click", tryPlay);
-    };
-
-    window.addEventListener("click", tryPlay);
-
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
-      window.removeEventListener("click", tryPlay);
-    };
-  }, []);
 
   // Fetch or create board data (Backend now generates tiles)
   useEffect(() => {
@@ -103,7 +74,7 @@ export default function GamePage() {
     };
 
     fetchOrCreateBoard();
-  }, [status, session, gameID]);
+  }, [status, session, gameID, userData]);
 
   // Handle loading/error/empty states
   if (loading) return <LoadingScreen />;
