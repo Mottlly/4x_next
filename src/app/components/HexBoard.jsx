@@ -38,6 +38,10 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
   const previousTileRef = useRef(null);
   const elements = [];
 
+  // Define a scaling factor for the height differences;
+  // Adjust this value to get your desired effect
+  const heightScale = 0.5;
+
   const handlePointerMove = (event) => {
     if (isDraggingRef.current) return;
     event.stopPropagation();
@@ -66,12 +70,12 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
     elements.push(
       <group key={`tile-${q}-${r}`}>
         <Bestagon
-          position={[pos[0], height, pos[2]]}
+          position={[pos[0], height * heightScale, pos[2]]} // Apply the scaling factor here
           color={color}
           userData={{ tile: { q, r, type, height, river } }}
         />
         {river && (
-          <mesh position={[pos[0], height + 0.1, pos[2]]}>
+          <mesh position={[pos[0], height * heightScale + 0.1, pos[2]]}>
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshStandardMaterial color="#0000FF" />
           </mesh>
