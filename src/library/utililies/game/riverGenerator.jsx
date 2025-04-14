@@ -1,6 +1,6 @@
 // riverGenerator.js
 
-import { hexToPosition } from "./hexUtilities";
+import { hexToPosition } from "../../../app/components/hexBoard/hexUtilities";
 // Ensure hexUtilities exports your hexToPosition function.
 
 // Returns an array of the six neighboring tiles for a given tile based on axial coordinates.

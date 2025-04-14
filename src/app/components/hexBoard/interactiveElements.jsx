@@ -1,23 +1,12 @@
 // InteractiveBoard.jsx
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import Bestagon from "./bestagon";
 import { getColorForType, hexToPosition } from "./hexUtilities";
-import { generateRivers } from "./riverGenerator"; // Import the river-generation helper
 
 const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
   const groupRef = useRef();
   const previousTileRef = useRef(null);
   const heightScale = 0.5; // Scale for tile height.
-
-  // On board initialization, select mountain tiles with 4% chance and generate river paths.
-  useEffect(() => {
-    // For each mountain tile, have a 4% chance to serve as a river source.
-    const mountainRiverSources = board.tiles.filter(
-      (tile) => tile.type === "mountain" && Math.random() < 0.04
-    );
-    // Use our river generator to update the board tile properties.
-    generateRivers(board, mountainRiverSources);
-  }, [board]);
 
   // Handles pointer movement over the board.
   const handlePointerMove = (event) => {
@@ -41,7 +30,7 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
 
   const elements = [];
 
-  // Render each tile and, if the tile's river property is true, display the river sphere.
+  // Render each tile along with the river sphere if the tile data indicates river.
   board.tiles.forEach((tile) => {
     const { q, r, type, height, river } = tile;
     const pos = hexToPosition(q, r, board.spacing);
