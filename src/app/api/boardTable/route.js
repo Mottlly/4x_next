@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
-import { generateBiomeMap } from "../../../library/utililies/game/generateMap";
+import { generateBiomeMap } from "../../../library/utililies/game/biomeGenerators/generateMap";
 
-// SQL queries (unchanged)
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
   "utf8"
@@ -22,7 +21,7 @@ const deleteBoardQuery = fs.readFileSync(
   "utf8"
 );
 
-// ✅ GET (unchanged)
+// ✅ GET
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
