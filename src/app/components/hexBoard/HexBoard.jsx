@@ -1,10 +1,9 @@
-// HexBoard.jsx
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import TileInfoPanel from "../gameUI/infoTile";
 import InteractiveBoard from "./interactiveElements";
-import ExtrudedFogMask from "./fogMask";
+import VolumetricFogMask from "./fogMask";
 import AudioSwitcher from "./audioSwitcher";
 
 export default function HexBoard({ board, threshold = 8 }) {
@@ -89,7 +88,11 @@ export default function HexBoard({ board, threshold = 8 }) {
           natureAudioRef={natureAudioRef}
         />
         {/* Render the extruded fog mask */}
-        <ExtrudedFogMask board={board} spacing={board.spacing} wallHeight={5} />
+        <VolumetricFogMask
+          board={board}
+          spacing={board.spacing}
+          wallHeight={5}
+        />
       </Canvas>
       <TileInfoPanel tile={hoveredTile} /> {/* Display tile info */}
     </div>
