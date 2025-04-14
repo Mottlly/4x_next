@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import HexBoard from "@/app/components/HexBoard";
+import HexBoard from "@/app/components/hexBoard/HexBoard";
 import { useUserData } from "../../library/utililies/hooks/useUserData";
 import LoadingScreen from "../components/gameUI/loadingScreen";
 
