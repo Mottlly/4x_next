@@ -22,7 +22,7 @@ export default function HexBoard({ board, threshold = 8 }) {
     const savedVolume = localStorage.getItem("musicVolume");
     const volume = savedVolume ? parseFloat(savedVolume) : 0.3;
     sciFiAudio.volume = volume;
-    natureAudio.volume = volume;
+    natureAudio.volume = volume - 0.2;
     sciFiAudioRef.current = sciFiAudio;
     natureAudioRef.current = natureAudio;
 
