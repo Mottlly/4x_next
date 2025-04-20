@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
+import { hexToPosition } from "./hexUtilities";
 import TileInfoPanel from "../gameUI/infoTile";
 import InteractiveBoard from "./interactiveElements";
 import VolumetricFogMask from "./fogMask";
@@ -12,6 +13,14 @@ export default function HexBoard({ board, threshold = 8 }) {
   const dragTimeoutRef = useRef(null);
   const sciFiAudioRef = useRef(null);
   const natureAudioRef = useRef(null);
+
+  const heightScale = 0.5;
+
+  // Piece sits on whichever tile you click
+  const [piecePos, setPiecePos] = useState(() => {
+    const first = board.tiles?.[0];
+    return first ? { q: first.q, r: first.r } : { q: 0, r: 0 };
+  });
 
   // Setup background audio on mount.
   useEffect(() => {
@@ -74,6 +83,10 @@ export default function HexBoard({ board, threshold = 8 }) {
           board={board}
           setHoveredTile={setHoveredTile}
           isDraggingRef={isDraggingRef}
+          onTileClick={(tile) => {
+            console.log("Moving piece to:", tile);
+            setPiecePos({ q: tile.q, r: tile.r });
+          }}
         />
         {/* Orbit controls with damping and angle limits */}
         <MapControls
@@ -93,6 +106,21 @@ export default function HexBoard({ board, threshold = 8 }) {
           spacing={board.spacing}
           wallHeight={5}
         />
+        {/* — render the “piece” on top of the selected tile */}
+        {(() => {
+          const tile = board.tiles.find(
+            (t) => t.q === piecePos.q && t.r === piecePos.r
+          );
+          if (!tile) return null;
+          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
+          const y = tile.height * heightScale + 0.5; // lift it up a bit
+          return (
+            <mesh position={[x, y, z]}>
+              <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
+              <meshStandardMaterial color="red" />
+            </mesh>
+          );
+        })()}
       </Canvas>
       <TileInfoPanel tile={hoveredTile} /> {/* Display tile info */}
     </div>

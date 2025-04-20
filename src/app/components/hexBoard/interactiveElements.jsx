@@ -3,7 +3,12 @@ import React, { useRef } from "react";
 import Bestagon from "./bestagon";
 import { getColorForType, hexToPosition } from "./hexUtilities";
 
-const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
+const InteractiveBoard = ({
+  board,
+  setHoveredTile,
+  isDraggingRef,
+  onTileClick,
+}) => {
   const groupRef = useRef();
   const previousTileRef = useRef(null);
   const heightScale = 0.5; // Scale for tile height.
@@ -41,6 +46,10 @@ const InteractiveBoard = ({ board, setHoveredTile, isDraggingRef }) => {
           position={[pos[0], height * heightScale, pos[2]]}
           color={color}
           userData={{ tile: { q, r, type, height, river } }}
+          onClick={() => {
+            console.log("InteractiveBoard: tile clicked →", tile);
+            onTileClick(tile);
+          }}
         />
         {river && (
           <mesh position={[pos[0], height * heightScale + 0.1, pos[2]]}>
