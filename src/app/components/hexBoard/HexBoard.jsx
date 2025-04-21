@@ -23,6 +23,7 @@ export default function HexBoard({ board, threshold = 8 }) {
       q: Number(p.q),
       r: Number(p.r),
       type: p.type,
+      vision: p.vision,
     }))
   );
 

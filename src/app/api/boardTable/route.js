@@ -79,7 +79,7 @@ export async function POST(req) {
     // 3️⃣ build your initial pieces array with that pod
     const boardState = {
       tiles,
-      pieces: [{ q: podTile.q, r: podTile.r, type: "pod" }],
+      pieces: [{ q: podTile.q, r: podTile.r, type: "pod", vision: 2 }],
     };
 
     // 4️⃣ insert into your JSONB column
