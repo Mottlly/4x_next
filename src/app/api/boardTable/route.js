@@ -61,7 +61,6 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const { user_id, game_id } = await req.json();
-
     if (!user_id || !game_id) {
       return NextResponse.json(
         { error: "User ID and Game ID are required." },
@@ -69,17 +68,26 @@ export async function POST(req) {
       );
     }
 
-    // Generate biome map directly on backend
+    // 1️⃣ generate your tiles
     const tiles = generateBiomeMap(25, 25);
 
-    const boardState = { tiles };
+    // 2️⃣ pick a random tile that isn't water, lake or impassable mountain
+    const forbidden = new Set(["water", "lake", "impassable mountain"]);
+    const spawnable = tiles.filter((t) => !forbidden.has(t.type));
+    const podTile = spawnable[Math.floor(Math.random() * spawnable.length)];
 
+    // 3️⃣ build your initial pieces array with that pod
+    const boardState = {
+      tiles,
+      pieces: [{ q: podTile.q, r: podTile.r, type: "pod" }],
+    };
+
+    // 4️⃣ insert into your JSONB column
     const { rows } = await pool.query(postBoardQuery, [
       user_id,
       game_id,
       JSON.stringify(boardState),
     ]);
-
     return NextResponse.json(
       { message: "Board created.", board: rows[0] },
       { status: 201 }
@@ -92,7 +100,6 @@ export async function POST(req) {
     );
   }
 }
-
 // DELETE (unchanged)
 export async function DELETE(req) {
   try {
