@@ -18,31 +18,30 @@ export default function GamePage() {
 
   const userData = useUserData(session);
 
+  // board will be { id, tiles, pieces }
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Redirect unauthenticated users
+  // redirect if not signed in
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/");
-    }
+    if (status === "unauthenticated") router.push("/");
   }, [status, router]);
 
-  // Fetch or create board data (Backend now generates tiles)
+  // fetch or create
   useEffect(() => {
-    const fetchOrCreateBoard = async () => {
+    const fetchOrCreate = async () => {
       if (status !== "authenticated" || !userData || !gameID) return;
 
       try {
-        const getResponse = await fetch(`/api/boardTable?game_id=${gameID}`);
-
-        if (getResponse.ok) {
-          const boardData = await getResponse.json();
-          console.log("Fetched board:", boardData);
-          setBoard(boardData);
-        } else if (getResponse.status === 404) {
-          const postResponse = await fetch("/api/boardTable", {
+        // try GET
+        const getResp = await fetch(`/api/boardTable?game_id=${gameID}`);
+        if (getResp.ok) {
+          const { board: boardRef, board_id } = await getResp.json();
+          setBoard({ id: board_id, ...boardRef });
+        } else if (getResp.status === 404) {
+          // run POST
+          const postResp = await fetch("/api/boardTable", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -50,21 +49,12 @@ export default function GamePage() {
               game_id: gameID,
             }),
           });
+          if (!postResp.ok) throw new Error("Failed to create board");
 
-          if (!postResponse.ok) {
-            throw new Error("Failed to create new board.");
-          }
-
-          const createdData = await postResponse.json();
-
-          const newBoard = {
-            board: createdData.board.boardref,
-          };
-
-          console.log("Created new board:", newBoard);
-          setBoard(newBoard);
+          const { board: newRef, board_id: newId } = await postResp.json();
+          setBoard({ id: newId, ...newRef });
         } else {
-          throw new Error("Failed to fetch board data.");
+          throw new Error("Failed to fetch board");
         }
       } catch (err) {
         setError(err.message);
@@ -73,30 +63,28 @@ export default function GamePage() {
       }
     };
 
-    fetchOrCreateBoard();
-  }, [status, session, gameID, userData]);
+    fetchOrCreate();
+  }, [status, session, userData, gameID]);
 
-  // Handle loading/error/empty states
   if (loading) return <LoadingScreen />;
   if (error)
     return (
       <div>
-        {t("gamePage.LoadingError")}
-        {error}
+        {t("gamePage.LoadingError")}: {error}
       </div>
     );
-  if (!board || !board.board || !Array.isArray(board.board.tiles)) {
+  if (!board || !Array.isArray(board.tiles)) {
     return <div>{t("gamePage.NoMapData")}</div>;
   }
 
   const boardTiles = {
-    ...board.board,
+    id: board.id,
+    tiles: board.tiles,
+    pieces: board.pieces || [],
     cols: 25,
     rows: 25,
     spacing: 1.05,
   };
-
-  console.log(boardTiles);
 
   return (
     <div className="h-screen w-screen">

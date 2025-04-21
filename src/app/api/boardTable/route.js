@@ -16,38 +16,38 @@ const postBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/postBoard.sql"),
   "utf8"
 );
+const patchBoardQuery = fs.readFileSync(
+  path.join(process.cwd(), "src/library/sql/boardTable/patchBoard.sql"),
+  "utf8"
+);
 const deleteBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/deleteBoard.sql"),
   "utf8"
 );
 
-// ✅ GET
+// ── GET by id or game_id
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const game_id = searchParams.get("game_id");
-
-  if (!id && !game_id)
+  if (!id && !game_id) {
     return NextResponse.json(
       { error: "Board ID or Game ID required." },
       { status: 400 }
     );
-
-  let query, param;
-  if (id) {
-    query = getBoardQuery;
-    param = [id];
-  } else {
-    query = getBoardByGameIDQuery;
-    param = [game_id];
   }
+  const query = id ? getBoardQuery : getBoardByGameIDQuery;
+  const param = id ? [id] : [game_id];
 
   try {
     const { rows } = await pool.query(query, param);
-    if (rows.length === 0)
+    if (rows.length === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
-
-    return NextResponse.json({ board: rows[0].boardref }, { status: 200 });
+    }
+    return NextResponse.json(
+      { board: rows[0].boardref, board_id: rows[0].id },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("GET Error:", error);
     return NextResponse.json(
@@ -57,7 +57,7 @@ export async function GET(req) {
   }
 }
 
-// ✅ POST (Procedural Generation on Backend)
+// ── POST (generate & insert)
 export async function POST(req) {
   try {
     const { user_id, game_id } = await req.json();
@@ -68,28 +68,24 @@ export async function POST(req) {
       );
     }
 
-    // 1️⃣ generate your tiles
     const tiles = generateBiomeMap(25, 25);
-
-    // 2️⃣ pick a random tile that isn't water, lake or impassable mountain
     const forbidden = new Set(["water", "lake", "impassable mountain"]);
     const spawnable = tiles.filter((t) => !forbidden.has(t.type));
     const podTile = spawnable[Math.floor(Math.random() * spawnable.length)];
-
-    // 3️⃣ build your initial pieces array with that pod
     const boardState = {
       tiles,
       pieces: [{ q: podTile.q, r: podTile.r, type: "pod", vision: 2 }],
     };
 
-    // 4️⃣ insert into your JSONB column
     const { rows } = await pool.query(postBoardQuery, [
       user_id,
       game_id,
       JSON.stringify(boardState),
     ]);
+
+    // return same shape as GET
     return NextResponse.json(
-      { message: "Board created.", board: rows[0] },
+      { board: rows[0].boardref, board_id: rows[0].id },
       { status: 201 }
     );
   } catch (error) {
@@ -100,19 +96,55 @@ export async function POST(req) {
     );
   }
 }
-// DELETE (unchanged)
+
+// ── PATCH (update JSONB)
+export async function PATCH(req) {
+  try {
+    const { board_id, board: newBoard } = await req.json();
+    if (!board_id || !newBoard) {
+      return NextResponse.json(
+        { error: "Board ID and new board payload required." },
+        { status: 400 }
+      );
+    }
+
+    const { rows } = await pool.query(patchBoardQuery, [
+      JSON.stringify(newBoard),
+      board_id,
+    ]);
+
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "Board not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Board updated.", board: rows[0].boardref },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("PATCH Error:", error);
+    return NextResponse.json(
+      { error: "Internal server error." },
+      { status: 500 }
+    );
+  }
+}
+
+// ── DELETE by board_id
 export async function DELETE(req) {
   try {
     const { board_id } = await req.json();
-    if (!board_id)
+    if (!board_id) {
       return NextResponse.json(
         { error: "Board ID required." },
         { status: 400 }
       );
+    }
 
     const result = await pool.query(deleteBoardQuery, [board_id]);
-    if (result.rowCount === 0)
+    if (result.rowCount === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
+    }
 
     return NextResponse.json(
       { message: "Board deleted.", deletedBoardId: board_id },

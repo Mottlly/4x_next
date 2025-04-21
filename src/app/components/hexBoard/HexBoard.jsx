@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import { hexToPosition } from "./hexUtilities";
@@ -8,7 +8,9 @@ import VolumetricFogMask from "./fogMask";
 import AudioSwitcher from "./audioSwitcher";
 
 export default function HexBoard({ board, threshold = 8 }) {
-  const { tiles, spacing, pieces: initialPieces = [] } = board;
+  // ── pull out board.id so we can PATCH by that primary key
+  const { id: boardId, tiles, spacing, pieces: initialPieces = [] } = board;
+
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
   const dragTimeoutRef = useRef(null);
@@ -16,7 +18,7 @@ export default function HexBoard({ board, threshold = 8 }) {
   const natureAudioRef = useRef(null);
   const heightScale = 0.5;
 
-  // State for multiple pieces
+  // ── manage arbitrary number of pieces
   const [pieces, setPieces] = useState(() =>
     initialPieces.map((p, idx) => ({
       id: p.id ?? idx,
@@ -26,28 +28,44 @@ export default function HexBoard({ board, threshold = 8 }) {
       vision: p.vision,
     }))
   );
-
-  // Which piece (by id) is currently selected for moving
   const [selectedPieceId, setSelectedPieceId] = useState(null);
 
-  // Unified click handler
-  const handleTileClick = (tile) => {
-    // Check if a piece sits here
+  // ── click handler: select, move & PATCH
+  const handleTileClick = async (tile) => {
+    // did we click on an existing piece?
     const clickedPiece = pieces.find((p) => p.q === tile.q && p.r === tile.r);
-
     if (clickedPiece) {
-      // Select or deselect this piece
+      // toggle select
       setSelectedPieceId((id) =>
         id === clickedPiece.id ? null : clickedPiece.id
       );
-    } else if (selectedPieceId !== null) {
-      // Move the selected piece to this tile
-      setPieces((prev) =>
-        prev.map((p) =>
-          p.id === selectedPieceId ? { ...p, q: tile.q, r: tile.r } : p
-        )
+      return;
+    }
+
+    // if a piece is selected, move it
+    if (selectedPieceId !== null) {
+      const updated = pieces.map((p) =>
+        p.id === selectedPieceId ? { ...p, q: tile.q, r: tile.r } : p
       );
+      setPieces(updated);
       setSelectedPieceId(null);
+
+      // ── PATCH the new board state back to the DB
+      try {
+        const res = await fetch("/api/boardTable", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            board_id: boardId,
+            board: { tiles, pieces: updated },
+          }),
+        });
+        if (!res.ok) {
+          console.error("PATCH failed:", await res.text());
+        }
+      } catch (err) {
+        console.error("PATCH error:", err);
+      }
     }
   };
 
@@ -89,12 +107,13 @@ export default function HexBoard({ board, threshold = 8 }) {
 
         <VolumetricFogMask board={board} spacing={spacing} wallHeight={5} />
 
-        {/* Render every piece */}
+        {/* render each piece */}
         {pieces.map((p) => {
           const tile = tiles.find((t) => t.q === p.q && t.r === p.r);
           if (!tile) return null;
           const [x, , z] = hexToPosition(p.q, p.r, spacing);
           const y = tile.height * heightScale + 0.5;
+
           return (
             <mesh
               key={p.id}
