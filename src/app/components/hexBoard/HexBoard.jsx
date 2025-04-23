@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
-import { hexToPosition } from "./hexUtilities";
+import hexToPosition from "../tileUtilities/positionFinder";
 import TileInfoPanel from "../gameUI/infoTile";
 import InteractiveBoard from "./interactiveElements";
 import VolumetricFogMask from "./fogMask";
@@ -105,7 +105,12 @@ export default function HexBoard({ board, threshold = 8 }) {
           natureAudioRef={natureAudioRef}
         />
 
-        <VolumetricFogMask board={board} spacing={spacing} wallHeight={5} />
+        <VolumetricFogMask
+          board={board}
+          spacing={board.spacing}
+          pieces={board.pieces}
+          wallHeight={5}
+        />
 
         {/* render each piece */}
         {pieces.map((p) => {

@@ -1,4 +1,5 @@
-import { hexToPosition, getNeighborsAxial } from "../hexUtilities";
+import hexToPosition from "../tileUtilities/positionFinder";
+import getNeighborsAxial from "../tileUtilities/getNeighbors";
 
 /**
  * Returns the neighboring tiles of a given tile from board.tiles

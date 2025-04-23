@@ -1,5 +1,6 @@
 import { createNoise2D } from "simplex-noise";
-import { hexToPosition, getNeighborsAxial } from "../hexUtilities";
+import hexToPosition from "../tileUtilities/positionFinder";
+import getNeighborsAxial from "../tileUtilities/getNeighbors";
 import { generateRivers } from "../otherGenerators/riverGenerator";
 
 export function generateBiomeMap(cols, rows, seed = Math.random()) {
