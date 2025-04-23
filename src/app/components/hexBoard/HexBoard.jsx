@@ -1,10 +1,10 @@
 import React, { useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
-import hexToPosition from "../tileUtilities/positionFinder";
+import hexToPosition from "../../../library/utililies/game/tileUtilities/positionFinder";
 import TileInfoPanel from "../gameUI/infoTile";
 import InteractiveBoard from "./interactiveElements";
-import VolumetricFogMask from "./fogMask";
+import FogEnclosure from "./fogMask";
 import AudioSwitcher from "./audioSwitcher";
 
 export default function HexBoard({ board, threshold = 8 }) {
@@ -51,6 +51,7 @@ export default function HexBoard({ board, threshold = 8 }) {
       setSelectedPieceId(null);
 
       // ── PATCH the new board state back to the DB
+
       try {
         const res = await fetch("/api/boardTable", {
           method: "PATCH",
@@ -65,6 +66,7 @@ export default function HexBoard({ board, threshold = 8 }) {
         }
       } catch (err) {
         console.error("PATCH error:", err);
+        throw err;
       }
     }
   };
@@ -105,11 +107,11 @@ export default function HexBoard({ board, threshold = 8 }) {
           natureAudioRef={natureAudioRef}
         />
 
-        <VolumetricFogMask
+        <FogEnclosure
           board={board}
           spacing={board.spacing}
-          pieces={board.pieces}
-          wallHeight={5}
+          floorFactor={10}
+          speed={0.15}
         />
 
         {/* render each piece */}

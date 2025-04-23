@@ -1,4 +1,4 @@
 SELECT * 
-FROM boardstate 
-WHERE game_id = $1
+FROM "boardstate" 
+WHERE "game_id" = $1
   

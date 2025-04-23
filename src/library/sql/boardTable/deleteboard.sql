@@ -1,4 +1,4 @@
 DELETE 
-FROM boardstate 
-WHERE id = $1
+FROM "boardstate" 
+WHERE "id" = $1
 ;

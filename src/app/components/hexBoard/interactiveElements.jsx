@@ -1,7 +1,9 @@
 // InteractiveBoard.jsx
 import React, { useRef } from "react";
 import Bestagon from "./bestagon";
-import { getColorForType, hexToPosition } from "./hexUtilities";
+import hexToPosition from "../../../library/utililies/game/tileUtilities/positionFinder";
+import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/getNeighbors";
+import getColourForType from "../../../library/utililies/game/tileUtilities/getColourForType";
 
 const InteractiveBoard = ({
   board,
@@ -39,7 +41,7 @@ const InteractiveBoard = ({
   board.tiles.forEach((tile) => {
     const { q, r, type, height, river } = tile;
     const pos = hexToPosition(q, r, board.spacing);
-    const color = getColorForType(type);
+    const color = getColourForType(type);
     elements.push(
       <group key={`tile-${q}-${r}`}>
         <Bestagon
