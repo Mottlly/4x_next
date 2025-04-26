@@ -13,11 +13,18 @@ import AudioSwitcher from "./audioSwitcher";
 import FogBestagon from "./fogagon";
 
 // axial hex‐distance helper
+function offsetToCube({ q, r }) {
+  // remove the “half-column” offset on odd rows
+  const x = q - (r - (r & 1)) / 2;
+  const z = r;
+  const y = -x - z;
+  return { x, y, z };
+}
+
 function hexDistance(a, b) {
-  const dq = a.q - b.q;
-  const dr = a.r - b.r;
-  const ds = -a.q - a.r - (-b.q - b.r);
-  return (Math.abs(dq) + Math.abs(dr) + Math.abs(ds)) / 2;
+  const A = offsetToCube(a);
+  const B = offsetToCube(b);
+  return (Math.abs(A.x - B.x) + Math.abs(A.y - B.y) + Math.abs(A.z - B.z)) / 2;
 }
 
 export default function HexBoard({ board: initialBoard, threshold = 8 }) {
