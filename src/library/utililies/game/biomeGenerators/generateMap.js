@@ -41,6 +41,7 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
         type,
         height: elevationLevel,
         elevationLevel,
+        discovered: false,
       });
     }
   }
