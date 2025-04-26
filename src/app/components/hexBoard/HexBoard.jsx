@@ -1,11 +1,10 @@
-// HexBoard.jsx
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback, memo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import hexToPosition from "../../../library/utililies/game/tileUtilities/positionFinder";
-import { getColorForType } from "./interactiveElements"; // wherever you get colors
+import { getColorForType } from "./interactiveElements";
 import TileInfoPanel from "../gameUI/infoTile";
 import InteractiveBoard from "./interactiveElements";
 import FogEnclosure from "./fogMask";
@@ -14,7 +13,6 @@ import FogBestagon from "./fogagon";
 
 // axial hex‐distance helper
 function offsetToCube({ q, r }) {
-  // remove the “half-column” offset on odd rows
   const x = q - (r - (r & 1)) / 2;
   const z = r;
   const y = -x - z;
@@ -27,12 +25,114 @@ function hexDistance(a, b) {
   return (Math.abs(A.x - B.x) + Math.abs(A.y - B.y) + Math.abs(A.z - B.z)) / 2;
 }
 
+// Memoized canvas subtree to prevent re-renders on hover
+const BoardCanvas = memo(function BoardCanvas({
+  board,
+  pieces,
+  selectedPieceId,
+  threshold,
+  onTileClick,
+  setHoveredTile,
+  isDraggingRef,
+}) {
+  const sciFiAudioRef = useRef(null);
+  const natureAudioRef = useRef(null);
+  const heightScale = 0.5;
+
+  return (
+    <Canvas
+      camera={{ position: [10, 10, 15] }}
+      style={{ width: "100vw", height: "100vh" }}
+      onPointerDown={() => (isDraggingRef.current = true)}
+      onPointerUp={() => (isDraggingRef.current = false)}
+    >
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 20, 10]} />
+
+      {/* terrain + interactive hover/click */}
+      <InteractiveBoard
+        board={board}
+        setHoveredTile={setHoveredTile}
+        isDraggingRef={isDraggingRef}
+        onTileClick={onTileClick}
+      />
+
+      {/* fog‐cover only on undiscovered */}
+      {board.tiles
+        .filter((t) => !t.discovered)
+        .map((tile) => {
+          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
+          const y = tile.height * heightScale + 0.01;
+          return (
+            <FogBestagon
+              key={`${tile.q}-${tile.r}`}
+              position={[x, y, z]}
+              userData={{ tile }}
+              onClick={() => onTileClick(tile)}
+              radius={board.spacing}
+              thickness={0.3}
+              speed={0.5}
+            />
+          );
+        })}
+
+      {/* pieces on top */}
+      {pieces.map((p) => {
+        const tile = board.tiles.find((t) => t.q === p.q && t.r === p.r);
+        if (!tile) return null;
+        const [x, , z] = hexToPosition(p.q, p.r, board.spacing);
+        const y = tile.height * heightScale + 0.5;
+        return (
+          <mesh
+            key={p.id}
+            position={[x, y, z]}
+            onClick={(e) => {
+              e.stopPropagation();
+              onTileClick(tile);
+            }}
+          >
+            <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
+            <meshStandardMaterial
+              color={
+                selectedPieceId === p.id
+                  ? "yellow"
+                  : p.type === "pod"
+                  ? "green"
+                  : "red"
+              }
+            />
+          </mesh>
+        );
+      })}
+
+      <MapControls
+        enableDamping
+        minPolarAngle={0}
+        maxPolarAngle={Math.PI / 4}
+      />
+
+      <AudioSwitcher
+        threshold={threshold}
+        sciFiAudioRef={sciFiAudioRef}
+        natureAudioRef={natureAudioRef}
+      />
+
+      <FogEnclosure
+        board={board}
+        spacing={board.spacing}
+        floorFactor={10}
+        speed={0.15}
+      />
+    </Canvas>
+  );
+});
+
 export default function HexBoard({ board: initialBoard, threshold = 8 }) {
-  // ─── keep full board (with discovered flags) in state ────
+  // keep full board (with discovered flags) in state
   const [board, setBoard] = useState(initialBoard);
   const { id: boardId, spacing, tiles } = board;
 
-  // ─── pieces carry their own vision radii ─────────────────
+  // pieces carry their own vision radii
   const [pieces, setPieces] = useState(() =>
     initialBoard.pieces.map((p, idx) => ({
       id: p.id ?? idx,
@@ -44,15 +144,11 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
   );
   const [selectedPieceId, setSelectedPieceId] = useState(null);
 
-  // ─── hover + drag refs ───────────────────────────────────
+  // hover state and refs
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
-  const dragTimeoutRef = useRef(null);
-  const sciFiAudioRef = useRef(null);
-  const natureAudioRef = useRef(null);
-  const heightScale = 0.5;
 
-  // ─── when pieces move, reveal any tiles in their vision ──
+  // reveal effect: mark tiles discovered
   useEffect(() => {
     let changed = false;
     const newTiles = tiles.map((tile) => {
@@ -65,11 +161,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
     });
 
     if (!changed) return;
-
-    const newBoard = { ...board, tiles: newTiles };
-    setBoard(newBoard);
-
-    // persist new discovered flags
+    setBoard((b) => ({ ...b, tiles: newTiles }));
     fetch("/api/boardTable", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -78,129 +170,48 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
         board: { tiles: newTiles, pieces },
       }),
     }).catch(console.error);
-  }, [pieces]);
+  }, [pieces, tiles, boardId]);
 
-  // ─── click handler: only select/move pieces, never reveal ──
-  const handleTileClick = async (tile) => {
-    // toggle select if clicking a piece
-    const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
-    if (clicked) {
-      setSelectedPieceId((id) => (id === clicked.id ? null : clicked.id));
-      return;
-    }
-
-    // move selected piece if any
-    if (selectedPieceId !== null) {
-      const updated = pieces.map((p) =>
-        p.id === selectedPieceId ? { ...p, q: tile.q, r: tile.r } : p
-      );
-      setPieces(updated);
-      setSelectedPieceId(null);
-
-      // persist move (tiles stay the same here)
-      fetch("/api/boardTable", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          board_id: boardId,
-          board: { tiles, pieces: updated },
-        }),
-      }).catch(console.error);
-    }
-  };
+  // click handler: select/move pieces
+  const handleTileClick = useCallback(
+    (tile) => {
+      // toggle selection
+      const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
+      if (clicked) {
+        setSelectedPieceId((id) => (id === clicked.id ? null : clicked.id));
+        return;
+      }
+      // move if selected
+      if (selectedPieceId !== null) {
+        const updated = pieces.map((p) =>
+          p.id === selectedPieceId ? { ...p, q: tile.q, r: tile.r } : p
+        );
+        setPieces(updated);
+        setSelectedPieceId(null);
+        fetch("/api/boardTable", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            board_id: boardId,
+            board: { tiles, pieces: updated },
+          }),
+        }).catch(console.error);
+      }
+    },
+    [pieces, selectedPieceId, tiles, boardId]
+  );
 
   return (
     <div className="relative">
-      <Canvas
-        camera={{ position: [10, 10, 15] }}
-        style={{ width: "100vw", height: "100vh" }}
-        onPointerDown={() => (isDraggingRef.current = true)}
-        onPointerUp={() => {
-          isDraggingRef.current = false;
-          if (dragTimeoutRef.current) {
-            clearTimeout(dragTimeoutRef.current);
-            dragTimeoutRef.current = null;
-          }
-        }}
-      >
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 20, 10]} />
-
-        {/* base terrain */}
-        <InteractiveBoard
-          board={board}
-          setHoveredTile={setHoveredTile}
-          isDraggingRef={isDraggingRef}
-          onTileClick={handleTileClick}
-        />
-
-        {/* fog‐cover only on undiscovered */}
-        {tiles
-          .filter((t) => !t.discovered)
-          .map((tile) => {
-            const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
-            const y = tile.height * heightScale + 0.01;
-            return (
-              <FogBestagon
-                key={`${tile.q}-${tile.r}`}
-                position={[x, y, z]}
-                userData={{ tile }}
-                onClick={handleTileClick}
-                radius={spacing}
-                thickness={0.3}
-                speed={0.5}
-              />
-            );
-          })}
-
-        <MapControls
-          enableDamping
-          minPolarAngle={0}
-          maxPolarAngle={Math.PI / 4}
-        />
-
-        <AudioSwitcher
-          threshold={threshold}
-          sciFiAudioRef={sciFiAudioRef}
-          natureAudioRef={natureAudioRef}
-        />
-
-        <FogEnclosure
-          board={board}
-          spacing={spacing}
-          floorFactor={10}
-          speed={0.15}
-        />
-
-        {/* pieces on top */}
-        {pieces.map((p) => {
-          const tile = tiles.find((t) => t.q === p.q && t.r === p.r);
-          if (!tile) return null;
-          const [x, , z] = hexToPosition(p.q, p.r, spacing);
-          const y = tile.height * heightScale + 0.5;
-          return (
-            <mesh
-              key={p.id}
-              position={[x, y, z]}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTileClick(tile);
-              }}
-            >
-              <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-              <meshStandardMaterial
-                color={
-                  selectedPieceId === p.id
-                    ? "yellow"
-                    : p.type === "pod"
-                    ? "green"
-                    : "red"
-                }
-              />
-            </mesh>
-          );
-        })}
-      </Canvas>
+      <BoardCanvas
+        board={board}
+        pieces={pieces}
+        selectedPieceId={selectedPieceId}
+        threshold={threshold}
+        onTileClick={handleTileClick}
+        setHoveredTile={setHoveredTile}
+        isDraggingRef={isDraggingRef}
+      />
 
       <TileInfoPanel tile={hoveredTile} />
     </div>

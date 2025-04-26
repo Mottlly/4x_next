@@ -36,7 +36,7 @@ const Bestagon = ({
     >
       <cylinderGeometry args={[1, 1, 0.5, 6]} />
       <meshStandardMaterial color={color} />
-      <Edges color={selected ? "lime" : "white"} />
+      <Edges color="white" />
     </mesh>
   );
 };
