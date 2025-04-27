@@ -40,12 +40,20 @@ const BoardCanvas = memo(function BoardCanvas({
 }) {
   const heightScale = 0.5;
 
-  // Precompute reachable tiles
+  // ➤ Compute only those tiles in range AND passable AND not the current tile
   const reachableTiles = useMemo(() => {
     if (selectedPieceId == null) return [];
     const sel = pieces.find((p) => p.id === selectedPieceId);
     if (!sel) return [];
-    return board.tiles.filter((tile) => hexDistance(tile, sel) <= sel.move);
+    return board.tiles.filter((tile) => {
+      // exclude the tile the piece currently occupies
+      if (tile.q === sel.q && tile.r === sel.r) return false;
+      const inRange = hexDistance(tile, sel) <= sel.move;
+      const passable =
+        tile.type !== "impassable mountain" &&
+        (tile.type !== "water" || sel.amphibious);
+      return inRange && passable;
+    });
   }, [selectedPieceId, pieces, board.tiles]);
 
   return (
@@ -95,6 +103,7 @@ const BoardCanvas = memo(function BoardCanvas({
             position={[x, y, z]}
             renderOrder={999}
           >
+            {/* flat hex prism */}
             <cylinderGeometry
               args={[board.spacing * 0.85, board.spacing * 0.85, 0.02, 6]}
             />
@@ -164,6 +173,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
   const [board, setBoard] = useState(initialBoard);
   const { id: boardId, tiles } = board;
 
+  // ▶ Include amphibious flag in piece state
   const [pieces, setPieces] = useState(() =>
     initialBoard.pieces.map((p, idx) => ({
       id: p.id ?? idx,
@@ -172,6 +182,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
       type: p.type,
       vision: p.vision,
       move: p.move,
+      amphibious: Boolean(p.amphibious),
     }))
   );
   const [selectedPieceId, setSelectedPieceId] = useState(null);
@@ -202,11 +213,10 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
     }).catch(console.error);
   }, [pieces, tiles, boardId]);
 
-  // Select / move logic with range check
+  // Select / move logic with water and impassable checks
   const handleTileClick = useCallback(
     (tile) => {
       const clickedPiece = pieces.find((p) => p.q === tile.q && p.r === tile.r);
-      // selecting a piece
       if (clickedPiece) {
         setSelectedPieceId((id) =>
           id === clickedPiece.id ? null : clickedPiece.id
@@ -214,10 +224,14 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
         return;
       }
 
-      // moving: only if piece selected AND tile is within its move range
       if (selectedPieceId != null) {
         const sel = pieces.find((p) => p.id === selectedPieceId);
-        if (sel && hexDistance(tile, sel) <= sel.move) {
+        const inRange = sel && hexDistance(tile, sel) <= sel.move;
+        const passable =
+          tile.type !== "impassable mountain" &&
+          (tile.type !== "water" || sel.amphibious);
+
+        if (sel && inRange && passable) {
           const updated = pieces.map((p) =>
             p.id === sel.id ? { ...p, q: tile.q, r: tile.r } : p
           );
@@ -232,7 +246,6 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
             }),
           }).catch(console.error);
         }
-        // else: click outside move range does nothing
       }
     },
     [pieces, selectedPieceId, tiles, boardId]
