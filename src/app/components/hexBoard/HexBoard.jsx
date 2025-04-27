@@ -40,7 +40,7 @@ const BoardCanvas = memo(function BoardCanvas({
 }) {
   const heightScale = 0.5;
 
-  // compute reachable tiles once per selection / board change
+  // Precompute reachable tiles
   const reachableTiles = useMemo(() => {
     if (selectedPieceId == null) return [];
     const sel = pieces.find((p) => p.id === selectedPieceId);
@@ -85,33 +85,31 @@ const BoardCanvas = memo(function BoardCanvas({
           );
         })}
 
-      {/* ——— MOVE BORDERS (wireframe) ——— */}
+      {/* MOVE BORDERS (wireframe) */}
       {reachableTiles.map((tile) => {
         const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
-        // lift it up so it can't hide in the mesh
         const y = tile.height * heightScale + 0.1;
         return (
           <mesh
             key={`border-${tile.q}-${tile.r}`}
             position={[x, y, z]}
-            renderOrder={999} // draw last
+            renderOrder={999}
           >
-            {/* flat hex prism */}
             <cylinderGeometry
               args={[board.spacing * 0.85, board.spacing * 0.85, 0.02, 6]}
             />
             <meshBasicMaterial
               color="cyan"
-              wireframe // outline only
+              wireframe
               transparent
               opacity={0.8}
-              depthTest={false} // ignore depth so it's always visible
+              depthTest={false}
             />
           </mesh>
         );
       })}
 
-      {/* pieces */}
+      {/* Pieces */}
       {pieces.map((p) => {
         const tile = board.tiles.find((t) => t.q === p.q && t.r === p.r);
         if (!tile) return null;
@@ -181,7 +179,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
 
-  // reveal/discover logic (unchanged)
+  // Reveal/discover logic (unchanged)
   useEffect(() => {
     let changed = false;
     const newTiles = tiles.map((tile) => {
@@ -204,28 +202,37 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
     }).catch(console.error);
   }, [pieces, tiles, boardId]);
 
-  // select/move logic (unchanged)
+  // Select / move logic with range check
   const handleTileClick = useCallback(
     (tile) => {
-      const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
-      if (clicked) {
-        setSelectedPieceId((id) => (id === clicked.id ? null : clicked.id));
+      const clickedPiece = pieces.find((p) => p.q === tile.q && p.r === tile.r);
+      // selecting a piece
+      if (clickedPiece) {
+        setSelectedPieceId((id) =>
+          id === clickedPiece.id ? null : clickedPiece.id
+        );
         return;
       }
+
+      // moving: only if piece selected AND tile is within its move range
       if (selectedPieceId != null) {
-        const updated = pieces.map((p) =>
-          p.id === selectedPieceId ? { ...p, q: tile.q, r: tile.r } : p
-        );
-        setPieces(updated);
-        setSelectedPieceId(null);
-        fetch("/api/boardTable", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            board_id: boardId,
-            board: { tiles, pieces: updated },
-          }),
-        }).catch(console.error);
+        const sel = pieces.find((p) => p.id === selectedPieceId);
+        if (sel && hexDistance(tile, sel) <= sel.move) {
+          const updated = pieces.map((p) =>
+            p.id === sel.id ? { ...p, q: tile.q, r: tile.r } : p
+          );
+          setPieces(updated);
+          setSelectedPieceId(null);
+          fetch("/api/boardTable", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              board_id: boardId,
+              board: { tiles, pieces: updated },
+            }),
+          }).catch(console.error);
+        }
+        // else: click outside move range does nothing
       }
     },
     [pieces, selectedPieceId, tiles, boardId]
