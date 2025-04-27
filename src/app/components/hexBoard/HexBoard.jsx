@@ -1,10 +1,16 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, memo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  memo,
+} from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import hexToPosition from "../../../library/utililies/game/tileUtilities/positionFinder";
-import { getColorForType } from "./interactiveElements";
 import TileInfoPanel from "../gameUI/infoTile";
 import InteractiveBoard from "./interactiveElements";
 import FogEnclosure from "./fogMask";
@@ -18,26 +24,29 @@ function offsetToCube({ q, r }) {
   const y = -x - z;
   return { x, y, z };
 }
-
 function hexDistance(a, b) {
   const A = offsetToCube(a);
   const B = offsetToCube(b);
   return (Math.abs(A.x - B.x) + Math.abs(A.y - B.y) + Math.abs(A.z - B.z)) / 2;
 }
 
-// Memoized canvas subtree to prevent re-renders on hover
 const BoardCanvas = memo(function BoardCanvas({
   board,
   pieces,
   selectedPieceId,
-  threshold,
   onTileClick,
   setHoveredTile,
   isDraggingRef,
 }) {
-  const sciFiAudioRef = useRef(null);
-  const natureAudioRef = useRef(null);
   const heightScale = 0.5;
+
+  // compute reachable tiles once per selection / board change
+  const reachableTiles = useMemo(() => {
+    if (selectedPieceId == null) return [];
+    const sel = pieces.find((p) => p.id === selectedPieceId);
+    if (!sel) return [];
+    return board.tiles.filter((tile) => hexDistance(tile, sel) <= sel.move);
+  }, [selectedPieceId, pieces, board.tiles]);
 
   return (
     <Canvas
@@ -49,7 +58,7 @@ const BoardCanvas = memo(function BoardCanvas({
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 20, 10]} />
 
-      {/* terrain + interactive hover/click */}
+      {/* Base terrain + hover/click */}
       <InteractiveBoard
         board={board}
         setHoveredTile={setHoveredTile}
@@ -57,7 +66,7 @@ const BoardCanvas = memo(function BoardCanvas({
         onTileClick={onTileClick}
       />
 
-      {/* fog‐cover only on undiscovered */}
+      {/* Fog on undiscovered */}
       {board.tiles
         .filter((t) => !t.discovered)
         .map((tile) => {
@@ -65,7 +74,7 @@ const BoardCanvas = memo(function BoardCanvas({
           const y = tile.height * heightScale + 0.01;
           return (
             <FogBestagon
-              key={`${tile.q}-${tile.r}`}
+              key={`fog-${tile.q}-${tile.r}`}
               position={[x, y, z]}
               userData={{ tile }}
               onClick={() => onTileClick(tile)}
@@ -76,7 +85,33 @@ const BoardCanvas = memo(function BoardCanvas({
           );
         })}
 
-      {/* pieces on top */}
+      {/* ——— MOVE BORDERS (wireframe) ——— */}
+      {reachableTiles.map((tile) => {
+        const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
+        // lift it up so it can't hide in the mesh
+        const y = tile.height * heightScale + 0.1;
+        return (
+          <mesh
+            key={`border-${tile.q}-${tile.r}`}
+            position={[x, y, z]}
+            renderOrder={999} // draw last
+          >
+            {/* flat hex prism */}
+            <cylinderGeometry
+              args={[board.spacing * 0.85, board.spacing * 0.85, 0.02, 6]}
+            />
+            <meshBasicMaterial
+              color="cyan"
+              wireframe // outline only
+              transparent
+              opacity={0.8}
+              depthTest={false} // ignore depth so it's always visible
+            />
+          </mesh>
+        );
+      })}
+
+      {/* pieces */}
       {pieces.map((p) => {
         const tile = board.tiles.find((t) => t.q === p.q && t.r === p.r);
         if (!tile) return null;
@@ -84,7 +119,7 @@ const BoardCanvas = memo(function BoardCanvas({
         const y = tile.height * heightScale + 0.5;
         return (
           <mesh
-            key={p.id}
+            key={`piece-${p.id}`}
             position={[x, y, z]}
             onClick={(e) => {
               e.stopPropagation();
@@ -112,9 +147,9 @@ const BoardCanvas = memo(function BoardCanvas({
       />
 
       <AudioSwitcher
-        threshold={threshold}
-        sciFiAudioRef={sciFiAudioRef}
-        natureAudioRef={natureAudioRef}
+        threshold={board.threshold}
+        sciFiAudioRef={useRef()}
+        natureAudioRef={useRef()}
       />
 
       <FogEnclosure
@@ -128,11 +163,9 @@ const BoardCanvas = memo(function BoardCanvas({
 });
 
 export default function HexBoard({ board: initialBoard, threshold = 8 }) {
-  // keep full board (with discovered flags) in state
   const [board, setBoard] = useState(initialBoard);
-  const { id: boardId, spacing, tiles } = board;
+  const { id: boardId, tiles } = board;
 
-  // pieces carry their own vision radii
   const [pieces, setPieces] = useState(() =>
     initialBoard.pieces.map((p, idx) => ({
       id: p.id ?? idx,
@@ -140,15 +173,15 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
       r: Number(p.r),
       type: p.type,
       vision: p.vision,
+      move: p.move,
     }))
   );
   const [selectedPieceId, setSelectedPieceId] = useState(null);
 
-  // hover state and refs
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
 
-  // reveal effect: mark tiles discovered
+  // reveal/discover logic (unchanged)
   useEffect(() => {
     let changed = false;
     const newTiles = tiles.map((tile) => {
@@ -159,7 +192,6 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
       }
       return tile;
     });
-
     if (!changed) return;
     setBoard((b) => ({ ...b, tiles: newTiles }));
     fetch("/api/boardTable", {
@@ -172,17 +204,15 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
     }).catch(console.error);
   }, [pieces, tiles, boardId]);
 
-  // click handler: select/move pieces
+  // select/move logic (unchanged)
   const handleTileClick = useCallback(
     (tile) => {
-      // toggle selection
       const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
       if (clicked) {
         setSelectedPieceId((id) => (id === clicked.id ? null : clicked.id));
         return;
       }
-      // move if selected
-      if (selectedPieceId !== null) {
+      if (selectedPieceId != null) {
         const updated = pieces.map((p) =>
           p.id === selectedPieceId ? { ...p, q: tile.q, r: tile.r } : p
         );
@@ -207,12 +237,10 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
         board={board}
         pieces={pieces}
         selectedPieceId={selectedPieceId}
-        threshold={threshold}
         onTileClick={handleTileClick}
         setHoveredTile={setHoveredTile}
         isDraggingRef={isDraggingRef}
       />
-
       <TileInfoPanel tile={hoveredTile} />
     </div>
   );

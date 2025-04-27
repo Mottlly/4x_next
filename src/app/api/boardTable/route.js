@@ -74,7 +74,7 @@ export async function POST(req) {
     const podTile = spawnable[Math.floor(Math.random() * spawnable.length)];
     const boardState = {
       tiles,
-      pieces: [{ q: podTile.q, r: podTile.r, type: "pod", vision: 2 }],
+      pieces: [{ q: podTile.q, r: podTile.r, type: "pod", vision: 2, move: 1 }],
     };
 
     const { rows } = await pool.query(postBoardQuery, [
