@@ -51,6 +51,8 @@ const BoardCanvas = memo(function BoardCanvas({
       const inRange = hexDistance(tile, sel) <= sel.move;
       const passable =
         tile.type !== "impassable mountain" &&
+        // Create schema of properties and write in NOW
+        // Elegance of type checks -> a file that checks
         (tile.type !== "water" || sel.amphibious);
       return inRange && passable;
     });
