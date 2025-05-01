@@ -27,9 +27,9 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
       } else {
         const rawBiome = (biomeNoise(q * biomeScale, r * biomeScale) + 1) / 2;
         if (rawBiome < 0.33) {
-          type = "desert";
-        } else if (rawBiome < 0.66) {
           type = "plains";
+        } else if (rawBiome < 0.66) {
+          type = "grassland";
         } else {
           type = "forest";
         }

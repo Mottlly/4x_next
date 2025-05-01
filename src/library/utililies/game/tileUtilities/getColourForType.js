@@ -6,11 +6,11 @@ export default function getColourForType(type) {
       return "#007BA7";
     case "forest":
       return "#228B22";
-    case "desert":
-      return "#EDC9AF";
+    case "plains":
+      return "#F5F5DC"; // soft beige for open plains
     case "mountain":
       return "#A9A9A9";
-    case "plains":
+    case "grassland":
       return "#90EE90";
     default:
       return "#CCCCCC";
