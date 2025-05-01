@@ -39,10 +39,10 @@ export async function GET(req) {
     );
   }
   const query = id ? getBoardQuery : getBoardByGameIDQuery;
-  const param = id ? [id] : [game_id];
+  const params = id ? [id] : [game_id];
 
   try {
-    const { rows } = await pool.query(query, param);
+    const { rows } = await pool.query(query, params);
     if (rows.length === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
     }
@@ -70,7 +70,10 @@ export async function POST(req) {
       );
     }
 
-    const tiles = generateBiomeMap(25, 25);
+    const cols = 25;
+    const rows = 25;
+    const spacing = 1.05;
+    const tiles = generateBiomeMap(cols, rows);
     const forbidden = new Set(["water", "lake", "impassable mountain"]);
     const spawnable = tiles.filter((t) => !forbidden.has(t.type));
     const podTile = spawnable[Math.floor(Math.random() * spawnable.length)];
@@ -80,23 +83,28 @@ export async function POST(req) {
       q: podTile.q,
       r: podTile.r,
       type: "pod",
-      vision: 2, // override any defaults
+      vision: 2,
       move: 1,
+      movesLeft: 1,
     };
+
     const boardState = {
+      turn: 1,
+      cols,
+      rows,
+      spacing,
       tiles,
       pieces: [firstPiece],
     };
 
-    const { rows } = await pool.query(postBoardQuery, [
+    const { rows: inserted } = await pool.query(postBoardQuery, [
       user_id,
       game_id,
       JSON.stringify(boardState),
     ]);
 
-    // return same shape as GET
     return NextResponse.json(
-      { board: rows[0].boardref, board_id: rows[0].id },
+      { board: inserted[0].boardref, board_id: inserted[0].id },
       { status: 201 }
     );
   } catch (error) {
@@ -119,17 +127,16 @@ export async function PATCH(req) {
       );
     }
 
-    const { rows } = await pool.query(patchBoardQuery, [
+    // newBoard must include turn, cols, rows, spacing, tiles, pieces
+    const { rows: updated } = await pool.query(patchBoardQuery, [
       JSON.stringify(newBoard),
       board_id,
     ]);
-
-    if (rows.length === 0) {
+    if (updated.length === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
     }
-
     return NextResponse.json(
-      { message: "Board updated.", board: rows[0].boardref },
+      { message: "Board updated.", board: updated[0].boardref },
       { status: 200 }
     );
   } catch (error) {

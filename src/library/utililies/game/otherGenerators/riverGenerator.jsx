@@ -2,95 +2,78 @@ import hexToPosition from "../tileUtilities/positionFinder";
 import getNeighborsAxial from "../tileUtilities/getNeighbors";
 
 /**
- * Returns the neighboring tiles of a given tile from board.tiles
- * by using the new getNeighborsAxial utility.
- */
-export function getNeighbors(tile, board) {
-  // Get the axial coordinates for all neighbors.
-  const neighborCoords = getNeighborsAxial(tile.q, tile.r);
-
-  // Map those coordinates into actual tile objects using board.tiles.
-  return neighborCoords
-    .map(({ q, r }) => board.tiles.find((t) => t.q === q && t.r === r))
-    .filter(Boolean);
-}
-
-/**
- * Computes the Euclidean distance on the XZ-plane between two tiles.
- */
-export function distanceBetweenTiles(tileA, tileB, spacing) {
-  const posA = hexToPosition(tileA.q, tileA.r, spacing);
-  const posB = hexToPosition(tileB.q, tileB.r, spacing);
-  const dx = posA[0] - posB[0];
-  const dz = posA[2] - posB[2];
-  return Math.sqrt(dx * dx + dz * dz);
-}
-
-/**
- * Returns the distance from a tile to the nearest water or lake tile.
- */
-export function nearestWaterDistance(tile, waterTiles, spacing) {
-  let minDist = Infinity;
-  for (const wt of waterTiles) {
-    const d = distanceBetweenTiles(tile, wt, spacing);
-    if (d < minDist) {
-      minDist = d;
-    }
-  }
-  return minDist;
-}
-
-/**
- * Generates rivers on the board using the specified source tiles.
+ * Given board.tiles and board.tileMap (a Map<"q,r",tile>), carve rivers from sourceTiles.
+ * Returns an array of tiles that became river segments.
  */
 export function generateRivers(board, sourceTiles) {
-  const waterTiles = board.tiles.filter(
-    (tile) => tile.type === "water" || tile.type === "lake"
+  const { tiles, tileMap, spacing } = board;
+  const waterTiles = tiles.filter(
+    (t) => t.type === "water" || t.type === "lake"
   );
 
-  sourceTiles.forEach((sourceTile) => {
-    let currentTile = sourceTile;
-    currentTile.river = true;
-    let iterations = 0;
+  const riverSegments = [];
 
+  sourceTiles.forEach((source) => {
+    let current = source;
+    // mark the source
+    current.riverPresent = true;
+    riverSegments.push(current);
+
+    let iterations = 0;
     while (
       iterations < 10 &&
-      currentTile &&
-      currentTile.type !== "water" &&
-      currentTile.type !== "lake"
+      current.type !== "water" &&
+      current.type !== "lake"
     ) {
-      const neighbors = getNeighbors(currentTile, board);
-      if (neighbors.length === 0) break;
+      // get the actual tile objects via fast Map lookups
+      const neighbors = getNeighborsAxial(current.q, current.r)
+        .map(({ q, r }) => tileMap.get(`${q},${r}`))
+        .filter(Boolean);
 
-      let candidates = neighbors.filter((n) => n.height <= currentTile.height);
-      const downhill = candidates.filter((n) => n.height < currentTile.height);
-      if (downhill.length > 0) {
-        candidates = downhill;
-      }
-      if (candidates.length === 0) break;
+      if (!neighbors.length) break;
 
-      let bestCandidate = null;
-      let bestDistance = Infinity;
-      for (const candidate of candidates) {
-        const d = nearestWaterDistance(candidate, waterTiles, board.spacing);
-        if (d < bestDistance) {
-          bestDistance = d;
-          bestCandidate = candidate;
-        }
-      }
-      if (!bestCandidate) break;
+      // only move downhill (or flat) toward water
+      let candidates = neighbors.filter((n) => n.height <= current.height);
+      const downhill = candidates.filter((n) => n.height < current.height);
+      if (downhill.length) candidates = downhill;
+      if (!candidates.length) break;
 
+      // pick the neighbor closest to any water tile
+      let best = candidates[0];
+      let bestDist = Infinity;
+      candidates.forEach((c) => {
+        // Euclidean on XZ-plane
+        const [x1, , z1] = hexToPosition(c.q, c.r, spacing);
+        waterTiles.forEach((wt) => {
+          const [x2, , z2] = hexToPosition(wt.q, wt.r, spacing);
+          const d = (x1 - x2) ** 2 + (z1 - z2) ** 2;
+          if (d < bestDist) {
+            bestDist = d;
+            best = c;
+          }
+        });
+      });
+
+      // chance to spawn a lake after iteration 7–10
       if (iterations >= 7) {
-        const lakeProb = (iterations - 7 + 1) / 3;
+        const lakeProb = (iterations - 7 + 1) / 3; // .33, .66, 1
         if (Math.random() < lakeProb) {
-          bestCandidate.type = "lake";
+          best.type = "lake";
+          best.riverPresent = true;
+          riverSegments.push(best);
           break;
         }
       }
 
-      bestCandidate.river = true;
-      currentTile = bestCandidate;
+      // carve the river
+      best.riverPresent = true;
+      riverSegments.push(best);
+
+      // advance
+      current = best;
       iterations++;
     }
   });
+
+  return riverSegments;
 }

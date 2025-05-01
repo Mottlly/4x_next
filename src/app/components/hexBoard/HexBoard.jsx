@@ -16,6 +16,7 @@ import InteractiveBoard from "./interactiveElements";
 import FogEnclosure from "./fogMask";
 import AudioSwitcher from "./audioSwitcher";
 import FogBestagon from "./fogagon";
+import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
 
 // axial hex‐distance helper
 function offsetToCube({ q, r }) {
@@ -40,21 +41,28 @@ const BoardCanvas = memo(function BoardCanvas({
 }) {
   const heightScale = 0.5;
 
-  // ➤ Compute only those tiles in range AND passable AND not the current tile
   const reachableTiles = useMemo(() => {
     if (selectedPieceId == null) return [];
     const sel = pieces.find((p) => p.id === selectedPieceId);
     if (!sel) return [];
+
+    const { movesLeft, abilities } = sel;
+    const { seafaring, coastfaring, amphibious, mountaineering, flying } =
+      abilities;
+
     return board.tiles.filter((tile) => {
-      // exclude the tile the piece currently occupies
       if (tile.q === sel.q && tile.r === sel.r) return false;
-      const inRange = hexDistance(tile, sel) <= sel.move;
-      const passable =
-        tile.type !== "impassable mountain" &&
-        // Create schema of properties and write in NOW
-        // Elegance of type checks -> a file that checks
-        (tile.type !== "water" || sel.amphibious);
-      return inRange && passable;
+      const dist = hexDistance(tile, sel);
+      if (dist > movesLeft) return false;
+
+      const isWaterOrLake = tile.type === "water" || tile.type === "lake";
+      const waterPass = !isWaterOrLake || amphibious || seafaring;
+      const coastPass = !isWaterOrLake || coastfaring;
+      const mountainPass =
+        tile.type !== "impassable mountain" || mountaineering;
+      const passable = flying || (waterPass && coastPass && mountainPass);
+
+      return passable;
     });
   }, [selectedPieceId, pieces, board.tiles]);
 
@@ -68,7 +76,6 @@ const BoardCanvas = memo(function BoardCanvas({
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 20, 10]} />
 
-      {/* Base terrain + hover/click */}
       <InteractiveBoard
         board={board}
         setHoveredTile={setHoveredTile}
@@ -76,7 +83,7 @@ const BoardCanvas = memo(function BoardCanvas({
         onTileClick={onTileClick}
       />
 
-      {/* Fog on undiscovered */}
+      {/* Fog */}
       {board.tiles
         .filter((t) => !t.discovered)
         .map((tile) => {
@@ -95,7 +102,25 @@ const BoardCanvas = memo(function BoardCanvas({
           );
         })}
 
-      {/* MOVE BORDERS (wireframe) */}
+      {/* Rivers */}
+      {board.tiles
+        .filter((t) => t.riverPresent)
+        .map((tile) => {
+          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
+          const y = tile.height * heightScale + 0.05;
+          return (
+            <mesh
+              key={`river-${tile.q}-${tile.r}`}
+              position={[x, y, z]}
+              renderOrder={1000}
+            >
+              <sphereGeometry args={[board.spacing * 0.1, 8, 8]} />
+              <meshStandardMaterial color="deepskyblue" />
+            </mesh>
+          );
+        })}
+
+      {/* Move borders */}
       {reachableTiles.map((tile) => {
         const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
         const y = tile.height * heightScale + 0.1;
@@ -105,7 +130,6 @@ const BoardCanvas = memo(function BoardCanvas({
             position={[x, y, z]}
             renderOrder={999}
           >
-            {/* flat hex prism */}
             <cylinderGeometry
               args={[board.spacing * 0.85, board.spacing * 0.85, 0.02, 6]}
             />
@@ -154,13 +178,11 @@ const BoardCanvas = memo(function BoardCanvas({
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 4}
       />
-
       <AudioSwitcher
         threshold={board.threshold}
         sciFiAudioRef={useRef()}
         natureAudioRef={useRef()}
       />
-
       <FogEnclosure
         board={board}
         spacing={board.spacing}
@@ -172,27 +194,21 @@ const BoardCanvas = memo(function BoardCanvas({
 });
 
 export default function HexBoard({ board: initialBoard, threshold = 8 }) {
-  const [board, setBoard] = useState(initialBoard);
-  const { id: boardId, tiles } = board;
+  // initialBoard MUST include turn from API
+  const { id: boardId, tiles, turn: initialTurn } = initialBoard;
+  console.log("HexBoard", initialBoard);
 
-  // ▶ Include amphibious flag in piece state
+  // Local state
+  const [board, setBoard] = useState(initialBoard);
+  const [currentTurn, setCurrentTurn] = useState(initialTurn);
   const [pieces, setPieces] = useState(() =>
-    initialBoard.pieces.map((p, idx) => ({
-      id: p.id ?? idx,
-      q: Number(p.q),
-      r: Number(p.r),
-      type: p.type,
-      vision: p.vision,
-      move: p.move,
-      amphibious: Boolean(p.amphibious),
-    }))
+    initialBoard.pieces.map((p) => ({ ...defaultFriendlyPiece, ...p }))
   );
   const [selectedPieceId, setSelectedPieceId] = useState(null);
-
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
 
-  // Reveal/discover logic (unchanged)
+  // Reveal logic
   useEffect(() => {
     let changed = false;
     const newTiles = tiles.map((tile) => {
@@ -203,58 +219,64 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
       }
       return tile;
     });
-    if (!changed) return;
-    setBoard((b) => ({ ...b, tiles: newTiles }));
+    if (changed) setBoard((b) => ({ ...b, tiles: newTiles }));
+  }, [pieces, tiles]);
+
+  // Handle moves
+  const handleTileClick = useCallback(
+    (tile) => {
+      const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
+      if (clicked) {
+        setSelectedPieceId((id) => (id === clicked.id ? null : clicked.id));
+        return;
+      }
+      if (selectedPieceId != null) {
+        const sel = pieces.find((p) => p.id === selectedPieceId);
+        if (!sel) return;
+        const dist = hexDistance(tile, sel);
+        if (dist <= sel.movesLeft) {
+          setPieces((prev) =>
+            prev.map((p) =>
+              p.id === sel.id
+                ? { ...p, q: tile.q, r: tile.r, movesLeft: p.movesLeft - dist }
+                : p
+            )
+          );
+          setSelectedPieceId(null);
+        }
+      }
+    },
+    [pieces, selectedPieceId]
+  );
+
+  // End turn
+  const nextTurn = () => {
+    const newTurn = currentTurn + 1;
+    setCurrentTurn(newTurn);
+    setPieces((prev) => prev.map((p) => ({ ...p, movesLeft: p.move })));
+    setBoard((b) => ({ ...b, turn: newTurn }));
+
+    // Persist
     fetch("/api/boardTable", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         board_id: boardId,
-        board: { tiles: newTiles, pieces },
+        board: { turn: newTurn, tiles, pieces },
       }),
     }).catch(console.error);
-  }, [pieces, tiles, boardId]);
-
-  // Select / move logic with water and impassable checks
-  const handleTileClick = useCallback(
-    (tile) => {
-      const clickedPiece = pieces.find((p) => p.q === tile.q && p.r === tile.r);
-      if (clickedPiece) {
-        setSelectedPieceId((id) =>
-          id === clickedPiece.id ? null : clickedPiece.id
-        );
-        return;
-      }
-
-      if (selectedPieceId != null) {
-        const sel = pieces.find((p) => p.id === selectedPieceId);
-        const inRange = sel && hexDistance(tile, sel) <= sel.move;
-        const passable =
-          tile.type !== "impassable mountain" &&
-          (tile.type !== "water" || sel.amphibious);
-
-        if (sel && inRange && passable) {
-          const updated = pieces.map((p) =>
-            p.id === sel.id ? { ...p, q: tile.q, r: tile.r } : p
-          );
-          setPieces(updated);
-          setSelectedPieceId(null);
-          fetch("/api/boardTable", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              board_id: boardId,
-              board: { tiles, pieces: updated },
-            }),
-          }).catch(console.error);
-        }
-      }
-    },
-    [pieces, selectedPieceId, tiles, boardId]
-  );
+  };
 
   return (
     <div className="relative">
+      <div className="absolute top-4 left-4 z-20">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+          onClick={nextTurn}
+        >
+          Next Turn ({currentTurn})
+        </button>
+      </div>
       <BoardCanvas
         board={board}
         pieces={pieces}
