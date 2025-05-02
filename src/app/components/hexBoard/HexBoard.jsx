@@ -11,6 +11,9 @@ import React, {
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import hexToPosition from "../../../library/utililies/game/tileUtilities/positionFinder";
+import { hexDistance } from "../../../library/utililies/game/tileUtilities/distanceFinder";
+import useMoveHandler from "./useMoveHandler";
+import useEndTurn from "./useEndTurn";
 import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
 import InteractiveBoard from "./interactiveElements";
@@ -18,19 +21,6 @@ import FogEnclosure from "./fogMask";
 import AudioSwitcher from "./audioSwitcher";
 import FogBestagon from "./fogagon";
 import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
-
-// axial hex‐distance helper
-function offsetToCube({ q, r }) {
-  const x = q - (r - (r & 1)) / 2;
-  const z = r;
-  const y = -x - z;
-  return { x, y, z };
-}
-function hexDistance(a, b) {
-  const A = offsetToCube(a);
-  const B = offsetToCube(b);
-  return (Math.abs(A.x - B.x) + Math.abs(A.y - B.y) + Math.abs(A.z - B.z)) / 2;
-}
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -224,58 +214,23 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
   }, [pieces, tiles]);
 
   // Handle moves
-  const handleTileClick = useCallback(
-    (tile) => {
-      const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
-      if (clicked) {
-        setSelectedPieceId((id) => (id === clicked.id ? null : clicked.id));
-        return;
-      }
-      if (selectedPieceId != null) {
-        const sel = pieces.find((p) => p.id === selectedPieceId);
-        if (!sel) return;
-        const dist = hexDistance(tile, sel);
-        if (dist <= sel.movesLeft) {
-          setPieces((prev) =>
-            prev.map((p) =>
-              p.id === sel.id
-                ? { ...p, q: tile.q, r: tile.r, movesLeft: p.movesLeft - dist }
-                : p
-            )
-          );
-          setSelectedPieceId(null);
-        }
-      }
-    },
-    [pieces, selectedPieceId]
+  const handleTileClick = useMoveHandler(
+    pieces,
+    selectedPieceId,
+    setPieces,
+    setSelectedPieceId
   );
 
   // End turn
-  const nextTurn = () => {
-    const newTurn = currentTurn + 1;
-    setCurrentTurn(newTurn);
-    setPieces((prev) => prev.map((p) => ({ ...p, movesLeft: p.move })));
-    setBoard((b) => ({ ...b, turn: newTurn }));
-
-    const patchPayload = {
-      board_id: boardId,
-      board: {
-        turn: newTurn,
-        cols: board.cols,
-        rows: board.rows,
-        spacing: board.spacing,
-        tiles: board.tiles,
-        pieces,
-      },
-    };
-    console.log("PATCH payload:", patchPayload);
-    // Persist
-    fetch("/api/boardTable", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(patchPayload),
-    }).catch(console.error);
-  };
+  const nextTurn = useEndTurn(
+    boardId,
+    board,
+    setBoard,
+    currentTurn,
+    setCurrentTurn,
+    pieces,
+    setPieces
+  );
 
   return (
     <div className="relative">
