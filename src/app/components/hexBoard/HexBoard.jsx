@@ -211,7 +211,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
   // Reveal logic
   useEffect(() => {
     let changed = false;
-    const newTiles = tiles.map((tile) => {
+    const newTiles = board.tiles.map((tile) => {
       if (tile.discovered) return tile;
       if (pieces.some((p) => hexDistance(tile, p) <= p.vision)) {
         changed = true;
@@ -256,14 +256,23 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
     setPieces((prev) => prev.map((p) => ({ ...p, movesLeft: p.move })));
     setBoard((b) => ({ ...b, turn: newTurn }));
 
+    const patchPayload = {
+      board_id: boardId,
+      board: {
+        turn: newTurn,
+        cols: board.cols,
+        rows: board.rows,
+        spacing: board.spacing,
+        tiles: board.tiles,
+        pieces,
+      },
+    };
+    console.log("PATCH payload:", patchPayload);
     // Persist
     fetch("/api/boardTable", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        board_id: boardId,
-        board: { turn: newTurn, tiles, pieces },
-      }),
+      body: JSON.stringify(patchPayload),
     }).catch(console.error);
   };
 

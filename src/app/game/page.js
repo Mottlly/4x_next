@@ -18,7 +18,6 @@ export default function GamePage() {
 
   const userData = useUserData(session);
 
-  // board will be { id, tiles, pieces }
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -79,6 +78,7 @@ export default function GamePage() {
 
   const boardTiles = {
     id: board.id,
+    turn: board.turn,
     tiles: board.tiles,
     pieces: board.pieces || [],
     cols: 25,
