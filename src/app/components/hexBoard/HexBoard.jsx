@@ -12,6 +12,7 @@ import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import hexToPosition from "../../../library/utililies/game/tileUtilities/positionFinder";
 import TileInfoPanel from "../gameUI/infoTile";
+import NextTurnButton from "../gameUI/endTurn";
 import InteractiveBoard from "./interactiveElements";
 import FogEnclosure from "./fogMask";
 import AudioSwitcher from "./audioSwitcher";
@@ -278,14 +279,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
 
   return (
     <div className="relative">
-      <div className="absolute top-4 left-4 z-20">
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={nextTurn}
-        >
-          Next Turn ({currentTurn})
-        </button>
-      </div>
+      <div className="absolute top-4 left-4 z-20"></div>
       <BoardCanvas
         board={board}
         pieces={pieces}
@@ -295,6 +289,7 @@ export default function HexBoard({ board: initialBoard, threshold = 8 }) {
         isDraggingRef={isDraggingRef}
       />
       <TileInfoPanel tile={hoveredTile} />
+      <NextTurnButton currentTurn={currentTurn} onNext={nextTurn} />
     </div>
   );
 }
