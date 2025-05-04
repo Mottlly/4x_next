@@ -48,7 +48,7 @@ export default function MainMenu() {
           </button>
 
           <button
-            onClick={() => handleStartGame(userData, router)}
+            onClick={() => router.push("/create-game")}
             className={menuStyles.start}
           >
             {t("start")}
