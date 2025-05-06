@@ -32,7 +32,7 @@ const TileInfoPanel = ({ tile }) => {
     return (
       <div
         className="
-          absolute top-4 left-4 w-72 p-4
+          left-4 w-72 p-4
           bg-black bg-opacity-90
           border border-cyan-500 rounded-lg
           shadow-lg ring-2 ring-cyan-400 ring-opacity-50
@@ -53,7 +53,7 @@ const TileInfoPanel = ({ tile }) => {
   return (
     <div
       className="
-        absolute top-4 left-4 w-72 p-4
+        w-72 p-4
         bg-gray-900 bg-opacity-80 backdrop-blur-sm
         border border-cyan-500 rounded-lg
         shadow-lg ring-2 ring-cyan-400 ring-opacity-50

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import { ArrowRight, Sword } from "lucide-react";
 import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
 
 import BoardCanvas from "./boardCanvas/boardCanvas";
@@ -9,7 +10,6 @@ import NextTurnButton from "../gameUI/endTurn";
 import useMoveHandler from "./useMoveHandler";
 import useEndTurn from "./useEndTurn";
 import useRevealTiles from "./useRevealTiles";
-import { hexDistance } from "../../../library/utililies/game/tileUtilities/distanceFinder";
 
 export default function HexBoard({ board: initialBoard }) {
   const { id: boardId, turn: initialTurn } = initialBoard;
@@ -23,10 +23,8 @@ export default function HexBoard({ board: initialBoard }) {
   const [hoveredTile, setHoveredTile] = useState(null);
   const isDraggingRef = useRef(false);
 
-  // reveal hook (from earlier)
   useRevealTiles(board, pieces, setBoard);
 
-  // tile click handler
   const handleTileClick = useMoveHandler(
     pieces,
     selectedPieceId,
@@ -34,7 +32,6 @@ export default function HexBoard({ board: initialBoard }) {
     setSelectedPieceId
   );
 
-  // next-turn handler
   const nextTurn = useEndTurn(
     boardId,
     board,
@@ -45,8 +42,21 @@ export default function HexBoard({ board: initialBoard }) {
     setPieces
   );
 
+  const handleAction = (action) => {
+    switch (action) {
+      case "move":
+        // TODO: enter move mode
+        break;
+      case "attack":
+        // TODO: enter attack mode
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <div className="relative">
+    <div className="relative w-full h-full">
       <BoardCanvas
         board={board}
         pieces={pieces}
@@ -55,7 +65,47 @@ export default function HexBoard({ board: initialBoard }) {
         setHoveredTile={setHoveredTile}
         isDraggingRef={isDraggingRef}
       />
-      <TileInfoPanel tile={hoveredTile} />
+
+      {/* Top-left: info + actions */}
+      <div className="absolute top-4 left-4 z-10 flex items-start space-x-4 pointer-events-none">
+        <TileInfoPanel tile={hoveredTile} />
+
+        {selectedPieceId && (
+          <div className="pointer-events-auto flex space-x-2">
+            <button
+              onClick={() => handleAction("move")}
+              className="
+                flex items-center justify-center
+                w-12 h-12
+                bg-gray-800 bg-opacity-80
+                hover:bg-blue-700
+                border border-blue-500
+                rounded-lg
+                transition
+              "
+            >
+              <ArrowRight className="w-6 h-6 text-cyan-200" />
+            </button>
+
+            <button
+              onClick={() => handleAction("attack")}
+              className="
+                flex items-center justify-center
+                w-12 h-12
+                bg-gray-800 bg-opacity-80
+                hover:bg-red-700
+                border border-red-500
+                rounded-lg
+                transition
+              "
+            >
+              <Sword className="w-6 h-6 text-cyan-200" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Next Turn */}
       <NextTurnButton currentTurn={currentTurn} onNext={nextTurn} />
     </div>
   );
