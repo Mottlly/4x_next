@@ -3,7 +3,7 @@ import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
 import { generateBiomeMap } from "../../../library/utililies/game/biomeGenerators/generateMap";
-import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
+import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
 import { v4 as uuidv4 } from "uuid";
 
 const getBoardQuery = fs.readFileSync(
@@ -77,16 +77,11 @@ export async function POST(req) {
     const forbidden = new Set(["water", "lake", "impassable mountain"]);
     const spawnable = tiles.filter((t) => !forbidden.has(t.type));
     const podTile = spawnable[Math.floor(Math.random() * spawnable.length)];
-    const firstPiece = {
-      ...defaultFriendlyPiece,
+    const firstPiece = createPiece("Pod", {
       id: uuidv4(),
       q: podTile.q,
       r: podTile.r,
-      type: "pod",
-      vision: 2,
-      move: 1,
-      movesLeft: 1,
-    };
+    });
 
     const boardState = {
       turn: 1,

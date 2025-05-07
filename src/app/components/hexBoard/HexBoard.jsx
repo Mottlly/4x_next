@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { ArrowRight, Sword } from "lucide-react";
+import { ArrowRight, Sword, Hammer } from "lucide-react";
 import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
-
+import {
+  ACTIONS_BY_TYPE,
+  ACTION_DETAILS,
+} from "../../../library/utililies/game/gamePieces/actionsDictator";
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
@@ -42,6 +45,12 @@ export default function HexBoard({ board: initialBoard }) {
     setPieces
   );
 
+  // Determine the selected piece and its available actions
+  const selectedPiece = pieces.find((p) => p.id === selectedPieceId);
+  const availableActions = selectedPiece
+    ? ACTIONS_BY_TYPE[selectedPiece.type] || []
+    : [];
+
   const handleAction = (action) => {
     switch (action) {
       case "move":
@@ -49,6 +58,9 @@ export default function HexBoard({ board: initialBoard }) {
         break;
       case "attack":
         // TODO: enter attack mode
+        break;
+      case "build":
+        // TODO: enter build mode
         break;
       default:
         break;
@@ -70,37 +82,32 @@ export default function HexBoard({ board: initialBoard }) {
       <div className="absolute top-4 left-4 z-10 flex items-start space-x-4 pointer-events-none">
         <TileInfoPanel tile={hoveredTile} />
 
-        {selectedPieceId && (
+        {selectedPiece && (
           <div className="pointer-events-auto flex space-x-2">
-            <button
-              onClick={() => handleAction("move")}
-              className="
+            {availableActions.map((action) => {
+              const {
+                icon: Icon,
+                tooltip,
+                buttonClass,
+              } = ACTION_DETAILS[action];
+              return (
+                <button
+                  key={action}
+                  onClick={() => handleAction(action)}
+                  title={tooltip}
+                  className={`
                 flex items-center justify-center
                 w-12 h-12
                 bg-gray-800 bg-opacity-80
-                hover:bg-blue-700
-                border border-blue-500
+                ${buttonClass}
                 rounded-lg
                 transition
-              "
-            >
-              <ArrowRight className="w-6 h-6 text-cyan-200" />
-            </button>
-
-            <button
-              onClick={() => handleAction("attack")}
-              className="
-                flex items-center justify-center
-                w-12 h-12
-                bg-gray-800 bg-opacity-80
-                hover:bg-red-700
-                border border-red-500
-                rounded-lg
-                transition
-              "
-            >
-              <Sword className="w-6 h-6 text-cyan-200" />
-            </button>
+              `}
+                >
+                  <Icon className="w-6 h-6 text-cyan-200" />
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
