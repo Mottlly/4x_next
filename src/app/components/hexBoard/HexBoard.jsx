@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { ArrowRight, Sword, Hammer } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
 import {
   ACTIONS_BY_TYPE,
   ACTION_DETAILS,
 } from "../../../library/utililies/game/gamePieces/actionsDictator";
+import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
@@ -24,7 +24,12 @@ export default function HexBoard({ board: initialBoard }) {
   );
   const [selectedPieceId, setSelectedPieceId] = useState(null);
   const [hoveredTile, setHoveredTile] = useState(null);
+  const [activeAction, setActiveAction] = useState(null);
   const isDraggingRef = useRef(false);
+
+  useEffect(() => {
+    setActiveAction(selectedPieceId ? "move" : null);
+  }, [selectedPieceId]);
 
   useRevealTiles(board, pieces, setBoard);
 
@@ -45,26 +50,29 @@ export default function HexBoard({ board: initialBoard }) {
     setPieces
   );
 
-  // Determine the selected piece and its available actions
   const selectedPiece = pieces.find((p) => p.id === selectedPieceId);
   const availableActions = selectedPiece
     ? ACTIONS_BY_TYPE[selectedPiece.type] || []
     : [];
 
+  const buildOptions =
+    activeAction === "build" && selectedPiece
+      ? getBuildOptionsForType(selectedPiece.type)
+      : [];
+
   const handleAction = (action) => {
-    switch (action) {
-      case "move":
-        // TODO: enter move mode
-        break;
-      case "attack":
-        // TODO: enter attack mode
-        break;
-      case "build":
-        // TODO: enter build mode
-        break;
-      default:
-        break;
+    if (action === "build") {
+      setActiveAction((prev) => (prev === "build" ? null : "build"));
+    } else {
+      setActiveAction(action);
+      // TODO: handle other modes: move, attack, fortify, scout
     }
+  };
+
+  const handleBuildOption = (buildingKey) => {
+    // TODO: implement structure placement logic
+    console.log(`Build ${buildingKey} at`, hoveredTile);
+    setActiveAction(null);
   };
 
   return (
@@ -79,37 +87,66 @@ export default function HexBoard({ board: initialBoard }) {
       />
 
       {/* Top-left: info + actions */}
-      <div className="absolute top-4 left-4 z-10 flex items-start space-x-4 pointer-events-none">
-        <TileInfoPanel tile={hoveredTile} />
+      <div className="absolute top-4 left-4 z-10 pointer-events-none">
+        <div className="flex items-start space-x-4">
+          <TileInfoPanel tile={hoveredTile} />
 
-        {selectedPiece && (
-          <div className="pointer-events-auto flex space-x-2">
-            {availableActions.map((action) => {
-              const {
-                icon: Icon,
-                tooltip,
-                buttonClass,
-              } = ACTION_DETAILS[action];
-              return (
-                <button
-                  key={action}
-                  onClick={() => handleAction(action)}
-                  title={tooltip}
-                  className={`
-                flex items-center justify-center
-                w-12 h-12
-                bg-gray-800 bg-opacity-80
-                ${buttonClass}
-                rounded-lg
-                transition
-              `}
-                >
-                  <Icon className="w-6 h-6 text-cyan-200" />
-                </button>
-              );
-            })}
-          </div>
-        )}
+          {selectedPiece && (
+            <div className="pointer-events-auto flex space-x-2">
+              {availableActions.map((action) => {
+                const {
+                  icon: Icon,
+                  tooltip,
+                  buttonClass,
+                } = ACTION_DETAILS[action];
+                const isActive = activeAction === action;
+
+                return (
+                  <div key={action} className="relative">
+                    <button
+                      onClick={() => handleAction(action)}
+                      title={tooltip}
+                      className={`
+                        flex items-center justify-center
+                        w-12 h-12
+                        bg-gray-800 bg-opacity-80
+                        ${buttonClass}
+                        ${isActive ? "ring-2 ring-offset-2 ring-white" : ""}
+                        rounded-lg transition
+                      `}
+                    >
+                      <Icon className="w-6 h-6 text-cyan-200" />
+                    </button>
+
+                    {/* Only render build dropdown inside the BUILD button's wrapper */}
+                    {action === "build" && isActive && (
+                      <div className="absolute top-full left-0 mt-2 flex flex-col space-y-2 bg-gray-900 bg-opacity-90 p-2 rounded-lg">
+                        {buildOptions.map(
+                          ({ key, label, icon: OptIcon, buttonClass }) => (
+                            <button
+                              key={key}
+                              onClick={() => handleBuildOption(key)}
+                              title={label}
+                              className={`
+                              flex items-center justify-center
+                              w-10 h-10
+                              bg-gray-800 bg-opacity-80
+                              ${buttonClass}
+                              rounded-lg transition
+                            `}
+                            >
+                              <OptIcon className="w-5 h-5 text-white" />
+                            </button>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Next Turn */}
