@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { BUILDING_CONFIG } from "../../../library/utililies/game/gamePieces/buildBank";
 
 const TileInfoPanel = ({ tile }) => {
   const [displayTile, setDisplayTile] = useState(null);
@@ -6,21 +7,17 @@ const TileInfoPanel = ({ tile }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    // whenever `tile` changes, clear prior timers…
     clearTimeout(timerRef.current);
 
     if (tile) {
-      // new hover: show placeholder immediately
       setLoading(true);
       setDisplayTile(null);
 
-      // if still over same tile after 1 s, show real panel
       timerRef.current = setTimeout(() => {
         setDisplayTile(tile);
         setLoading(false);
       }, 1000);
     } else {
-      // moved off: clear everything
       setLoading(false);
       setDisplayTile(null);
     }
@@ -49,6 +46,12 @@ const TileInfoPanel = ({ tile }) => {
   }
 
   if (!displayTile) return null;
+
+  // look up a friendly label for the building key
+  const buildingLabel =
+    displayTile.building && BUILDING_CONFIG[displayTile.building]
+      ? BUILDING_CONFIG[displayTile.building].label
+      : displayTile.building;
 
   return (
     <div
@@ -81,6 +84,12 @@ const TileInfoPanel = ({ tile }) => {
           <li>
             <span className="inline-block w-12 text-right pr-2">River:</span>
             <span className="font-semibold text-blue-400">Present</span>
+          </li>
+        )}
+        {displayTile.building && (
+          <li>
+            <span className="inline-block w-12 text-right pr-2">Building:</span>
+            <span className="font-semibold">{buildingLabel}</span>
           </li>
         )}
       </ul>

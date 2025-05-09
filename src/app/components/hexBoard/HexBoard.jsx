@@ -65,13 +65,29 @@ export default function HexBoard({ board: initialBoard }) {
       setActiveAction((prev) => (prev === "build" ? null : "build"));
     } else {
       setActiveAction(action);
-      // TODO: handle other modes: move, attack, fortify, scout
     }
   };
 
   const handleBuildOption = (buildingKey) => {
-    // TODO: implement structure placement logic
-    console.log(`Build ${buildingKey} at`, hoveredTile);
+    if (!selectedPiece) return;
+
+    const { q, r, id: pieceId } = selectedPiece;
+
+    // Only remove the piece if we're building a reconstructed shelter
+    if (buildingKey === "reconstructed_shelter") {
+      setPieces((prev) => prev.filter((p) => p.id !== pieceId));
+      setSelectedPieceId(null);
+    }
+
+    // Stamp the tile with the building, regardless of type
+    setBoard((prev) => {
+      const newTiles = prev.tiles.map((tile) =>
+        tile.q === q && tile.r === r ? { ...tile, building: buildingKey } : tile
+      );
+      return { ...prev, tiles: newTiles };
+    });
+
+    // Close the build menu
     setActiveAction(null);
   };
 
@@ -118,7 +134,6 @@ export default function HexBoard({ board: initialBoard }) {
                       <Icon className="w-6 h-6 text-cyan-200" />
                     </button>
 
-                    {/* Only render build dropdown inside the BUILD button's wrapper */}
                     {action === "build" && isActive && (
                       <div className="absolute top-full left-0 mt-2 flex flex-col space-y-2 bg-gray-900 bg-opacity-90 p-2 rounded-lg">
                         {buildOptions.map(
@@ -128,12 +143,12 @@ export default function HexBoard({ board: initialBoard }) {
                               onClick={() => handleBuildOption(key)}
                               title={label}
                               className={`
-                              flex items-center justify-center
-                              w-10 h-10
-                              bg-gray-800 bg-opacity-80
-                              ${buttonClass}
-                              rounded-lg transition
-                            `}
+                                flex items-center justify-center
+                                w-10 h-10
+                                bg-gray-800 bg-opacity-80
+                                ${buttonClass}
+                                rounded-lg transition
+                              `}
                             >
                               <OptIcon className="w-5 h-5 text-white" />
                             </button>

@@ -55,12 +55,35 @@ const BoardCanvas = memo(function BoardCanvas({
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 20, 10]} />
 
+      {/* Base hex board + pointer handling */}
       <InteractiveBoard
         board={board}
         setHoveredTile={setHoveredTile}
         isDraggingRef={isDraggingRef}
         onTileClick={onTileClick}
       />
+
+      {/* ─── Buildings ─── */}
+      {board.tiles
+        .filter((t) => t.building)
+        .map((tile) => {
+          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
+          // lift the pyramid just above the tile floor
+          const y = tile.height * heightScale + 0.2;
+          return (
+            <mesh
+              key={`building-${tile.q}-${tile.r}`}
+              position={[x, y, z]}
+              renderOrder={500}
+            >
+              {/* topRadius = 0 gives a pyramid; 4 segments for square base */}
+              <cylinderGeometry
+                args={[0, board.spacing * 0.4, board.spacing * 0.6, 4]}
+              />
+              <meshStandardMaterial color="#c2a465" />
+            </mesh>
+          );
+        })}
 
       {/* Fog layer */}
       {board.tiles
