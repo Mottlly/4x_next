@@ -21,7 +21,6 @@ const BoardCanvas = memo(function BoardCanvas({
 }) {
   const heightScale = 0.5;
 
-  // compute reachable tiles once
   const reachableTiles = useMemo(() => {
     if (selectedPieceId == null) return [];
     const sel = pieces.find((p) => p.id === selectedPieceId);
@@ -68,19 +67,58 @@ const BoardCanvas = memo(function BoardCanvas({
         .filter((t) => t.building)
         .map((tile) => {
           const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
-          // lift the pyramid just above the tile floor
           const y = tile.height * heightScale + 0.2;
+
+          // pick geometry & color based on building key
+          let geom = null;
+          let color = "#c2a465";
+
+          switch (tile.building) {
+            case "reconstructed_shelter":
+              geom = (
+                <cylinderGeometry
+                  args={[0, board.spacing * 0.4, board.spacing * 0.6, 4]}
+                />
+              );
+              color = "#9b59b6"; // purple shelter
+              break;
+
+            case "resource_extractor":
+              geom = (
+                <cylinderGeometry
+                  args={[
+                    board.spacing * 0.3,
+                    board.spacing * 0.3,
+                    board.spacing * 0.5,
+                    16,
+                  ]}
+                />
+              );
+              color = "#27ae60"; // green extractor
+              break;
+
+            case "sensor_suite":
+              geom = <sphereGeometry args={[board.spacing * 0.35, 16, 16]} />;
+              color = "#5f27cd"; // indigo sensor
+              break;
+
+            default:
+              // fallback: pyramid
+              geom = (
+                <cylinderGeometry
+                  args={[0, board.spacing * 0.4, board.spacing * 0.6, 4]}
+                />
+              );
+          }
+
           return (
             <mesh
               key={`building-${tile.q}-${tile.r}`}
               position={[x, y, z]}
               renderOrder={500}
             >
-              {/* topRadius = 0 gives a pyramid; 4 segments for square base */}
-              <cylinderGeometry
-                args={[0, board.spacing * 0.4, board.spacing * 0.6, 4]}
-              />
-              <meshStandardMaterial color="#c2a465" />
+              {geom}
+              <meshStandardMaterial color={color} />
             </mesh>
           );
         })}

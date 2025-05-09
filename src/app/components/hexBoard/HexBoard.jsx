@@ -10,9 +10,13 @@ import { getBuildOptionsForType } from "../../../library/utililies/game/gamePiec
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
+import SettlementPanel from "../gameUI/settlementTile";
 import useMoveHandler from "./useMoveHandler";
 import useEndTurn from "./useEndTurn";
 import useRevealTiles from "./useRevealTiles";
+
+// Which building‐keys count as “settlements” (open hub UI)
+const SETTLEMENT_BUILDINGS = ["reconstructed_shelter"];
 
 export default function HexBoard({ board: initialBoard }) {
   const { id: boardId, turn: initialTurn } = initialBoard;
@@ -25,21 +29,35 @@ export default function HexBoard({ board: initialBoard }) {
   const [selectedPieceId, setSelectedPieceId] = useState(null);
   const [hoveredTile, setHoveredTile] = useState(null);
   const [activeAction, setActiveAction] = useState(null);
+  const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
 
+  // Default to "move" when you pick up a piece
   useEffect(() => {
     setActiveAction(selectedPieceId ? "move" : null);
   }, [selectedPieceId]);
 
+  // Reveal fog-of-war where seen
   useRevealTiles(board, pieces, setBoard);
 
-  const handleTileClick = useMoveHandler(
+  // Base move/selection handler
+  const baseHandleTileClick = useMoveHandler(
     pieces,
     selectedPieceId,
     setPieces,
     setSelectedPieceId
   );
 
+  // Wrap it to intercept settlement-clicks
+  const handleTileClick = (tile) => {
+    if (tile.building && SETTLEMENT_BUILDINGS.includes(tile.building)) {
+      setOpenSettlement(tile);
+    } else {
+      baseHandleTileClick(tile);
+    }
+  };
+
+  // End-turn logic
   const nextTurn = useEndTurn(
     boardId,
     board,
@@ -73,13 +91,13 @@ export default function HexBoard({ board: initialBoard }) {
 
     const { q, r, id: pieceId } = selectedPiece;
 
-    // Only remove the piece if we're building a reconstructed shelter
+    // Only remove the piece if it's a reconstructed shelter
     if (buildingKey === "reconstructed_shelter") {
       setPieces((prev) => prev.filter((p) => p.id !== pieceId));
       setSelectedPieceId(null);
     }
 
-    // Stamp the tile with the building, regardless of type
+    // Stamp the tile with the building
     setBoard((prev) => {
       const newTiles = prev.tiles.map((tile) =>
         tile.q === q && tile.r === r ? { ...tile, building: buildingKey } : tile
@@ -102,7 +120,7 @@ export default function HexBoard({ board: initialBoard }) {
         isDraggingRef={isDraggingRef}
       />
 
-      {/* Top-left: info + actions */}
+      {/* Top-left: tile info + action buttons */}
       <div className="absolute top-4 left-4 z-10 pointer-events-none">
         <div className="flex items-start space-x-4">
           <TileInfoPanel tile={hoveredTile} />
@@ -166,6 +184,14 @@ export default function HexBoard({ board: initialBoard }) {
 
       {/* Next Turn */}
       <NextTurnButton currentTurn={currentTurn} onNext={nextTurn} />
+
+      {/* Settlement panel if a hub-building was clicked */}
+      {openSettlement && (
+        <SettlementPanel
+          tile={openSettlement}
+          onClose={() => setOpenSettlement(null)}
+        />
+      )}
     </div>
   );
 }
