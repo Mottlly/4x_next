@@ -3,13 +3,17 @@
 import React, { memo, useMemo, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
-import hexToPosition from "../../../../library/utililies/game/tileUtilities/positionFinder";
 import { hexDistance } from "../../../../library/utililies/game/tileUtilities/distanceFinder";
 
 import InteractiveBoard from "./interactiveElements";
-import FogBestagon from "./fogagon";
 import AudioSwitcher from "./audioSwitcher";
 import FogEnclosure from "./fogMask";
+
+import BuildingLayer from "./layers/buildingLayer";
+import FogLayer from "./layers/fogLayer";
+import RiverLayer from "./layers/riverLayer";
+import MovementLayer from "./layers/movementLayer";
+import PiecesLayer from "./layers/piecesLayer";
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -21,6 +25,7 @@ const BoardCanvas = memo(function BoardCanvas({
 }) {
   const heightScale = 0.5;
 
+  // precompute reachable tiles for the movement layer
   const reachableTiles = useMemo(() => {
     if (selectedPieceId == null) return [];
     const sel = pieces.find((p) => p.id === selectedPieceId);
@@ -62,156 +67,26 @@ const BoardCanvas = memo(function BoardCanvas({
         onTileClick={onTileClick}
       />
 
-      {/* ─── Buildings ─── */}
-      {board.tiles
-        .filter((t) => t.building)
-        .map((tile) => {
-          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
-          const y = tile.height * heightScale + 0.2;
-
-          // pick geometry & color based on building key
-          let geom = null;
-          let color = "#c2a465";
-
-          switch (tile.building) {
-            case "reconstructed_shelter":
-              geom = (
-                <cylinderGeometry
-                  args={[0, board.spacing * 0.4, board.spacing * 0.6, 4]}
-                />
-              );
-              color = "#9b59b6"; // purple shelter
-              break;
-
-            case "resource_extractor":
-              geom = (
-                <cylinderGeometry
-                  args={[
-                    board.spacing * 0.3,
-                    board.spacing * 0.3,
-                    board.spacing * 0.5,
-                    16,
-                  ]}
-                />
-              );
-              color = "#27ae60"; // green extractor
-              break;
-
-            case "sensor_suite":
-              geom = <sphereGeometry args={[board.spacing * 0.35, 16, 16]} />;
-              color = "#5f27cd"; // indigo sensor
-              break;
-
-            default:
-              // fallback: pyramid
-              geom = (
-                <cylinderGeometry
-                  args={[0, board.spacing * 0.4, board.spacing * 0.6, 4]}
-                />
-              );
-          }
-
-          return (
-            <mesh
-              key={`building-${tile.q}-${tile.r}`}
-              position={[x, y, z]}
-              renderOrder={500}
-            >
-              {geom}
-              <meshStandardMaterial color={color} />
-            </mesh>
-          );
-        })}
-
-      {/* Fog layer */}
-      {board.tiles
-        .filter((t) => !t.discovered)
-        .map((tile) => {
-          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
-          const y = tile.height * heightScale + 0.01;
-          return (
-            <FogBestagon
-              key={`fog-${tile.q}-${tile.r}`}
-              position={[x, y, z]}
-              userData={{ tile }}
-              onClick={() => onTileClick(tile)}
-              radius={board.spacing}
-              thickness={0.3}
-              speed={0.5}
-            />
-          );
-        })}
-
-      {/* River markers */}
-      {board.tiles
-        .filter((t) => t.riverPresent)
-        .map((tile) => {
-          const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
-          const y = tile.height * heightScale + 0.05;
-          return (
-            <mesh
-              key={`river-${tile.q}-${tile.r}`}
-              position={[x, y, z]}
-              renderOrder={1000}
-            >
-              <sphereGeometry args={[board.spacing * 0.1, 8, 8]} />
-              <meshStandardMaterial color="deepskyblue" />
-            </mesh>
-          );
-        })}
-
-      {/* Movement borders */}
-      {reachableTiles.map((tile) => {
-        const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
-        const y = tile.height * heightScale + 0.1;
-        return (
-          <mesh
-            key={`border-${tile.q}-${tile.r}`}
-            position={[x, y, z]}
-            renderOrder={999}
-          >
-            <cylinderGeometry
-              args={[board.spacing * 0.85, board.spacing * 0.85, 0.02, 6]}
-            />
-            <meshBasicMaterial
-              color="cyan"
-              wireframe
-              transparent
-              opacity={0.8}
-              depthTest={false}
-            />
-          </mesh>
-        );
-      })}
-
-      {/* Pieces */}
-      {pieces.map((p) => {
-        const tile = board.tiles.find((t) => t.q === p.q && t.r === p.r);
-        if (!tile) return null;
-        const [x, , z] = hexToPosition(p.q, p.r, board.spacing);
-        const y = tile.height * heightScale + 0.5;
-        return (
-          <mesh
-            key={`piece-${p.id}`}
-            position={[x, y, z]}
-            onClick={(e) => {
-              e.stopPropagation();
-              onTileClick(tile);
-            }}
-          >
-            <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-            <meshStandardMaterial
-              color={
-                selectedPieceId === p.id
-                  ? "yellow"
-                  : p.type === "pod"
-                  ? "green"
-                  : "red"
-              }
-            />
-          </mesh>
-        );
-      })}
+      {/* Render layers */}
+      <BuildingLayer board={board} heightScale={heightScale} />
+      <FogLayer
+        board={board}
+        heightScale={heightScale}
+        onTileClick={onTileClick}
+      />
+      <RiverLayer board={board} heightScale={heightScale} />
+      <MovementLayer
+        reachableTiles={reachableTiles}
+        board={board}
+        heightScale={heightScale}
+      />
+      <PiecesLayer
+        pieces={pieces}
+        selectedPieceId={selectedPieceId}
+        board={board}
+        heightScale={heightScale}
+        onTileClick={onTileClick}
+      />
 
       <MapControls
         enableDamping
