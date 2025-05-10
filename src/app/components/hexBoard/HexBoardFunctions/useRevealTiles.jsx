@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { hexDistance } from "../../../library/utililies/game/tileUtilities/distanceFinder";
+import { hexDistance } from "../../../../library/utililies/game/tileUtilities/distanceFinder";
 
 export default function useRevealTiles(board, pieces, setBoard) {
   useEffect(() => {

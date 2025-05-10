@@ -23,6 +23,8 @@ export const BUILD_OPTIONS_BY_TYPE = {
   Engineer: ["resource_extractor", "sensor_suite"],
 };
 
+export const SETTLEMENT_BUILDINGS = ["reconstructed_shelter"];
+
 export function getBuildOptionsForType(type) {
   const keys = BUILD_OPTIONS_BY_TYPE[type] || [];
   return keys.map((key) => {

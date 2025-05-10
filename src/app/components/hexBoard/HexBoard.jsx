@@ -11,12 +11,16 @@ import BoardCanvas from "./boardCanvas/boardCanvas";
 import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
-import useMoveHandler from "./useMoveHandler";
-import useEndTurn from "./useEndTurn";
-import useRevealTiles from "./useRevealTiles";
 
-// Which building‐keys count as “settlements” (open hub UI)
-const SETTLEMENT_BUILDINGS = ["reconstructed_shelter"];
+// custom hooks
+import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
+import useEndTurn from "./HexBoardFunctions/useEndTurn";
+import useRevealTiles from "./HexBoardFunctions/useRevealTiles";
+
+// extracted functions & constants
+import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
+import { handleAction } from "./HexBoardFunctions/handleAction";
+import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
 
 export default function HexBoard({ board: initialBoard }) {
   const { id: boardId, turn: initialTurn } = initialBoard;
@@ -32,32 +36,27 @@ export default function HexBoard({ board: initialBoard }) {
   const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
 
-  // Default to "move" when you pick up a piece
+  // default action when selecting a piece
   useEffect(() => {
     setActiveAction(selectedPieceId ? "move" : null);
   }, [selectedPieceId]);
 
-  // Reveal fog-of-war where seen
+  // reveal fog of war
   useRevealTiles(board, pieces, setBoard);
 
-  // Base move/selection handler
-  const baseHandleTileClick = useMoveHandler(
+  // base move/selection handler
+  const baseMove = useMoveHandler(
     pieces,
     selectedPieceId,
     setPieces,
     setSelectedPieceId
   );
 
-  // Wrap it to intercept settlement-clicks
-  const handleTileClick = (tile) => {
-    if (tile.building && SETTLEMENT_BUILDINGS.includes(tile.building)) {
-      setOpenSettlement(tile);
-    } else {
-      baseHandleTileClick(tile);
-    }
-  };
+  // wrapped tile click
+  const onTileClick = (tile) =>
+    handleTileClick(tile, baseMove, setOpenSettlement);
 
-  // End-turn logic
+  // end turn logic
   const nextTurn = useEndTurn(
     boardId,
     board,
@@ -68,46 +67,27 @@ export default function HexBoard({ board: initialBoard }) {
     setPieces
   );
 
-  const selectedPiece = pieces.find((p) => p.id === selectedPieceId);
+  const selectedPiece = pieces.find((p) => p.id === selectedPieceId) || null;
   const availableActions = selectedPiece
     ? ACTIONS_BY_TYPE[selectedPiece.type] || []
     : [];
-
   const buildOptions =
     activeAction === "build" && selectedPiece
       ? getBuildOptionsForType(selectedPiece.type)
       : [];
 
-  const handleAction = (action) => {
-    if (action === "build") {
-      setActiveAction((prev) => (prev === "build" ? null : "build"));
-    } else {
-      setActiveAction(action);
-    }
-  };
+  const onActionClick = (action) =>
+    handleAction(action, activeAction, setActiveAction);
 
-  const handleBuildOption = (buildingKey) => {
-    if (!selectedPiece) return;
-
-    const { q, r, id: pieceId } = selectedPiece;
-
-    // Only remove the piece if it's a reconstructed shelter
-    if (buildingKey === "reconstructed_shelter") {
-      setPieces((prev) => prev.filter((p) => p.id !== pieceId));
-      setSelectedPieceId(null);
-    }
-
-    // Stamp the tile with the building
-    setBoard((prev) => {
-      const newTiles = prev.tiles.map((tile) =>
-        tile.q === q && tile.r === r ? { ...tile, building: buildingKey } : tile
-      );
-      return { ...prev, tiles: newTiles };
-    });
-
-    // Close the build menu
-    setActiveAction(null);
-  };
+  const onBuildOptionClick = (key) =>
+    handleBuildOption(
+      key,
+      selectedPiece,
+      setPieces,
+      setSelectedPieceId,
+      setBoard,
+      setActiveAction
+    );
 
   return (
     <div className="relative w-full h-full">
@@ -115,12 +95,12 @@ export default function HexBoard({ board: initialBoard }) {
         board={board}
         pieces={pieces}
         selectedPieceId={selectedPieceId}
-        onTileClick={handleTileClick}
+        onTileClick={onTileClick}
         setHoveredTile={setHoveredTile}
         isDraggingRef={isDraggingRef}
       />
 
-      {/* Top-left: tile info + action buttons */}
+      {/* Tile info & actions */}
       <div className="absolute top-4 left-4 z-10 pointer-events-none">
         <div className="flex items-start space-x-4">
           <TileInfoPanel tile={hoveredTile} />
@@ -134,11 +114,10 @@ export default function HexBoard({ board: initialBoard }) {
                   buttonClass,
                 } = ACTION_DETAILS[action];
                 const isActive = activeAction === action;
-
                 return (
                   <div key={action} className="relative">
                     <button
-                      onClick={() => handleAction(action)}
+                      onClick={() => onActionClick(action)}
                       title={tooltip}
                       className={`
                         flex items-center justify-center
@@ -158,15 +137,15 @@ export default function HexBoard({ board: initialBoard }) {
                           ({ key, label, icon: OptIcon, buttonClass }) => (
                             <button
                               key={key}
-                              onClick={() => handleBuildOption(key)}
+                              onClick={() => onBuildOptionClick(key)}
                               title={label}
                               className={`
-                                flex items-center justify-center
-                                w-10 h-10
-                                bg-gray-800 bg-opacity-80
-                                ${buttonClass}
-                                rounded-lg transition
-                              `}
+                              flex items-center justify-center
+                              w-10 h-10
+                              bg-gray-800 bg-opacity-80
+                              ${buttonClass}
+                              rounded-lg transition
+                            `}
                             >
                               <OptIcon className="w-5 h-5 text-white" />
                             </button>
@@ -182,10 +161,8 @@ export default function HexBoard({ board: initialBoard }) {
         </div>
       </div>
 
-      {/* Next Turn */}
       <NextTurnButton currentTurn={currentTurn} onNext={nextTurn} />
 
-      {/* Settlement panel if a hub-building was clicked */}
       {openSettlement && (
         <SettlementPanel
           tile={openSettlement}
