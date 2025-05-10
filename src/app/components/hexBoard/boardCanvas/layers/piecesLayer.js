@@ -1,20 +1,23 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/positionFinder";
 
-export default function PiecesLayer({
+function PiecesLayer({
   pieces,
   selectedPieceId,
-  board,
+  tiles,
+  spacing,
   heightScale,
   onTileClick,
 }) {
   return (
     <>
       {pieces.map((p) => {
-        const tile = board.tiles.find((t) => t.q === p.q && t.r === p.r);
+        const tile = tiles.find((t) => t.q === p.q && t.r === p.r);
         if (!tile) return null;
-        const [x, , z] = hexToPosition(p.q, p.r, board.spacing);
+
+        const [x, , z] = hexToPosition(p.q, p.r, spacing);
         const y = tile.height * heightScale + 0.5;
+
         return (
           <mesh
             key={`piece-${p.id}`}
@@ -40,3 +43,5 @@ export default function PiecesLayer({
     </>
   );
 }
+
+export default React.memo(PiecesLayer);

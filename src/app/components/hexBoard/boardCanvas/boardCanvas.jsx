@@ -1,6 +1,6 @@
 "use client";
 
-import React, { memo, useMemo, useRef } from "react";
+import React, { memo, useMemo, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import { hexDistance } from "../../../../library/utililies/game/tileUtilities/distanceFinder";
@@ -25,7 +25,19 @@ const BoardCanvas = memo(function BoardCanvas({
 }) {
   const heightScale = 0.5;
 
-  // precompute reachable tiles for the movement layer
+  const buildingTiles = useMemo(
+    () => board.tiles.filter((t) => !!t.building),
+    [board.tiles]
+  );
+  const fogTiles = useMemo(
+    () => board.tiles.filter((t) => !t.discovered),
+    [board.tiles]
+  );
+  const riverTiles = useMemo(
+    () => board.tiles.filter((t) => t.riverPresent),
+    [board.tiles]
+  );
+
   const reachableTiles = useMemo(() => {
     if (selectedPieceId == null) return [];
     const sel = pieces.find((p) => p.id === selectedPieceId);
@@ -49,6 +61,9 @@ const BoardCanvas = memo(function BoardCanvas({
     });
   }, [selectedPieceId, pieces, board.tiles]);
 
+  // stabilize callback
+  const onTileClickCb = useCallback(onTileClick, [onTileClick]);
+
   return (
     <Canvas
       camera={{ position: [10, 10, 15] }}
@@ -64,28 +79,38 @@ const BoardCanvas = memo(function BoardCanvas({
         board={board}
         setHoveredTile={setHoveredTile}
         isDraggingRef={isDraggingRef}
-        onTileClick={onTileClick}
+        onTileClick={onTileClickCb}
       />
 
       {/* Render layers */}
-      <BuildingLayer board={board} heightScale={heightScale} />
-      <FogLayer
-        board={board}
+      <BuildingLayer
+        tiles={buildingTiles}
+        spacing={board.spacing}
         heightScale={heightScale}
-        onTileClick={onTileClick}
       />
-      <RiverLayer board={board} heightScale={heightScale} />
+      <FogLayer
+        tiles={fogTiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+        onTileClick={onTileClickCb}
+      />
+      <RiverLayer
+        tiles={riverTiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+      />
       <MovementLayer
         reachableTiles={reachableTiles}
-        board={board}
+        spacing={board.spacing}
         heightScale={heightScale}
       />
       <PiecesLayer
         pieces={pieces}
         selectedPieceId={selectedPieceId}
-        board={board}
+        tiles={board.tiles}
+        spacing={board.spacing}
         heightScale={heightScale}
-        onTileClick={onTileClick}
+        onTileClick={onTileClickCb}
       />
 
       <MapControls

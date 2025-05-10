@@ -1,11 +1,11 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/positionFinder";
 
-export default function MovementLayer({ reachableTiles, board, heightScale }) {
+function MovementLayer({ reachableTiles, spacing, heightScale }) {
   return (
     <>
       {reachableTiles.map((tile) => {
-        const [x, , z] = hexToPosition(tile.q, tile.r, board.spacing);
+        const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
         const y = tile.height * heightScale + 0.1;
         return (
           <mesh
@@ -14,7 +14,7 @@ export default function MovementLayer({ reachableTiles, board, heightScale }) {
             renderOrder={999}
           >
             <cylinderGeometry
-              args={[board.spacing * 0.85, board.spacing * 0.85, 0.02, 6]}
+              args={[spacing * 0.85, spacing * 0.85, 0.02, 6]}
             />
             <meshBasicMaterial
               color="cyan"
@@ -29,3 +29,5 @@ export default function MovementLayer({ reachableTiles, board, heightScale }) {
     </>
   );
 }
+
+export default React.memo(MovementLayer);
