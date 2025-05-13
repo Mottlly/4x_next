@@ -90,6 +90,8 @@ export async function POST(req) {
       spacing,
       tiles,
       pieces: [firstPiece],
+      // resources array: [rations, printingMaterial, weapons]
+      resources: [0, 0, 0],
     };
 
     const { rows: inserted } = await pool.query(postBoardQuery, [
@@ -122,7 +124,6 @@ export async function PATCH(req) {
       );
     }
 
-    // newBoard must include turn, cols, rows, spacing, tiles, pieces
     const { rows: updated } = await pool.query(patchBoardQuery, [
       JSON.stringify(newBoard),
       board_id,
