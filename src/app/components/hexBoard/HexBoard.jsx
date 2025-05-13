@@ -11,19 +11,24 @@ import BoardCanvas from "./boardCanvas/boardCanvas";
 import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
+import ResourcePanel from "../gameUI/resourcePanel";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
 import useEndTurn from "./HexBoardFunctions/useEndTurn";
 import useRevealTiles from "./HexBoardFunctions/useRevealTiles";
 
-// extracted functions & constants
+// extracted functions
 import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
 import { handleAction } from "./HexBoardFunctions/handleAction";
 import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
 
 export default function HexBoard({ board: initialBoard }) {
-  const { id: boardId, turn: initialTurn } = initialBoard;
+  const {
+    id: boardId,
+    turn: initialTurn,
+    resources: initialResources = [0, 0, 0],
+  } = initialBoard;
 
   const [board, setBoard] = useState(initialBoard);
   const [currentTurn, setCurrentTurn] = useState(initialTurn ?? 1);
@@ -36,15 +41,19 @@ export default function HexBoard({ board: initialBoard }) {
   const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
 
-  // default action when selecting a piece
+  // map array to object
+  const [resources, setResources] = useState({
+    rations: initialResources[0],
+    printingMaterial: initialResources[1],
+    weapons: initialResources[2],
+  });
+
   useEffect(() => {
     setActiveAction(selectedPieceId ? "move" : null);
   }, [selectedPieceId]);
 
-  // reveal fog of war
   useRevealTiles(board, pieces, setBoard);
 
-  // base move/selection handler
   const baseMove = useMoveHandler(
     pieces,
     selectedPieceId,
@@ -52,11 +61,9 @@ export default function HexBoard({ board: initialBoard }) {
     setSelectedPieceId
   );
 
-  // wrapped tile click
   const onTileClick = (tile) =>
     handleTileClick(tile, baseMove, setOpenSettlement);
 
-  // end turn logic
   const nextTurn = useEndTurn(
     boardId,
     board,
@@ -91,6 +98,8 @@ export default function HexBoard({ board: initialBoard }) {
 
   return (
     <div className="relative w-full h-full">
+      <ResourcePanel resources={resources} />
+
       <BoardCanvas
         board={board}
         pieces={pieces}
@@ -100,7 +109,6 @@ export default function HexBoard({ board: initialBoard }) {
         isDraggingRef={isDraggingRef}
       />
 
-      {/* Tile info & actions */}
       <div className="absolute top-4 left-4 z-10 pointer-events-none">
         <div className="flex items-start space-x-4">
           <TileInfoPanel tile={hoveredTile} />
@@ -119,14 +127,9 @@ export default function HexBoard({ board: initialBoard }) {
                     <button
                       onClick={() => onActionClick(action)}
                       title={tooltip}
-                      className={`
-                        flex items-center justify-center
-                        w-12 h-12
-                        bg-gray-800 bg-opacity-80
-                        ${buttonClass}
-                        ${isActive ? "ring-2 ring-offset-2 ring-white" : ""}
-                        rounded-lg transition
-                      `}
+                      className={`flex items-center justify-center w-12 h-12 bg-gray-800 bg-opacity-80 ${buttonClass} ${
+                        isActive ? "ring-2 ring-offset-2 ring-white" : ""
+                      } rounded-lg transition`}
                     >
                       <Icon className="w-6 h-6 text-cyan-200" />
                     </button>
@@ -139,13 +142,7 @@ export default function HexBoard({ board: initialBoard }) {
                               key={key}
                               onClick={() => onBuildOptionClick(key)}
                               title={label}
-                              className={`
-                              flex items-center justify-center
-                              w-10 h-10
-                              bg-gray-800 bg-opacity-80
-                              ${buttonClass}
-                              rounded-lg transition
-                            `}
+                              className={`flex items-center justify-center w-10 h-10 bg-gray-800 bg-opacity-80 ${buttonClass} rounded-lg transition`}
                             >
                               <OptIcon className="w-5 h-5 text-white" />
                             </button>
