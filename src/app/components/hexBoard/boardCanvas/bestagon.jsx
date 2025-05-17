@@ -7,7 +7,8 @@ const Bestagon = ({
   position,
   color,
   userData,
-  onClick: onExternalClick, // ← accept an onClick prop
+  onClick: onExternalClick,
+  spacing = 1, // default, but will be passed in
 }) => {
   const meshRef = useRef();
   const [selected, setSelected] = useState(false);
@@ -34,7 +35,7 @@ const Bestagon = ({
       onClick={handleClick} // now both internal + external fire
       userData={userData}
     >
-      <cylinderGeometry args={[1, 1, 0.5, 6]} />
+      <cylinderGeometry args={[spacing, spacing, 0.5, 6]} />
       <meshStandardMaterial color={color} />
       <Edges color="white" />
     </mesh>

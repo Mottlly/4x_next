@@ -48,6 +48,7 @@ const InteractiveBoard = ({
               color={color}
               userData={{ tile }}
               onClick={() => onTileClick(tile)}
+              spacing={board.spacing}
             />
 
             {/* draw a little blue sphere if this tile has a river */}
