@@ -5,16 +5,19 @@ export const BUILDING_CONFIG = {
     label: "Reconstructed Shelter",
     icon: Home,
     buttonClass: "hover:bg-purple-700 border-purple-500",
+    vision: 2,
   },
   resource_extractor: {
     label: "Resource Extractor",
     icon: Database,
     buttonClass: "hover:bg-green-700 border-green-500",
+    vision: 1,
   },
   sensor_suite: {
     label: "Sensor Suite",
     icon: Satellite,
     buttonClass: "hover:bg-indigo-700 border-indigo-500",
+    vision: 3,
   },
 };
 
