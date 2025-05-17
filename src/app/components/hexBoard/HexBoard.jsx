@@ -13,6 +13,7 @@ import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/getTilesWithSemiFog";
+import FloatingTileInfoPanel from "../gameUI/FloatingTileInfoPanel";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -41,6 +42,8 @@ export default function HexBoard({ board: initialBoard }) {
   const [activeAction, setActiveAction] = useState(null);
   const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
+  const hoverTimeout = useRef();
+  const infoPanelRef = useRef();
 
   // map array to object
   const [resources, setResources] = useState({
@@ -99,6 +102,40 @@ export default function HexBoard({ board: initialBoard }) {
 
   const tilesWithSemiFog = getTilesWithSemiFog(board.tiles, pieces);
 
+  // Debounced setter
+  const setHoveredTileDebounced = (tile) => {
+    clearTimeout(hoverTimeout.current);
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredTile(tile);
+    }, 400); // adjust delay as needed
+  };
+
+  // Efficient handler to update info panel content/position
+  const showTileInfo = (tile, pointerEvent) => {
+    if (!infoPanelRef.current) return;
+    if (!tile) {
+      infoPanelRef.current.innerHTML = `
+        <h2 style="margin-bottom:8px;">DATA NODE</h2>
+        <div style="color:#0ff;opacity:0.6;">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
+      `;
+      infoPanelRef.current.style.opacity = 0.7;
+      return;
+    }
+    infoPanelRef.current.innerHTML = `
+      <h2 style="margin-bottom:8px;">DATA NODE</h2>
+      <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
+      <div><b>Type:</b> ${tile.type || "water"}</div>
+      ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
+      ${tile.building ? `<div><b>Building:</b> ${tile.building}</div>` : ""}
+      <div style="margin-top:8px;font-size:12px;opacity:0.7;"><em>Sector coordinates ⎯ data stream stabilized</em></div>
+    `;
+    infoPanelRef.current.style.opacity = 1;
+    if (pointerEvent) {
+      infoPanelRef.current.style.left = pointerEvent.clientX + 24 + "px";
+      infoPanelRef.current.style.top = pointerEvent.clientY - 24 + "px";
+    }
+  };
+
   return (
     <div className="relative w-full h-full">
       <ResourcePanel resources={resources} />
@@ -108,9 +145,11 @@ export default function HexBoard({ board: initialBoard }) {
         pieces={pieces}
         selectedPieceId={selectedPieceId}
         onTileClick={onTileClick}
-        setHoveredTile={setHoveredTile}
+        setHoveredTile={(tile, pointerEvent) => showTileInfo(tile, pointerEvent)}
         isDraggingRef={isDraggingRef}
       />
+
+      <FloatingTileInfoPanel ref={infoPanelRef} />
 
       <div className="absolute top-4 left-4 z-10 pointer-events-none">
         <div className="flex items-start space-x-4">

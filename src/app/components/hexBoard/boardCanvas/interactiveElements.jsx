@@ -13,25 +13,14 @@ const InteractiveBoard = ({
   const previousTileRef = useRef(null);
   const heightScale = 0.5; // Scale for tile height.
 
-  // Pointer‐move logic unchanged…
   const handlePointerMove = (event) => {
     if (isDraggingRef.current) return;
     event.stopPropagation();
-    const intersect = event.intersections?.[0];
-    const tile = intersect?.object?.userData?.tile || null;
-    const prev = previousTileRef.current;
-    if (
-      (!tile && !prev) ||
-      (tile &&
-        prev &&
-        tile.q === prev.q &&
-        tile.r === prev.r &&
-        tile.type === prev.type)
-    ) {
-      return;
-    }
-    previousTileRef.current = tile;
-    setHoveredTile(tile);
+    const tileIntersect = event.intersections?.find(
+      (i) => i.object?.userData?.tile
+    );
+    const tile = tileIntersect?.object?.userData?.tile || null;
+    setHoveredTile(tile, event.pointerEvent); // Pass the native pointer event
   };
 
   return (
