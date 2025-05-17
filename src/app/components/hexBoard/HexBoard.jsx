@@ -12,6 +12,7 @@ import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
+import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/getTilesWithSemiFog";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -96,12 +97,14 @@ export default function HexBoard({ board: initialBoard }) {
       setActiveAction
     );
 
+  const tilesWithSemiFog = getTilesWithSemiFog(board.tiles, pieces);
+
   return (
     <div className="relative w-full h-full">
       <ResourcePanel resources={resources} />
 
       <BoardCanvas
-        board={board}
+        board={{ ...board, tiles: tilesWithSemiFog }}
         pieces={pieces}
         selectedPieceId={selectedPieceId}
         onTileClick={onTileClick}

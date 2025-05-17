@@ -94,11 +94,8 @@ export default function FogBestagon({
       position={[position[0], position[1] + thickness / 2 + 0.01, position[2]]}
       onClick={handleClick}
     >
-      {/* exactly the same hex‐cylinder geometry you used in Bestagon */}
       <cylinderGeometry args={[radius, radius, thickness, 6]} />
-      {/* our animated fog shader */}
       <fogHexShaderMaterial ref={matRef} />
-      {/* keep the white outline so it reads like a hex tile */}
       <Edges color="white" />
     </mesh>
   );

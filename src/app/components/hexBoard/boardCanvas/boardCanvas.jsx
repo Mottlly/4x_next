@@ -14,6 +14,7 @@ import FogLayer from "./layers/fogLayer";
 import RiverLayer from "./layers/riverLayer";
 import MovementLayer from "./layers/movementLayer";
 import PiecesLayer from "./layers/piecesLayer";
+import SemiFogLayer from "./layers/semiFogLayer";
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -93,6 +94,11 @@ const BoardCanvas = memo(function BoardCanvas({
         spacing={board.spacing}
         heightScale={heightScale}
         onTileClick={onTileClickCb}
+      />
+      <SemiFogLayer
+        tiles={board.tiles.filter((t) => t.semiFogged)}
+        spacing={board.spacing}
+        heightScale={heightScale}
       />
       <RiverLayer
         tiles={riverTiles}
