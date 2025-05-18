@@ -34,7 +34,12 @@ export default function useEndTurn(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         board_id: boardId,
-        board: { ...board, turn: newTurn, resources: newResources },
+        board: {
+          ...board,
+          turn: newTurn,
+          resources: newResources,
+          pieces: pieces, // <-- use the current pieces state!
+        },
       }),
     }).catch(console.error);
   };

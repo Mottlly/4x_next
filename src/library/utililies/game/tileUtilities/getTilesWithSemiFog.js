@@ -1,4 +1,4 @@
-import { hexDistance } from "./distanceFinder";
+import { getTilesWithLOS } from "./sightLineAlgo";
 import { BUILDING_CONFIG } from "../gamePieces/buildBank";
 
 /**
@@ -8,7 +8,7 @@ import { BUILDING_CONFIG } from "../gamePieces/buildBank";
  * - do NOT have a building
  */
 export function getTilesWithSemiFog(tiles, pieces) {
-  // Filter out tiles that are not discovered
+  // Gather all vision sources: pieces and buildings with vision
   const visionSources = [
     ...pieces.map((piece) => ({
       q: piece.q,
@@ -24,23 +24,14 @@ export function getTilesWithSemiFog(tiles, pieces) {
       })),
   ];
 
-  // Compute visible tiles
-  const visibleTiles = new Set();
-  visionSources.forEach((source) => {
-    tiles.forEach((tile) => {
-      if (hexDistance(tile, source) <= source.vision) {
-        visibleTiles.add(`${tile.q},${tile.r}`);
-      }
-    });
-  });
+  // Use LOS to determine visible tiles
+  const tilesWithLOS = getTilesWithLOS(tiles, visionSources);
 
-  return tiles.map((tile) => {
-    const key = `${tile.q},${tile.r}`;
-    const isVisible = visibleTiles.has(key);
+  return tilesWithLOS.map((tile) => {
     const hasBuilding = !!tile.building;
     return {
       ...tile,
-      semiFogged: tile.discovered && !isVisible && !hasBuilding,
+      semiFogged: tile.discovered && !tile.visible && !hasBuilding,
     };
   });
 }

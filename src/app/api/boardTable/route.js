@@ -124,8 +124,14 @@ export async function PATCH(req) {
       );
     }
 
+    // Ensure pieces are saved with type and location
+    const boardToSave = {
+      ...newBoard,
+      pieces: (newBoard.pieces || []).map((p) => ({ ...p })), // Save all fields
+    };
+
     const { rows: updated } = await pool.query(patchBoardQuery, [
-      JSON.stringify(newBoard),
+      JSON.stringify(boardToSave),
       board_id,
     ]);
     if (updated.length === 0) {

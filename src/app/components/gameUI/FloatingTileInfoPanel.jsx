@@ -5,14 +5,15 @@ const FloatingTileInfoPanel = forwardRef((props, ref) => (
     ref={ref}
     style={{
       position: "fixed",
-      left: 40,
-      top: 40,
-      minWidth: 300,
+      left: 12,
+      top: 12,
+      minWidth: 220, // was 300
+      maxWidth: 320,
       background: "rgba(20,30,40,0.95)",
       color: "#aef",
       border: "1px solid #0ff",
       borderRadius: 8,
-      padding: 12,
+      padding: "10px 16px", // less vertical padding
       fontFamily: "monospace",
       zIndex: 1000,
       pointerEvents: "none",
