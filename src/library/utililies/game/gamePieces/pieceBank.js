@@ -8,6 +8,14 @@ export const PIECE_BANK = {
     build: 1,
     fortify: 0,
     scout: 0,
+    abilities: {
+      seafaring: false,
+      coastfaring: false,
+      amphibious: false,
+      mountaineering: false,
+      flying: false,
+      stealthy: false,
+    },
   },
   Scout: {
     type: "Scout",
@@ -18,6 +26,14 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 1,
+    abilities: {
+      seafaring: false,
+      coastfaring: false,
+      amphibious: false,
+      mountaineering: true,
+      flying: false,
+      stealthy: true,
+    },
   },
   Engineer: {
     type: "Engineer",
@@ -28,6 +44,14 @@ export const PIECE_BANK = {
     build: 1,
     fortify: 1,
     scout: 0,
+    abilities: {
+      seafaring: false,
+      coastfaring: false,
+      amphibious: false,
+      mountaineering: false,
+      flying: false,
+      stealthy: false,
+    },
   },
   Armed_Settler: {
     type: "Armed_Settler",
@@ -38,6 +62,14 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 0,
+    abilities: {
+      seafaring: false,
+      coastfaring: false,
+      amphibious: false,
+      mountaineering: false,
+      flying: false,
+      stealthy: false,
+    },
   },
   Security: {
     type: "Security",
@@ -48,6 +80,14 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 0,
+    abilities: {
+      seafaring: false,
+      coastfaring: false,
+      amphibious: false,
+      mountaineering: false,
+      flying: false,
+      stealthy: false,
+    },
   },
 };
 
