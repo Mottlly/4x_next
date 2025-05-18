@@ -75,7 +75,8 @@ export default function HexBoard({ board: initialBoard }) {
     currentTurn,
     setCurrentTurn,
     pieces,
-    setPieces
+    setPieces,
+    setResources
   );
 
   const selectedPiece = pieces.find((p) => p.id === selectedPieceId) || null;
@@ -145,7 +146,9 @@ export default function HexBoard({ board: initialBoard }) {
         pieces={pieces}
         selectedPieceId={selectedPieceId}
         onTileClick={onTileClick}
-        setHoveredTile={(tile, pointerEvent) => showTileInfo(tile, pointerEvent)}
+        setHoveredTile={(tile, pointerEvent) =>
+          showTileInfo(tile, pointerEvent)
+        }
         isDraggingRef={isDraggingRef}
       />
 

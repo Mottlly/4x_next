@@ -21,6 +21,24 @@ export const BUILDING_CONFIG = {
   },
 };
 
+export const BUILDING_EFFECTS = {
+  reconstructed_shelter: {
+    rations: -1,           // upkeep: consumes 1 ration
+    printingMaterial: 1,   // produces 1 printing material
+    weapons: 0,
+  },
+  resource_extractor: {
+    rations: 0,
+    printingMaterial: 2,
+    weapons: 0,
+  },
+  sensor_suite: {
+    rations: 0,
+    printingMaterial: 0,
+    weapons: 0,
+  },
+};
+
 export const BUILD_OPTIONS_BY_TYPE = {
   Pod: ["reconstructed_shelter"],
   Engineer: ["resource_extractor", "sensor_suite"],
