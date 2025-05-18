@@ -84,6 +84,7 @@ export default function GamePage() {
     cols: 25,
     rows: 25,
     spacing: 1.05,
+    resources: board.resources,
   };
 
   return (

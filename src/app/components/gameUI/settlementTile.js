@@ -1,8 +1,14 @@
 import React from "react";
 import { BUILDING_CONFIG } from "../../../library/utililies/game/gamePieces/buildBank";
+import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
 
-export default function SettlementPanel({ tile, onClose }) {
+export default function SettlementPanel({ tile, onClose, onBuildUnit, resources }) {
   const cfg = BUILDING_CONFIG[tile.building] || {};
+
+  // Helper to check if enough resources
+  const canAfford = (cost) =>
+    Object.entries(cost).every(([k, v]) => (resources[k] ?? 0) >= v);
+
   return (
     <div
       className="
@@ -26,12 +32,24 @@ export default function SettlementPanel({ tile, onClose }) {
       </div>
 
       <div className="space-y-2">
-        <button className="w-full py-2 bg-green-600 rounded hover:bg-green-700">
-          Build Unit
-        </button>
-        <button className="w-full py-2 bg-blue-600 rounded hover:bg-blue-700">
-          Manage Upgrades
-        </button>
+        <div className="font-semibold mb-2">Build Unit:</div>
+        {UNIT_BUILD_OPTIONS.map((unit) => (
+          <button
+            key={unit.key}
+            className={`w-full py-2 rounded ${
+              canAfford(unit.cost)
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-gray-700 cursor-not-allowed opacity-60"
+            }`}
+            disabled={!canAfford(unit.cost)}
+            onClick={() => onBuildUnit(unit.key, unit.cost, tile)}
+          >
+            {unit.label}{" "}
+            <span className="text-xs opacity-80">
+              (Cost: R{unit.cost.rations} P{unit.cost.printingMaterial} W{unit.cost.weapons})
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

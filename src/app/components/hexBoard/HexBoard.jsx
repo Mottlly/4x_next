@@ -14,6 +14,8 @@ import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/getTilesWithSemiFog";
 import FloatingTileInfoPanel from "../gameUI/FloatingTileInfoPanel";
+import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
+import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -26,6 +28,7 @@ import { handleAction } from "./HexBoardFunctions/handleAction";
 import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
 
 export default function HexBoard({ board: initialBoard }) {
+  console.log("Initial board:", initialBoard);
   const {
     id: boardId,
     turn: initialTurn,
@@ -137,6 +140,72 @@ export default function HexBoard({ board: initialBoard }) {
     }
   };
 
+  // Helper to subtract cost from resources
+  function subtractResources(resources, cost) {
+    return {
+      rations: resources.rations - (cost.rations || 0),
+      printingMaterial:
+        resources.printingMaterial - (cost.printingMaterial || 0),
+      weapons: resources.weapons - (cost.weapons || 0),
+    };
+  }
+
+  // Find an adjacent empty tile for the new unit
+  function findSpawnTile(settlementTile, tiles, pieces) {
+    const directions = [
+      [1, 0],
+      [0, 1],
+      [-1, 1],
+      [-1, 0],
+      [0, -1],
+      [1, -1],
+    ];
+    for (const [dq, dr] of directions) {
+      const q = settlementTile.q + dq;
+      const r = settlementTile.r + dr;
+      const tile = tiles.find((t) => t.q === q && t.r === r);
+      if (
+        tile &&
+        !tile.building &&
+        !pieces.some((p) => p.q === q && p.r === r)
+      ) {
+        return tile;
+      }
+    }
+    return null;
+  }
+
+  const handleBuildUnit = (unitKey, cost, settlementTile) => {
+    // Check resources again for safety
+    if (
+      resources.rations < (cost.rations || 0) ||
+      resources.printingMaterial < (cost.printingMaterial || 0) ||
+      resources.weapons < (cost.weapons || 0)
+    ) {
+      return;
+    }
+    // Find spawn tile
+    const spawnTile = findSpawnTile(settlementTile, board.tiles, pieces);
+    if (!spawnTile) {
+      alert("No adjacent space to deploy unit!");
+      return;
+    }
+    // Create new piece
+    const newPiece = createPiece(unitKey, {
+      id: crypto.randomUUID(),
+      q: spawnTile.q,
+      r: spawnTile.r,
+    });
+    setPieces((prev) => [...prev, newPiece]);
+    setResources((prev) => subtractResources(prev, cost));
+    setBoard((prev) => ({
+      ...prev,
+      pieces: [...prev.pieces, newPiece],
+      // Optionally update resources in board state if needed
+    }));
+    setOpenSettlement(null);
+  };
+
   return (
     <div className="relative w-full h-full">
       <ResourcePanel resources={resources} />
@@ -209,6 +278,8 @@ export default function HexBoard({ board: initialBoard }) {
         <SettlementPanel
           tile={openSettlement}
           onClose={() => setOpenSettlement(null)}
+          onBuildUnit={handleBuildUnit}
+          resources={resources}
         />
       )}
     </div>

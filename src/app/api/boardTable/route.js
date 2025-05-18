@@ -91,7 +91,7 @@ export async function POST(req) {
       tiles,
       pieces: [firstPiece],
       // resources array: [rations, printingMaterial, weapons]
-      resources: [0, 0, 0],
+      resources: [20, 3, 3],
     };
 
     const { rows: inserted } = await pool.query(postBoardQuery, [
