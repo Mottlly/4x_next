@@ -23,6 +23,7 @@ const BoardCanvas = memo(function BoardCanvas({
   onTileClick,
   setHoveredTile,
   isDraggingRef,
+  spawnTiles = [],
 }) {
   const heightScale = 0.5;
 
@@ -110,6 +111,13 @@ const BoardCanvas = memo(function BoardCanvas({
         spacing={board.spacing}
         heightScale={heightScale}
       />
+      {spawnTiles.length > 0 && (
+        <MovementLayer
+          reachableTiles={spawnTiles}
+          spacing={board.spacing}
+          heightScale={0.5}
+        />
+      )}
       <PiecesLayer
         pieces={pieces}
         selectedPieceId={selectedPieceId}

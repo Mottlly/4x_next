@@ -16,6 +16,8 @@ import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtiliti
 import FloatingTileInfoPanel from "../gameUI/FloatingTileInfoPanel";
 import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
 import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
+import { NO_SPAWN_TILE_TYPES } from "../../../library/utililies/game/tileUtilities/noSpawnTypes";
+import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/getNeighbors";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -47,6 +49,8 @@ export default function HexBoard({ board: initialBoard }) {
   const isDraggingRef = useRef(false);
   const hoverTimeout = useRef();
   const infoPanelRef = useRef();
+  const [spawnMode, setSpawnMode] = useState(null);
+  const [spawnTiles, setSpawnTiles] = useState([]);
 
   // map array to object
   const [resources, setResources] = useState({
@@ -68,8 +72,30 @@ export default function HexBoard({ board: initialBoard }) {
     setSelectedPieceId
   );
 
-  const onTileClick = (tile) =>
+  const onTileClick = (tile) => {
+    if (spawnMode) {
+      // Only allow clicking on highlighted spawn tiles
+      if (spawnTiles.some((t) => t.q === tile.q && t.r === tile.r)) {
+        // Create and place the new piece
+        const { unitKey, cost } = spawnMode;
+        const newPiece = createPiece(unitKey, {
+          id: crypto.randomUUID(),
+          q: tile.q,
+          r: tile.r,
+        });
+        setPieces((prev) => [...prev, newPiece]);
+        setResources((prev) => subtractResources(prev, cost));
+        setBoard((prev) => ({
+          ...prev,
+          pieces: [...prev.pieces, newPiece],
+        }));
+        setSpawnMode(null);
+        setSpawnTiles([]);
+      }
+      return;
+    }
     handleTileClick(tile, baseMove, setOpenSettlement);
+  };
 
   const nextTurn = useEndTurn(
     boardId,
@@ -176,33 +202,22 @@ export default function HexBoard({ board: initialBoard }) {
   }
 
   const handleBuildUnit = (unitKey, cost, settlementTile) => {
-    // Check resources again for safety
-    if (
-      resources.rations < (cost.rations || 0) ||
-      resources.printingMaterial < (cost.printingMaterial || 0) ||
-      resources.weapons < (cost.weapons || 0)
-    ) {
-      return;
-    }
-    // Find spawn tile
-    const spawnTile = findSpawnTile(settlementTile, board.tiles, pieces);
-    if (!spawnTile) {
+    // Find adjacent spawnable tiles
+    const adjTiles = getNeighborsAxial(settlementTile.q, settlementTile.r)
+      .map(({ q, r }) => board.tiles.find((t) => t.q === q && t.r === r))
+      .filter(
+        (tile) =>
+          tile &&
+          !NO_SPAWN_TILE_TYPES.has(tile.type) &&
+          !tile.building &&
+          !pieces.some((p) => p.q === tile.q && p.r === tile.r)
+      );
+    if (adjTiles.length === 0) {
       alert("No adjacent space to deploy unit!");
       return;
     }
-    // Create new piece
-    const newPiece = createPiece(unitKey, {
-      id: crypto.randomUUID(),
-      q: spawnTile.q,
-      r: spawnTile.r,
-    });
-    setPieces((prev) => [...prev, newPiece]);
-    setResources((prev) => subtractResources(prev, cost));
-    setBoard((prev) => ({
-      ...prev,
-      pieces: [...prev.pieces, newPiece],
-      // Optionally update resources in board state if needed
-    }));
+    setSpawnMode({ unitKey, cost, settlementTile });
+    setSpawnTiles(adjTiles);
     setOpenSettlement(null);
   };
 
@@ -219,6 +234,7 @@ export default function HexBoard({ board: initialBoard }) {
           showTileInfo(tile, pointerEvent)
         }
         isDraggingRef={isDraggingRef}
+        spawnTiles={spawnTiles}
       />
 
       <FloatingTileInfoPanel ref={infoPanelRef} />
