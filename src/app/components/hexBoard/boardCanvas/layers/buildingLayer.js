@@ -1,5 +1,5 @@
 import React from "react";
-import hexToPosition from "../../../../../library/utililies/game/tileUtilities/positionFinder";
+import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
 function BuildingLayer({ tiles, spacing, heightScale }) {
   return (

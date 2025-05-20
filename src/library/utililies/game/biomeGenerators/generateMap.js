@@ -1,5 +1,5 @@
 import { createNoise2D } from "simplex-noise";
-import getNeighborsAxial from "../tileUtilities/getNeighbors";
+import getNeighborsAxial from "../tileUtilities/Positioning/getNeighbors";
 import { generateRivers } from "../otherGenerators/riverGenerator";
 import { defaultTile } from "../tileUtilities/tileSchema";
 

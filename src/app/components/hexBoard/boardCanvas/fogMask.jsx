@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { extend, useFrame } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
-import hexToPosition from "../../../../library/utililies/game/tileUtilities/positionFinder";
+import hexToPosition from "../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
 // Animated fractal fog shader
 const FogShaderMaterial = shaderMaterial(

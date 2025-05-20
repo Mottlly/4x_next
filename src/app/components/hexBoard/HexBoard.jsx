@@ -15,10 +15,10 @@ import ResourcePanel from "../gameUI/resourcePanel";
 import FloatingTileInfoPanel from "../gameUI/FloatingTileInfoPanel";
 import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
 import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
-import { NO_SPAWN_TILE_TYPES } from "../../../library/utililies/game/tileUtilities/noSpawnTypes";
-import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/getNeighbors";
-import { getTilesWithLOS } from "../../../library/utililies/game/tileUtilities/sightLineAlgo";
-import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/getTilesWithSemiFog";
+import { NO_SPAWN_TILE_TYPES } from "../../../library/utililies/game/tileUtilities/typeChecks/noSpawnTypes";
+import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/Positioning/getNeighbors";
+import { getTilesWithLOS } from "../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
+import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";

@@ -1,5 +1,5 @@
 import React from "react";
-import hexToPosition from "../../../../../library/utililies/game/tileUtilities/positionFinder";
+import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import FogBestagon from "../fogagon";
 
 function FogLayer({ tiles, spacing, heightScale, onTileClick }) {

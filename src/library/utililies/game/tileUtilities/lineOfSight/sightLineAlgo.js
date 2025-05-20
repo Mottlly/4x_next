@@ -1,7 +1,7 @@
-import { hexDistance } from "./distanceFinder";
+import { hexDistance } from "../Positioning/distanceFinder";
 import { hexLine } from "./sightLineTiles";
-import { VISION_BLOCKING_TILE_TYPES } from "./visionBlockingTypes";
-import getNeighborsAxial from "./getNeighbors";
+import { VISION_BLOCKING_TILE_TYPES } from "../typeChecks/visionBlockingTypes";
+import getNeighborsAxial from "../Positioning/getNeighbors";
 
 export function getTilesWithLOS(tiles, visionSources) {
   const tileMap = new Map(tiles.map((t) => [`${t.q},${t.r}`, t]));

@@ -1,4 +1,4 @@
-import { hexDistance } from "./distanceFinder";
+import { hexDistance } from "../Positioning/distanceFinder";
 
 export function lerp(a, b, t) {
   return a + (b - a) * t;

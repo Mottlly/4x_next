@@ -3,7 +3,7 @@
 import React, { memo, useMemo, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
-import { hexDistance } from "../../../../library/utililies/game/tileUtilities/distanceFinder";
+import { hexDistance } from "../../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 
 import InteractiveBoard from "./interactiveElements";
 import AudioSwitcher from "./audioSwitcher";

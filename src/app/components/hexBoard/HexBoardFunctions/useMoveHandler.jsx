@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { hexDistance } from "../../../../library/utililies/game/tileUtilities/distanceFinder";
+import { hexDistance } from "../../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 
 export default function useMoveHandler(
   pieces,

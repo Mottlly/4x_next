@@ -1,5 +1,5 @@
-import hexToPosition from "../tileUtilities/positionFinder";
-import getNeighborsAxial from "../tileUtilities/getNeighbors";
+import hexToPosition from "../tileUtilities/Positioning/positionFinder";
+import getNeighborsAxial from "../tileUtilities/Positioning/getNeighbors";
 
 /**
  * Given board.tiles and board.tileMap (a Map<"q,r",tile>), carve rivers from sourceTiles.

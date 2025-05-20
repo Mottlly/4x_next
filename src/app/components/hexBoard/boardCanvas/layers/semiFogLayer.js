@@ -1,5 +1,5 @@
 import React from "react";
-import hexToPosition from "../../../../../library/utililies/game/tileUtilities/positionFinder";
+import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
 function SemiFogLayer({ tiles, spacing, heightScale }) {
   const fogHeight = spacing * 0.5 + 0.02; // slightly taller than tile

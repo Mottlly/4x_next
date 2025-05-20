@@ -1,5 +1,5 @@
 import { getTilesWithLOS } from "./sightLineAlgo";
-import { BUILDING_CONFIG } from "../gamePieces/buildBank";
+import { BUILDING_CONFIG } from "../../gamePieces/buildBank";
 
 /**
  * Returns a new tiles array with a `semiFogged` property set to true for tiles that:

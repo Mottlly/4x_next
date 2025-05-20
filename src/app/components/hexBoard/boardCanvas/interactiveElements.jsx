@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import Bestagon from "./bestagon";
-import hexToPosition from "../../../../library/utililies/game/tileUtilities/positionFinder";
-import getColourForType from "../../../../library/utililies/game/tileUtilities/getColourForType";
+import hexToPosition from "../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
+import getColourForType from "../../../../library/utililies/game/tileUtilities/typeChecks/getColourForType";
 
 const InteractiveBoard = ({
   board,

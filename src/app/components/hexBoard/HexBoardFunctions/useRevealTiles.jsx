@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getTilesWithLOS } from "../../../../library/utililies/game/tileUtilities/sightLineAlgo";
+import { getTilesWithLOS } from "../../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
 import { BUILDING_CONFIG } from "../../../../library/utililies/game/gamePieces/buildBank";
 
 export default function useRevealTiles(board, pieces, setBoard) {
@@ -14,7 +14,9 @@ export default function useRevealTiles(board, pieces, setBoard) {
         vision: piece.vision ?? 2,
       })),
       ...board.tiles
-        .filter((tile) => tile.building && BUILDING_CONFIG[tile.building]?.vision)
+        .filter(
+          (tile) => tile.building && BUILDING_CONFIG[tile.building]?.vision
+        )
         .map((tile) => ({
           q: tile.q,
           r: tile.r,
@@ -26,7 +28,9 @@ export default function useRevealTiles(board, pieces, setBoard) {
     const tilesWithLOS = getTilesWithLOS(board.tiles, visionSources);
 
     const newTiles = board.tiles.map((tile) => {
-      const losTile = tilesWithLOS.find((t) => t.q === tile.q && t.r === tile.r);
+      const losTile = tilesWithLOS.find(
+        (t) => t.q === tile.q && t.r === tile.r
+      );
       if (tile.discovered) return tile;
       if (losTile && losTile.visible) {
         changed = true;
