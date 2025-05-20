@@ -20,3 +20,11 @@ export function computeResourceChange(board) {
     (board.resources?.[2] ?? 0) + effect.weapons,
   ];
 }
+
+export function subtractResources(resources, cost) {
+  return {
+    rations: resources.rations - (cost.rations || 0),
+    printingMaterial: resources.printingMaterial - (cost.printingMaterial || 0),
+    weapons: resources.weapons - (cost.weapons || 0),
+  };
+}

@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { defaultFriendlyPiece } from "../../../library/utililies/game/gamePieces/friendlyPieces";
-import {
-  ACTIONS_BY_TYPE,
-  ACTION_DETAILS,
-} from "../../../library/utililies/game/gamePieces/actionsDictator";
+import { ACTIONS_BY_TYPE } from "../../../library/utililies/game/gamePieces/actionsDictator";
 import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import NextTurnButton from "../gameUI/endTurn";
@@ -13,13 +9,9 @@ import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
 import FloatingTileInfoPanel from "../gameUI/tileDataNode/FloatingTileInfoPanel";
 import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
-import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
-import { NO_SPAWN_TILE_TYPES } from "../../../library/utililies/game/tileUtilities/typeChecks/noSpawnTypes";
-import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/Positioning/getNeighbors";
-import { getTilesWithLOS } from "../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
-import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
 import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 import ActionsMenu from "../gameUI/actionsMenu";
+import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -30,6 +22,8 @@ import useRevealTiles from "./HexBoardFunctions/useRevealTiles";
 import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
 import { handleAction } from "./HexBoardFunctions/handleAction";
 import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
+import { subtractResources } from "../../../library/utililies/game/resources/resourceUtils";
+import { handleBuildUnit } from "../../../library/utililies/game/gamePieces/handleBuildUnit";
 
 export default function HexBoard({ board: initialBoard }) {
   const {
@@ -129,38 +123,20 @@ export default function HexBoard({ board: initialBoard }) {
       setActiveAction
     );
 
-  const tilesWithLOS = getTilesWithLOS(board.tiles, pieces);
   const tilesWithSemiFog = getTilesWithSemiFog(board.tiles, pieces);
 
-  // Helper to subtract cost from resources
-  function subtractResources(resources, cost) {
-    return {
-      rations: resources.rations - (cost.rations || 0),
-      printingMaterial:
-        resources.printingMaterial - (cost.printingMaterial || 0),
-      weapons: resources.weapons - (cost.weapons || 0),
-    };
-  }
-
-  const handleBuildUnit = (unitKey, cost, settlementTile) => {
-    // Find adjacent spawnable tiles
-    const adjTiles = getNeighborsAxial(settlementTile.q, settlementTile.r)
-      .map(({ q, r }) => board.tiles.find((t) => t.q === q && t.r === r))
-      .filter(
-        (tile) =>
-          tile &&
-          !NO_SPAWN_TILE_TYPES.has(tile.type) &&
-          !tile.building &&
-          !pieces.some((p) => p.q === tile.q && p.r === tile.r)
-      );
-    if (adjTiles.length === 0) {
-      alert("No adjacent space to deploy unit!");
-      return;
-    }
-    setSpawnMode({ unitKey, cost, settlementTile });
-    setSpawnTiles(adjTiles);
-    setOpenSettlement(null);
-  };
+  // Use the imported handleBuildUnit for settlements
+  const onBuildUnit = (unitKey, cost, settlementTile) =>
+    handleBuildUnit({
+      unitKey,
+      cost,
+      settlementTile,
+      board,
+      pieces,
+      setSpawnMode,
+      setSpawnTiles,
+      setOpenSettlement,
+    });
 
   return (
     <div className="relative w-full h-full">
@@ -195,7 +171,7 @@ export default function HexBoard({ board: initialBoard }) {
         <SettlementPanel
           tile={openSettlement}
           onClose={() => setOpenSettlement(null)}
-          onBuildUnit={handleBuildUnit}
+          onBuildUnit={onBuildUnit}
           resources={resources}
         />
       )}
