@@ -19,6 +19,7 @@ import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/Pos
 import { getTilesWithLOS } from "../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
 import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
+import ActionsMenu from "../gameUI/actionsMenu";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -31,7 +32,6 @@ import { handleAction } from "./HexBoardFunctions/handleAction";
 import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
 
 export default function HexBoard({ board: initialBoard }) {
-  console.log("Initial board:", initialBoard);
   const {
     id: boardId,
     turn: initialTurn,
@@ -51,7 +51,7 @@ export default function HexBoard({ board: initialBoard }) {
   const [spawnMode, setSpawnMode] = useState(null);
   const [spawnTiles, setSpawnTiles] = useState([]);
 
-  // map array to object
+  // map resources array to object
   const [resources, setResources] = useState({
     rations: initialResources[0],
     printingMaterial: initialResources[1],
@@ -142,31 +142,6 @@ export default function HexBoard({ board: initialBoard }) {
     };
   }
 
-  // Find an adjacent empty tile for the new unit
-  function findSpawnTile(settlementTile, tiles, pieces) {
-    const directions = [
-      [1, 0],
-      [0, 1],
-      [-1, 1],
-      [-1, 0],
-      [0, -1],
-      [1, -1],
-    ];
-    for (const [dq, dr] of directions) {
-      const q = settlementTile.q + dq;
-      const r = settlementTile.r + dr;
-      const tile = tiles.find((t) => t.q === q && t.r === r);
-      if (
-        tile &&
-        !tile.building &&
-        !pieces.some((p) => p.q === q && p.r === r)
-      ) {
-        return tile;
-      }
-    }
-    return null;
-  }
-
   const handleBuildUnit = (unitKey, cost, settlementTile) => {
     // Find adjacent spawnable tiles
     const adjTiles = getNeighborsAxial(settlementTile.q, settlementTile.r)
@@ -201,53 +176,18 @@ export default function HexBoard({ board: initialBoard }) {
         spawnTiles={spawnTiles}
       />
 
-      {/* Floating info panel, always rendered, always floating */}
+      {/* Floating info panel */}
       <FloatingTileInfoPanel ref={infoPanelRef} />
 
-      {/* --- TOP LEFT UI: Only actions menu here --- */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex flex-row items-start space-x-4 pointer-events-none">
-        {selectedPiece && (
-          <div className="pointer-events-auto flex flex-row space-x-2 mt-0 ml-0">
-            {availableActions.map((action) => {
-              const {
-                icon: Icon,
-                tooltip,
-                buttonClass,
-              } = ACTION_DETAILS[action];
-              const isActive = activeAction === action;
-              return (
-                <div key={action} className="relative">
-                  <button
-                    onClick={() => onActionClick(action)}
-                    title={tooltip}
-                    className={`flex items-center justify-center w-12 h-12 bg-gray-800 bg-opacity-80 ${buttonClass} ${
-                      isActive ? "ring-2 ring-offset-2 ring-white" : ""
-                    } rounded-lg transition`}
-                  >
-                    <Icon className="w-6 h-6 text-cyan-200" />
-                  </button>
-                  {action === "build" && isActive && (
-                    <div className="absolute top-full left-0 mt-2 flex flex-row space-x-2 bg-gray-900 bg-opacity-90 p-2 rounded-lg z-20">
-                      {buildOptions.map(
-                        ({ key, label, icon: OptIcon, buttonClass }) => (
-                          <button
-                            key={key}
-                            onClick={() => onBuildOptionClick(key)}
-                            title={label}
-                            className={`flex items-center justify-center w-10 h-10 bg-gray-800 bg-opacity-80 ${buttonClass} rounded-lg transition`}
-                          >
-                            <OptIcon className="w-5 h-5 text-white" />
-                          </button>
-                        )
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {/* Actions menu (centered at top) */}
+      <ActionsMenu
+        selectedPiece={selectedPiece}
+        availableActions={availableActions}
+        activeAction={activeAction}
+        onActionClick={onActionClick}
+        buildOptions={buildOptions}
+        onBuildOptionClick={onBuildOptionClick}
+      />
 
       <NextTurnButton currentTurn={currentTurn} onNext={nextTurn} />
 
