@@ -8,17 +8,17 @@ import {
 } from "../../../library/utililies/game/gamePieces/actionsDictator";
 import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
-import TileInfoPanel from "../gameUI/infoTile";
 import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
-import FloatingTileInfoPanel from "../gameUI/FloatingTileInfoPanel";
+import FloatingTileInfoPanel from "../gameUI/tileDataNode/FloatingTileInfoPanel";
 import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
 import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
 import { NO_SPAWN_TILE_TYPES } from "../../../library/utililies/game/tileUtilities/typeChecks/noSpawnTypes";
 import getNeighborsAxial from "../../../library/utililies/game/tileUtilities/Positioning/getNeighbors";
 import { getTilesWithLOS } from "../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
+import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -44,12 +44,10 @@ export default function HexBoard({ board: initialBoard }) {
     initialBoard.pieces.map((p) => createPiece(p.type, p))
   );
   const [selectedPieceId, setSelectedPieceId] = useState(null);
-  const [hoveredTile, setHoveredTile] = useState(null);
   const [activeAction, setActiveAction] = useState(null);
   const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
-  const hoverTimeout = useRef();
-  const infoPanelRef = useRef();
+  const { infoPanelRef, showTileInfo } = useFloatingTileInfo();
   const [spawnMode, setSpawnMode] = useState(null);
   const [spawnTiles, setSpawnTiles] = useState([]);
 
@@ -134,32 +132,6 @@ export default function HexBoard({ board: initialBoard }) {
   const tilesWithLOS = getTilesWithLOS(board.tiles, pieces);
   const tilesWithSemiFog = getTilesWithSemiFog(board.tiles, pieces);
 
-  // Efficient handler to update info panel content/position
-  const showTileInfo = (tile, pointerEvent) => {
-    if (!infoPanelRef.current) return;
-    if (!tile) {
-      infoPanelRef.current.innerHTML = `
-        <h2 style="margin-bottom:8px;">DATA NODE</h2>
-        <div style="color:#0ff;opacity:0.6;">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
-      `;
-      infoPanelRef.current.style.opacity = 0.7;
-      return;
-    }
-    infoPanelRef.current.innerHTML = `
-      <h2 style="margin-bottom:8px;">DATA NODE</h2>
-      <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
-      <div><b>Type:</b> ${tile.type || "water"}</div>
-      ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
-      ${tile.building ? `<div><b>Building:</b> ${tile.building}</div>` : ""}
-      <div style="margin-top:8px;font-size:12px;opacity:0.7;"><em>Sector coordinates ⎯ data stream stabilized</em></div>
-    `;
-    infoPanelRef.current.style.opacity = 1;
-    if (pointerEvent) {
-      infoPanelRef.current.style.left = pointerEvent.clientX + 24 + "px";
-      infoPanelRef.current.style.top = pointerEvent.clientY - 24 + "px";
-    }
-  };
-
   // Helper to subtract cost from resources
   function subtractResources(resources, cost) {
     return {
@@ -224,9 +196,7 @@ export default function HexBoard({ board: initialBoard }) {
         pieces={pieces}
         selectedPieceId={selectedPieceId}
         onTileClick={onTileClick}
-        setHoveredTile={(tile, pointerEvent) =>
-          showTileInfo(tile, pointerEvent)
-        }
+        setHoveredTile={showTileInfo}
         isDraggingRef={isDraggingRef}
         spawnTiles={spawnTiles}
       />
