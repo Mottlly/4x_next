@@ -1,6 +1,6 @@
 import { ArrowRight, Sword, Hammer, Shield, Eye } from "lucide-react";
 
-export const ACTIONS_BY_TYPE = {
+export const allowedActionsByType = {
   Pod: ["move", "build"],
   Scout: ["move", "attack", "fortify", "scout"],
   Engineer: ["move", "build", "fortify"],
@@ -8,7 +8,7 @@ export const ACTIONS_BY_TYPE = {
   Security: ["move", "attack", "fortify"],
 };
 
-export const ACTION_DETAILS = {
+export const actionDetails = {
   move: {
     icon: ArrowRight,
     tooltip: "Move",

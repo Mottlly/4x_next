@@ -1,5 +1,5 @@
 import React from "react";
-import { ACTION_DETAILS } from "../../../library/utililies/game/gamePieces/actionsDictator";
+import { actionDetails } from "../../../library/utililies/game/gamePieces/actionsDictator";
 
 export default function ActionsMenu({
   selectedPiece,
@@ -15,11 +15,7 @@ export default function ActionsMenu({
     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex flex-row items-start space-x-4 pointer-events-none">
       <div className="pointer-events-auto flex flex-row space-x-2 mt-0 ml-0">
         {availableActions.map((action) => {
-          const {
-            icon: Icon,
-            tooltip,
-            buttonClass,
-          } = ACTION_DETAILS[action];
+          const { icon: Icon, tooltip, buttonClass } = actionDetails[action];
           const isActive = activeAction === action;
           return (
             <div key={action} className="relative">

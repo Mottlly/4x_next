@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { ACTIONS_BY_TYPE } from "../../../library/utililies/game/gamePieces/actionsDictator";
+import { allowedActionsByType } from "../../../library/utililies/game/gamePieces/actionsDictator";
 import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import NextTurnButton from "../gameUI/endTurn";
@@ -103,7 +103,7 @@ export default function HexBoard({ board: initialBoard }) {
 
   const selectedPiece = pieces.find((p) => p.id === selectedPieceId) || null;
   const availableActions = selectedPiece
-    ? ACTIONS_BY_TYPE[selectedPiece.type] || []
+    ? allowedActionsByType[selectedPiece.type] || []
     : [];
   const buildOptions =
     activeAction === "build" && selectedPiece
