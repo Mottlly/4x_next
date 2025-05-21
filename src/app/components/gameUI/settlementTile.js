@@ -1,6 +1,6 @@
 import React from "react";
-import { BUILDING_CONFIG } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
-import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
+import { buildingOptions } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
+import { unitBuildOptions } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
 
 export default function SettlementPanel({
   tile,
@@ -8,7 +8,7 @@ export default function SettlementPanel({
   onBuildUnit,
   resources,
 }) {
-  const cfg = BUILDING_CONFIG[tile.building] || {};
+  const cfg = buildingOptions[tile.building] || {};
 
   // Helper to check if enough resources
   const canAfford = (cost) =>
@@ -38,7 +38,7 @@ export default function SettlementPanel({
 
       <div className="space-y-2">
         <div className="font-semibold mb-2">Build Unit:</div>
-        {UNIT_BUILD_OPTIONS.map((unit) => (
+        {unitBuildOptions.map((unit) => (
           <button
             key={unit.key}
             className={`w-full py-2 rounded ${

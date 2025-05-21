@@ -1,6 +1,6 @@
 import { Home, Database, Satellite } from "lucide-react";
 
-export const BUILDING_CONFIG = {
+export const buildingOptions = {
   reconstructed_shelter: {
     label: "Reconstructed Shelter",
     icon: Home,
@@ -21,10 +21,10 @@ export const BUILDING_CONFIG = {
   },
 };
 
-export const BUILDING_EFFECTS = {
+export const buildingEffects = {
   reconstructed_shelter: {
-    rations: -1,           // upkeep: consumes 1 ration
-    printingMaterial: 1,   // produces 1 printing material
+    rations: -1, // upkeep: consumes 1 ration
+    printingMaterial: 1, // produces 1 printing material
     weapons: 0,
   },
   resource_extractor: {
@@ -39,17 +39,17 @@ export const BUILDING_EFFECTS = {
   },
 };
 
-export const BUILD_OPTIONS_BY_TYPE = {
+export const buildOptions_byUnitType = {
   Pod: ["reconstructed_shelter"],
   Engineer: ["resource_extractor", "sensor_suite"],
 };
 
-export const SETTLEMENT_BUILDINGS = ["reconstructed_shelter"];
+export const settlementBuildings = ["reconstructed_shelter"];
 
 export function getBuildOptionsForType(type) {
-  const keys = BUILD_OPTIONS_BY_TYPE[type] || [];
+  const keys = buildOptions_byUnitType[type] || [];
   return keys.map((key) => {
-    const cfg = BUILDING_CONFIG[key];
+    const cfg = buildingOptions[key];
     if (!cfg) {
       throw new Error(`Unknown building key: ${key}`);
     }

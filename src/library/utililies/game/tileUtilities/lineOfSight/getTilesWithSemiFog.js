@@ -1,5 +1,5 @@
 import { getTilesWithLOS } from "./sightLineAlgo";
-import { BUILDING_CONFIG } from "../../gamePieces/schemas/buildBank";
+import { buildingOptions } from "../../gamePieces/schemas/buildBank";
 
 /**
  * Returns a new tiles array with a `semiFogged` property set to true for tiles that:
@@ -16,11 +16,11 @@ export function getTilesWithSemiFog(tiles, pieces) {
       vision: piece.vision ?? 2,
     })),
     ...tiles
-      .filter((tile) => tile.building && BUILDING_CONFIG[tile.building]?.vision)
+      .filter((tile) => tile.building && buildingOptions[tile.building]?.vision)
       .map((tile) => ({
         q: tile.q,
         r: tile.r,
-        vision: BUILDING_CONFIG[tile.building].vision,
+        vision: buildingOptions[tile.building].vision,
       })),
   ];
 

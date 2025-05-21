@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getTilesWithLOS } from "../../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
-import { BUILDING_CONFIG } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
+import { buildingOptions } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
 
 export default function useRevealTiles(board, pieces, setBoard) {
   useEffect(() => {
@@ -15,12 +15,12 @@ export default function useRevealTiles(board, pieces, setBoard) {
       })),
       ...board.tiles
         .filter(
-          (tile) => tile.building && BUILDING_CONFIG[tile.building]?.vision
+          (tile) => tile.building && buildingOptions[tile.building]?.vision
         )
         .map((tile) => ({
           q: tile.q,
           r: tile.r,
-          vision: BUILDING_CONFIG[tile.building].vision,
+          vision: buildingOptions[tile.building].vision,
         })),
     ];
 

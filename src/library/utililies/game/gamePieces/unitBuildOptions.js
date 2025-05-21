@@ -1,4 +1,4 @@
-export const UNIT_BUILD_OPTIONS = [
+export const unitBuildOptions = [
   {
     key: "Scout",
     label: "Scout",

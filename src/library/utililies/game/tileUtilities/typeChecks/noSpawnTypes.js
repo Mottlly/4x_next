@@ -1,5 +1,1 @@
-export const NO_SPAWN_TILE_TYPES = new Set([
-  "water",
-  "lake",
-  "impassable mountain",
-]);
+export const noSpawnTypes = new Set(["water", "lake", "impassable mountain"]);

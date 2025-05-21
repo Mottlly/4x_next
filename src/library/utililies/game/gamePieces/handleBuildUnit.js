@@ -1,5 +1,5 @@
 import getNeighborsAxial from "../tileUtilities/Positioning/getNeighbors";
-import { NO_SPAWN_TILE_TYPES } from "../tileUtilities/typeChecks/noSpawnTypes";
+import { noSpawnTypes } from "../tileUtilities/typeChecks/noSpawnTypes";
 
 export function handleBuildUnit({
   unitKey,
@@ -16,7 +16,7 @@ export function handleBuildUnit({
     .filter(
       (tile) =>
         tile &&
-        !NO_SPAWN_TILE_TYPES.has(tile.type) &&
+        !noSpawnTypes.has(tile.type) &&
         !tile.building &&
         !pieces.some((p) => p.q === tile.q && p.r === tile.r)
     );
