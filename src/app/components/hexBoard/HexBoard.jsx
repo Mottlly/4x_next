@@ -2,13 +2,13 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ACTIONS_BY_TYPE } from "../../../library/utililies/game/gamePieces/actionsDictator";
-import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/buildBank";
+import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
 import FloatingTileInfoPanel from "../gameUI/tileDataNode/FloatingTileInfoPanel";
-import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
+import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 import ActionsMenu from "../gameUI/actionsMenu";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";

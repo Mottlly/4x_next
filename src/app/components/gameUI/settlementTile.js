@@ -1,8 +1,13 @@
 import React from "react";
-import { BUILDING_CONFIG } from "../../../library/utililies/game/gamePieces/buildBank";
+import { BUILDING_CONFIG } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
 import { UNIT_BUILD_OPTIONS } from "../../../library/utililies/game/gamePieces/unitBuildOptions";
 
-export default function SettlementPanel({ tile, onClose, onBuildUnit, resources }) {
+export default function SettlementPanel({
+  tile,
+  onClose,
+  onBuildUnit,
+  resources,
+}) {
   const cfg = BUILDING_CONFIG[tile.building] || {};
 
   // Helper to check if enough resources
@@ -46,7 +51,8 @@ export default function SettlementPanel({ tile, onClose, onBuildUnit, resources 
           >
             {unit.label}{" "}
             <span className="text-xs opacity-80">
-              (Cost: R{unit.cost.rations} P{unit.cost.printingMaterial} W{unit.cost.weapons})
+              (Cost: R{unit.cost.rations} P{unit.cost.printingMaterial} W
+              {unit.cost.weapons})
             </span>
           </button>
         ))}

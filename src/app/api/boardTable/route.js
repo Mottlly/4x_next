@@ -3,7 +3,7 @@ import pool from "@/library/middleware/db";
 import fs from "fs";
 import path from "path";
 import { generateBiomeMap } from "../../../library/utililies/game/biomeGenerators/generateMap";
-import { createPiece } from "../../../library/utililies/game/gamePieces/pieceBank";
+import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import { v4 as uuidv4 } from "uuid";
 
 const getBoardQuery = fs.readFileSync(

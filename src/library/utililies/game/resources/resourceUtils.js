@@ -1,4 +1,4 @@
-import { BUILDING_EFFECTS } from "../gamePieces/buildBank";
+import { BUILDING_EFFECTS } from "../gamePieces/schemas/buildBank";
 
 // resources: [rations, printingMaterial, weapons]
 export function computeResourceChange(board) {

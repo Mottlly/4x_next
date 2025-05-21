@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getTilesWithLOS } from "../../../../library/utililies/game/tileUtilities/lineOfSight/sightLineAlgo";
-import { BUILDING_CONFIG } from "../../../../library/utililies/game/gamePieces/buildBank";
+import { BUILDING_CONFIG } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
 
 export default function useRevealTiles(board, pieces, setBoard) {
   useEffect(() => {
