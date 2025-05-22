@@ -19,6 +19,11 @@ export default function useFloatingTileInfo() {
       <div><b>Type:</b> ${tile.type || "water"}</div>
       ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
       ${tile.building ? `<div><b>Building:</b> ${tile.building}</div>` : ""}
+      ${
+        tile.building && tile.upgrades && tile.upgrades.length > 0
+          ? `<div><b>Upgrades:</b> ${tile.upgrades.join(", ")}</div>`
+          : ""
+      }
       <div style="margin-top:8px;font-size:12px;opacity:0.7;"><em>Sector coordinates ⎯ data stream stabilized</em></div>
     `;
     infoPanelRef.current.style.opacity = 1;

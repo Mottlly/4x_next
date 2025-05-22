@@ -20,6 +20,14 @@ export const tilePropType = PropTypes.shape({
   elevationLevel: PropTypes.number.isRequired, // raw elevation bucket (1–5)
   discovered: PropTypes.bool.isRequired, // visibility state
   riverPresent: PropTypes.bool.isRequired, // whether the tile has a river
+  upgrades: PropTypes.array, // array of completed upgrade keys
+  upgradeInProgress: PropTypes.shape({
+    key: PropTypes.string,
+    startedTurn: PropTypes.number,
+    duration: PropTypes.number,
+    cost: PropTypes.object,
+    upkeep: PropTypes.object,
+  }),
 });
 
 /*A default tile template you can spread into your generated maps or use for tests*/
@@ -31,4 +39,6 @@ export const defaultTile = {
   elevationLevel: 1,
   discovered: false,
   riverPresent: false,
+  upgrades: [],
+  upgradeInProgress: null,
 };

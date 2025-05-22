@@ -12,6 +12,7 @@ import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/
 import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 import ActionsMenu from "../gameUI/actionsMenu";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
+import { startUpgrade } from "../../../library/utililies/game/settlements/upgradeUtilities";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -138,6 +139,39 @@ export default function HexBoard({ board: initialBoard }) {
       setOpenSettlement,
     });
 
+  const onStartUpgrade = (upgradeKey) => {
+    if (!openSettlement) return;
+    if (openSettlement.upgradeInProgress) return;
+    // Find the upgrade config
+    const settlementType = openSettlement.building;
+    const upgrade =
+      (
+        require("../../../library/utililies/game/settlements/settlementUpgrades")
+          .settlementUpgradeOptions[settlementType] || []
+      ).find((u) => u.key === upgradeKey);
+    if (!upgrade) return;
+
+    // Subtract resources
+    setResources((prev) => ({
+      ...prev,
+      rations: prev.rations - (upgrade.cost.rations || 0),
+      printingMaterial: prev.printingMaterial - (upgrade.cost.printingMaterial || 0),
+      weapons: prev.weapons - (upgrade.cost.weapons || 0),
+    }));
+
+    // Update the tile in the board
+    setBoard((prev) => ({
+      ...prev,
+      tiles: prev.tiles.map((tile) =>
+        tile.q === openSettlement.q && tile.r === openSettlement.r
+          ? startUpgrade(tile, upgradeKey, currentTurn)
+          : tile
+      ),
+    }));
+
+    setOpenSettlement(null);
+  };
+
   return (
     <div className="relative w-full h-full">
       <ResourcePanel resources={resources} />
@@ -173,6 +207,8 @@ export default function HexBoard({ board: initialBoard }) {
           onClose={() => setOpenSettlement(null)}
           onBuildUnit={onBuildUnit}
           resources={resources}
+          onStartUpgrade={onStartUpgrade}
+          currentTurn={currentTurn}
         />
       )}
     </div>

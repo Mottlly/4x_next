@@ -1,4 +1,5 @@
 import { computeResourceChange } from "../../../../library/utililies/game/resources/resourceUtils";
+import { processUpgrades } from "../../../../library/utililies/game/settlements/upgradeUtilities";
 
 export default function useEndTurn(
   boardId,
@@ -18,10 +19,11 @@ export default function useEndTurn(
 
     setCurrentTurn(newTurn);
     setPieces((prev) => prev.map((p) => ({ ...p, movesLeft: p.move })));
-    setBoard((b) => ({
-      ...b,
+    setBoard((prev) => ({
+      ...prev,
       turn: newTurn,
       resources: newResources,
+      tiles: processUpgrades(prev.tiles, currentTurn + 1),
     }));
     setResources({
       rations: newResources[0],

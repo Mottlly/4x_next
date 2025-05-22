@@ -9,6 +9,7 @@ import {
   HardHat,
   BadgeCheck,
 } from "lucide-react";
+import { getAvailableUpgrades } from "../../../library/utililies/game/settlements/upgradeUtilities";
 
 // Map unit keys to icons
 const unitIcons = {
@@ -22,11 +23,19 @@ export default function SettlementPanel({
   onClose,
   onBuildUnit,
   resources,
+  onStartUpgrade,
+  currentTurn,
 }) {
   const cfg = buildingOptions[tile.building] || {};
 
+  const availableUpgrades = getAvailableUpgrades(tile);
+
   // Helper to check if enough resources
   const canAfford = (cost) =>
+    Object.entries(cost).every(([k, v]) => (resources[k] ?? 0) >= v);
+
+  // Helper to check if enough resources for an upgrade
+  const canAffordUpgrade = (cost) =>
     Object.entries(cost).every(([k, v]) => (resources[k] ?? 0) >= v);
 
   return (
@@ -98,13 +107,46 @@ export default function SettlementPanel({
         <div>
           <div className="font-semibold mb-2 text-sm">Upgrades:</div>
           <div className="flex flex-col gap-2">
-            {/* Replace below with actual upgrade options */}
-            <button className="w-full py-1 px-2 rounded text-sm bg-blue-700 hover:bg-blue-800">
-              Upgrade 1
-            </button>
-            <button className="w-full py-1 px-2 rounded text-sm bg-blue-700 hover:bg-blue-800">
-              Upgrade 2
-            </button>
+            {tile.upgradeInProgress ? (
+              <div className="text-yellow-300">
+                Upgrading: {tile.upgradeInProgress.key} (
+                {currentTurn - tile.upgradeInProgress.startedTurn}/
+                {tile.upgradeInProgress.duration} turns)
+              </div>
+            ) : (
+              availableUpgrades.length === 0 ? (
+                <div className="text-gray-400 text-xs">All upgrades built</div>
+              ) : (
+                availableUpgrades.map((upgrade) => (
+                  <button
+                    key={upgrade.key}
+                    className={`w-full py-1 px-2 rounded text-sm flex flex-col items-center mb-1 ${
+                      canAffordUpgrade(upgrade.cost)
+                        ? "bg-blue-700 hover:bg-blue-800"
+                        : "bg-gray-700 cursor-not-allowed opacity-60"
+                    }`}
+                    disabled={!canAffordUpgrade(upgrade.cost)}
+                    onClick={() => onStartUpgrade(upgrade.key)}
+                  >
+                    <span className="font-medium text-center w-full">{upgrade.label} ({upgrade.duration} turns)</span>
+                    <span className="flex flex-row items-center gap-2 mt-0.5 opacity-80">
+                      <span className="inline-flex items-center gap-0.5">
+                        <Package className="w-4 h-4" />
+                        {upgrade.cost.rations}
+                      </span>
+                      <span className="inline-flex items-center gap-0.5">
+                        <Printer className="w-4 h-4" />
+                        {upgrade.cost.printingMaterial}
+                      </span>
+                      <span className="inline-flex items-center gap-0.5">
+                        <Sword className="w-4 h-4" />
+                        {upgrade.cost.weapons}
+                      </span>
+                    </span>
+                  </button>
+                ))
+              )
+            )}
           </div>
         </div>
       </div>
