@@ -78,7 +78,6 @@ export default function HexBoard({ board: initialBoard }) {
           r: tile.r,
         });
         setPieces((prev) => [...prev, newPiece]);
-        setResources((prev) => subtractResources(prev, cost));
         setBoard((prev) => ({
           ...prev,
           pieces: [...prev.pieces, newPiece],
@@ -137,6 +136,8 @@ export default function HexBoard({ board: initialBoard }) {
       setSpawnMode,
       setSpawnTiles,
       setOpenSettlement,
+      setResources,
+      setBoard,
     });
 
   const onStartUpgrade = (upgradeKey) => {
@@ -144,24 +145,28 @@ export default function HexBoard({ board: initialBoard }) {
     if (openSettlement.upgradeInProgress) return;
     // Find the upgrade config
     const settlementType = openSettlement.building;
-    const upgrade =
-      (
-        require("../../../library/utililies/game/settlements/settlementUpgrades")
-          .settlementUpgradeOptions[settlementType] || []
-      ).find((u) => u.key === upgradeKey);
+    const upgrade = (
+      require("../../../library/utililies/game/settlements/settlementUpgrades")
+        .settlementUpgradeOptions[settlementType] || []
+    ).find((u) => u.key === upgradeKey);
     if (!upgrade) return;
 
-    // Subtract resources
+    // Subtract resources from both UI and board state!
     setResources((prev) => ({
       ...prev,
       rations: prev.rations - (upgrade.cost.rations || 0),
-      printingMaterial: prev.printingMaterial - (upgrade.cost.printingMaterial || 0),
+      printingMaterial:
+        prev.printingMaterial - (upgrade.cost.printingMaterial || 0),
       weapons: prev.weapons - (upgrade.cost.weapons || 0),
     }));
 
-    // Update the tile in the board
     setBoard((prev) => ({
       ...prev,
+      resources: [
+        (prev.resources?.[0] ?? 0) - (upgrade.cost.rations || 0),
+        (prev.resources?.[1] ?? 0) - (upgrade.cost.printingMaterial || 0),
+        (prev.resources?.[2] ?? 0) - (upgrade.cost.weapons || 0),
+      ],
       tiles: prev.tiles.map((tile) =>
         tile.q === openSettlement.q && tile.r === openSettlement.r
           ? startUpgrade(tile, upgradeKey, currentTurn)
