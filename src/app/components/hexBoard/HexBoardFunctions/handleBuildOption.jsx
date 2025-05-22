@@ -12,6 +12,10 @@ export function handleBuildOption(
   if (buildingKey === "reconstructed_shelter") {
     setPieces((prev) => prev.filter((p) => p.id !== pieceId));
     setSelectedPieceId(null);
+    setBoard((prev) => ({
+      ...prev,
+      pieces: prev.pieces.filter((p) => p.id !== pieceId), // <-- Remove from board.pieces too!
+    }));
   }
 
   setBoard((prev) => {

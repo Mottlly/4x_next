@@ -16,6 +16,7 @@ export const PIECE_BANK = {
       flying: false,
       stealthy: false,
     },
+    upkeep: { rations: 1, printingMaterial: 0, weapons: 0 },
   },
   Scout: {
     type: "Scout",
@@ -34,6 +35,7 @@ export const PIECE_BANK = {
       flying: false,
       stealthy: true,
     },
+    upkeep: { rations: 1, printingMaterial: 0, weapons: 0 },
   },
   Engineer: {
     type: "Engineer",
@@ -52,6 +54,7 @@ export const PIECE_BANK = {
       flying: false,
       stealthy: false,
     },
+    upkeep: { rations: 1, printingMaterial: 1, weapons: 0 },
   },
   Armed_Settler: {
     type: "Armed_Settler",
@@ -70,6 +73,7 @@ export const PIECE_BANK = {
       flying: false,
       stealthy: false,
     },
+    upkeep: { rations: 2, printingMaterial: 0, weapons: 1 },
   },
   Security: {
     type: "Security",
@@ -88,6 +92,7 @@ export const PIECE_BANK = {
       flying: false,
       stealthy: false,
     },
+    upkeep: { rations: 2, printingMaterial: 0, weapons: 2 },
   },
 };
 
