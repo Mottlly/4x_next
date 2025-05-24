@@ -66,7 +66,6 @@ export default function SettlementPanel({
           <div className="font-semibold mb-2 text-sm">Build Unit:</div>
           <div className="flex flex-col gap-2">
             {unitBuildOptions.map((unit) => {
-              // const Icon = unitIcons[unit.key]; // Remove icon usage
               return (
                 <button
                   key={unit.key}
@@ -80,7 +79,9 @@ export default function SettlementPanel({
                 >
                   {/* Left: Label above costs */}
                   <span className="flex flex-col items-center flex-1">
-                    <span className="font-medium text-center w-full">{unit.label}</span>
+                    <span className="font-medium text-center w-full">
+                      {unit.label}
+                    </span>
                     <span className="flex flex-row items-center gap-2 mt-0.5 opacity-80">
                       <span className="inline-flex items-center gap-0.5">
                         <Package className="w-4 h-4" />
@@ -96,7 +97,6 @@ export default function SettlementPanel({
                       </span>
                     </span>
                   </span>
-                  {/* Icon removed */}
                 </button>
               );
             })}
@@ -113,39 +113,39 @@ export default function SettlementPanel({
                 {currentTurn - tile.upgradeInProgress.startedTurn}/
                 {tile.upgradeInProgress.duration} turns)
               </div>
+            ) : availableUpgrades.length === 0 ? (
+              <div className="text-gray-400 text-xs">All upgrades built</div>
             ) : (
-              availableUpgrades.length === 0 ? (
-                <div className="text-gray-400 text-xs">All upgrades built</div>
-              ) : (
-                availableUpgrades.map((upgrade) => (
-                  <button
-                    key={upgrade.key}
-                    className={`w-full py-1 px-2 rounded text-sm flex flex-col items-center mb-1 ${
-                      canAffordUpgrade(upgrade.cost)
-                        ? "bg-blue-700 hover:bg-blue-800"
-                        : "bg-gray-700 cursor-not-allowed opacity-60"
-                    }`}
-                    disabled={!canAffordUpgrade(upgrade.cost)}
-                    onClick={() => onStartUpgrade(upgrade.key)}
-                  >
-                    <span className="font-medium text-center w-full">{upgrade.label} ({upgrade.duration} turns)</span>
-                    <span className="flex flex-row items-center gap-2 mt-0.5 opacity-80">
-                      <span className="inline-flex items-center gap-0.5">
-                        <Package className="w-4 h-4" />
-                        {upgrade.cost.rations}
-                      </span>
-                      <span className="inline-flex items-center gap-0.5">
-                        <Printer className="w-4 h-4" />
-                        {upgrade.cost.printingMaterial}
-                      </span>
-                      <span className="inline-flex items-center gap-0.5">
-                        <Sword className="w-4 h-4" />
-                        {upgrade.cost.weapons}
-                      </span>
+              availableUpgrades.map((upgrade) => (
+                <button
+                  key={upgrade.key}
+                  className={`w-full py-1 px-2 rounded text-sm flex flex-col items-center mb-1 ${
+                    canAffordUpgrade(upgrade.cost)
+                      ? "bg-blue-700 hover:bg-blue-800"
+                      : "bg-gray-700 cursor-not-allowed opacity-60"
+                  }`}
+                  disabled={!canAffordUpgrade(upgrade.cost)}
+                  onClick={() => onStartUpgrade(upgrade.key)}
+                >
+                  <span className="font-medium text-center w-full">
+                    {upgrade.label} ({upgrade.duration} turns)
+                  </span>
+                  <span className="flex flex-row items-center gap-2 mt-0.5 opacity-80">
+                    <span className="inline-flex items-center gap-0.5">
+                      <Package className="w-4 h-4" />
+                      {upgrade.cost.rations}
                     </span>
-                  </button>
-                ))
-              )
+                    <span className="inline-flex items-center gap-0.5">
+                      <Printer className="w-4 h-4" />
+                      {upgrade.cost.printingMaterial}
+                    </span>
+                    <span className="inline-flex items-center gap-0.5">
+                      <Sword className="w-4 h-4" />
+                      {upgrade.cost.weapons}
+                    </span>
+                  </span>
+                </button>
+              ))
             )}
           </div>
         </div>

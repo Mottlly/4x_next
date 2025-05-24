@@ -14,23 +14,34 @@ export default function useEndTurn(
   return () => {
     const newTurn = (currentTurn ?? 0) + 1;
 
-    // Compute new resources
+    // 1. Compute new resources based on the current board state
     const newResources = computeResourceChange(board);
 
+    // 2. Advance the turn counter
     setCurrentTurn(newTurn);
+
+    // 3. Reset each piece's movesLeft to its max move value for the new turn
     setPieces((prev) => prev.map((p) => ({ ...p, movesLeft: p.move })));
+
+    // 4. Update the board state:
+    //    - Set the new turn number
+    //    - Update resources to the new values
+    //    - Process any upgrades in progress on tiles
     setBoard((prev) => ({
       ...prev,
       turn: newTurn,
       resources: newResources,
       tiles: processUpgrades(prev.tiles, currentTurn + 1),
     }));
+
+    // 5. Update the UI resource state object for display
     setResources({
       rations: newResources[0],
       printingMaterial: newResources[1],
       weapons: newResources[2],
     });
 
+    // 6. Persist the new board state to the backend via PATCH request
     fetch("/api/boardTable", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -40,7 +51,7 @@ export default function useEndTurn(
           ...board,
           turn: newTurn,
           resources: newResources,
-          pieces: pieces, // <-- use the current pieces state!
+          pieces: pieces, // <-- uses the current pieces state!
         },
       }),
     }).catch(console.error);
