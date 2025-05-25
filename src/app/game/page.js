@@ -76,16 +76,7 @@ export default function GamePage() {
     return <div>{t("gamePage.NoMapData")}</div>;
   }
 
-  const boardTiles = {
-    id: board.id,
-    turn: board.turn,
-    tiles: board.tiles,
-    pieces: board.pieces || [],
-    cols: 25,
-    rows: 25,
-    spacing: 1.05,
-    resources: board.resources,
-  };
+  const boardTiles = { ...board };
 
   return (
     <div className="h-screen w-screen">

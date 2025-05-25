@@ -83,6 +83,16 @@ export async function POST(req) {
       r: podTile.r,
     });
 
+    // Generate 3-6 goody huts at random spawnable tiles
+    const goodyHutCount = Math.floor(Math.random() * 4) + 3; // 3 to 6 inclusive
+    const shuffled = spawnable.sort(() => 0.5 - Math.random());
+    const goodyHuts = Array.from({ length: goodyHutCount }).map((_, i) => ({
+      id: uuidv4(),
+      type: "goodyHut",
+      q: shuffled[i].q,
+      r: shuffled[i].r,
+    }));
+
     const boardState = {
       turn: 1,
       cols,
@@ -90,8 +100,10 @@ export async function POST(req) {
       spacing,
       tiles,
       pieces: [firstPiece],
-      // resources array: [rations, printingMaterial, weapons]
+      neutralPieces: goodyHuts,
+      hostilePieces: [],
       resources: [20, 3, 3],
+      // resources array: [rations, printingMaterial, weapons]
     };
 
     const { rows: inserted } = await pool.query(postBoardQuery, [

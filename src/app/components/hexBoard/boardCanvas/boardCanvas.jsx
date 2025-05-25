@@ -13,8 +13,10 @@ import BuildingLayer from "./layers/buildingLayer";
 import FogLayer from "./layers/fogLayer";
 import RiverLayer from "./layers/riverLayer";
 import MovementLayer from "./layers/movementLayer";
-import PiecesLayer from "./layers/piecesLayer";
+import PiecesLayer from "./layers/pieceLayers/piecesLayer";
 import SemiFogLayer from "./layers/semiFogLayer";
+import NeutralPiecesLayer from "./layers/pieceLayers/neutralPiecesLayer";
+import HostilePiecesLayer from "./layers/pieceLayers/hostilePiecesLayer";
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -126,7 +128,20 @@ const BoardCanvas = memo(function BoardCanvas({
         heightScale={heightScale}
         onTileClick={onTileClickCb}
       />
-
+      <NeutralPiecesLayer
+        neutralPieces={board.neutralPieces || []}
+        tiles={board.tiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+        onTileClick={onTileClickCb}
+      />
+      <HostilePiecesLayer
+        hostilePieces={board.hostilePieces || []}
+        tiles={board.tiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+        onTileClick={onTileClickCb}
+      />
       <MapControls
         enableDamping
         minPolarAngle={0}

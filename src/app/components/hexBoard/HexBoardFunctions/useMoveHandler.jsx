@@ -1,11 +1,15 @@
 import { useCallback } from "react";
 import { hexDistance } from "../../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
+import { handleGoodyHutCollect } from "../../../../library/utililies/game/goodyHuts/handleGoodyCollect";
 
 export default function useMoveHandler(
   pieces,
   selectedPieceId,
   setPieces,
-  setSelectedPieceId
+  setSelectedPieceId,
+  board,
+  setBoard,
+  setResources
 ) {
   return useCallback(
     (tile) => {
@@ -27,9 +31,18 @@ export default function useMoveHandler(
             )
           );
           setSelectedPieceId(null);
+
+          // --- Add this: check for goody hut after move ---
+          handleGoodyHutCollect({
+            tile,
+            pieces,
+            neutralPieces: board.neutralPieces,
+            setBoard,
+            setResources,
+          });
         }
       }
     },
-    [pieces, selectedPieceId, setPieces, setSelectedPieceId]
+    [pieces, selectedPieceId, setPieces, setSelectedPieceId, board, setBoard, setResources]
   );
 }

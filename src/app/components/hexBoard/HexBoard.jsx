@@ -63,7 +63,10 @@ export default function HexBoard({ board: initialBoard }) {
     pieces,
     selectedPieceId,
     setPieces,
-    setSelectedPieceId
+    setSelectedPieceId,
+    board,
+    setBoard,
+    setResources
   );
 
   const onTileClick = (tile) => {
