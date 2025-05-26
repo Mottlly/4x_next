@@ -44,8 +44,6 @@ export const buildOptions_byUnitType = {
   Engineer: ["resource_extractor", "sensor_suite"],
 };
 
-export const settlementBuildings = ["reconstructed_shelter"];
-
 export function getBuildOptionsForType(type) {
   const keys = buildOptions_byUnitType[type] || [];
   return keys.map((key) => {

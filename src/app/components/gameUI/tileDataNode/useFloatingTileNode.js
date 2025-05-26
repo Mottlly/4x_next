@@ -1,4 +1,20 @@
 import { useRef, useCallback } from "react";
+import { settlementUpgradeOptions } from "../../../../library/utililies/game/settlements/settlementUpgrades";
+import { buildingOptions } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
+
+// Combine upgrade and building key->label into one map
+const keyToLabel = {};
+
+// Add building labels
+Object.entries(buildingOptions).forEach(([key, val]) => {
+  keyToLabel[key] = val.label;
+});
+// Add upgrade labels
+Object.values(settlementUpgradeOptions).forEach((arr) => {
+  arr.forEach((upgrade) => {
+    keyToLabel[upgrade.key] = upgrade.label;
+  });
+});
 
 export default function useFloatingTileInfo() {
   const infoPanelRef = useRef();
@@ -18,10 +34,12 @@ export default function useFloatingTileInfo() {
       <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
       <div><b>Type:</b> ${tile.type || "water"}</div>
       ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
-      ${tile.building ? `<div><b>Building:</b> ${tile.building}</div>` : ""}
+      ${tile.building ? `<div><b>Building:</b> ${keyToLabel[tile.building] || tile.building}</div>` : ""}
       ${
         tile.building && tile.upgrades && tile.upgrades.length > 0
-          ? `<div><b>Upgrades:</b> ${tile.upgrades.join(", ")}</div>`
+          ? `<div><b>Upgrades:</b> ${tile.upgrades
+              .map((key) => keyToLabel[key] || key)
+              .join(", ")}</div>`
           : ""
       }
       <div style="margin-top:8px;font-size:12px;opacity:0.7;"><em>Sector coordinates ⎯ data stream stabilized</em></div>
