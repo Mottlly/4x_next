@@ -2,13 +2,15 @@ import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
 function SemiFogLayer({ tiles, spacing, heightScale }) {
-  const fogHeight = spacing * 0.5 + 0.02; // slightly taller than tile
+  const fogHeight = spacing * 0.3; // thinner fog layer
+  const fogYOffset = 0.4; // small lift to avoid z-fighting
+
   return (
     <>
       {tiles.map((tile) => {
         const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
-        // Center the fog overlay vertically on the tile
-        const y = tile.height * heightScale;
+        // Place fog just above the tile
+        const y = tile.height * heightScale + fogYOffset;
         return (
           <mesh
             key={`semifog-${tile.q}-${tile.r}`}

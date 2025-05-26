@@ -91,7 +91,7 @@ export default function FogBestagon({
   return (
     <mesh
       ref={meshRef}
-      position={[position[0], position[1] + thickness / 2 + 0.01, position[2]]}
+      position={position}
       onClick={handleClick}
     >
       <cylinderGeometry args={[radius, radius, thickness, 6]} />
