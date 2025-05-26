@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { extend, useFrame } from "@react-three/fiber";
 import { shaderMaterial, Edges } from "@react-three/drei";
 
-// Custom shader for semi-fog
+// Match main fog's color/noise, but lower alpha for semi-fog
 const SemiFogHexShaderMaterial = shaderMaterial(
   { time: 0.0 },
   `
@@ -36,7 +36,7 @@ const SemiFogHexShaderMaterial = shaderMaterial(
   float fbm(vec2 p) {
     float total = 0.0;
     float amp = 0.5;
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 5; i++) {
       total += amp * noise(p);
       p *= 2.0;
       amp *= 0.5;
@@ -45,20 +45,12 @@ const SemiFogHexShaderMaterial = shaderMaterial(
   }
   void main() {
     vec2 uv2 = vUv * 4.0;
-    uv2 += time * 0.12;
+    uv2 += time * 0.3;
     float f = fbm(uv2);
-
-    // Radial gradient for softer edges
-    float dist = distance(vUv, vec2(0.5, 0.5));
-    float edgeFade = smoothstep(0.45, 0.5, dist);
-
-    // Neutral gray fog colors
-    vec3 col = mix(vec3(0.18,0.18,0.18), vec3(0.32,0.32,0.32), f);
-
-    // Blend with edge fade for softer look
-    float alpha = mix(0.33, 0.12, edgeFade);
-
-    gl_FragColor = vec4(col, alpha);
+    // Use the same fog color as main fog
+    vec3 col = mix(vec3(0.15), vec3(0.35), f);
+    // Lower alpha for semi-fog (main fog is 1.0)
+    gl_FragColor = vec4(col, 0.4);
   }
   `
 );
@@ -68,7 +60,7 @@ export default function SemiFogBestagon({
   position,
   radius = 1,
   thickness = 0.05,
-  speed = 0.25,
+  speed = 0.3,
 }) {
   const matRef = useRef();
 
@@ -82,7 +74,6 @@ export default function SemiFogBestagon({
     <mesh position={position} renderOrder={1000}>
       <cylinderGeometry args={[radius, radius, thickness, 6]} />
       <semiFogHexShaderMaterial ref={matRef} transparent />
-      <Edges color="#bcd" />
     </mesh>
   );
 }

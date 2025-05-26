@@ -89,14 +89,9 @@ export default function FogBestagon({
   });
 
   return (
-    <mesh
-      ref={meshRef}
-      position={position}
-      onClick={handleClick}
-    >
+    <mesh ref={meshRef} position={position} onClick={handleClick}>
       <cylinderGeometry args={[radius, radius, thickness, 6]} />
       <fogHexShaderMaterial ref={matRef} />
-      <Edges color="white" />
     </mesh>
   );
 }
