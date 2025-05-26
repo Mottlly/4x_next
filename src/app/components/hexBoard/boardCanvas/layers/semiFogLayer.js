@@ -2,8 +2,8 @@ import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
 function SemiFogLayer({ tiles, spacing, heightScale }) {
-  const fogHeight = spacing * 0.3; // thinner fog layer
-  const fogYOffset = 0.4; // small lift to avoid z-fighting
+  const fogHeight = spacing * 0.05; // thinner fog layer
+  const fogYOffset = 0.3; // small lift to avoid z-fighting
 
   return (
     <>
