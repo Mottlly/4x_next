@@ -32,7 +32,7 @@ export default function useMoveHandler(
           );
           setSelectedPieceId(null);
 
-          // --- Add this: check for goody hut after move ---
+          // check for goody hut after move
           handleGoodyHutCollect({
             tile,
             pieces,
@@ -43,6 +43,14 @@ export default function useMoveHandler(
         }
       }
     },
-    [pieces, selectedPieceId, setPieces, setSelectedPieceId, board, setBoard, setResources]
+    [
+      pieces,
+      selectedPieceId,
+      setPieces,
+      setSelectedPieceId,
+      board,
+      setBoard,
+      setResources,
+    ]
   );
 }

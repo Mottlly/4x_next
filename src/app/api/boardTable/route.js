@@ -32,22 +32,32 @@ export async function GET(req) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const game_id = searchParams.get("game_id");
+
   if (!id && !game_id) {
     return NextResponse.json(
       { error: "Board ID or Game ID required." },
       { status: 400 }
     );
   }
+
   const query = id ? getBoardQuery : getBoardByGameIDQuery;
   const params = id ? [id] : [game_id];
 
   try {
     const { rows } = await pool.query(query, params);
+
     if (rows.length === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
     }
+
+    const b = rows[0];
     return NextResponse.json(
-      { board: rows[0].boardref, board_id: rows[0].id },
+      {
+        board: b.boardref,
+        board_id: b.id,
+        created_at: b.created_at,
+        updated_at: b.updated_at,
+      },
       { status: 200 }
     );
   } catch (error) {
@@ -83,8 +93,8 @@ export async function POST(req) {
       r: podTile.r,
     });
 
-    // Generate 3-6 goody huts at random spawnable tiles
-    const goodyHutCount = Math.floor(Math.random() * 4) + 3; // 3 to 6 inclusive
+    // Generate 3–6 goody huts
+    const goodyHutCount = Math.floor(Math.random() * 4) + 3;
     const shuffled = spawnable.sort(() => 0.5 - Math.random());
     const goodyHuts = Array.from({ length: goodyHutCount }).map((_, i) => ({
       id: uuidv4(),
@@ -103,7 +113,6 @@ export async function POST(req) {
       neutralPieces: goodyHuts,
       hostilePieces: [],
       resources: [20, 3, 3],
-      // resources array: [rations, printingMaterial, weapons]
     };
 
     const { rows: inserted } = await pool.query(postBoardQuery, [
@@ -112,8 +121,14 @@ export async function POST(req) {
       JSON.stringify(boardState),
     ]);
 
+    const b = inserted[0];
     return NextResponse.json(
-      { board: inserted[0].boardref, board_id: inserted[0].id },
+      {
+        board: b.boardref,
+        board_id: b.id,
+        created_at: b.created_at,
+        updated_at: b.updated_at,
+      },
       { status: 201 }
     );
   } catch (error) {
@@ -136,21 +151,29 @@ export async function PATCH(req) {
       );
     }
 
-    // Ensure pieces are saved with type and location
+    // Preserve all piece fields
     const boardToSave = {
       ...newBoard,
-      pieces: (newBoard.pieces || []).map((p) => ({ ...p })), // Save all fields
+      pieces: (newBoard.pieces || []).map((p) => ({ ...p })),
     };
 
     const { rows: updated } = await pool.query(patchBoardQuery, [
       JSON.stringify(boardToSave),
       board_id,
     ]);
+
     if (updated.length === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
     }
+
+    const b = updated[0];
     return NextResponse.json(
-      { message: "Board updated.", board: updated[0].boardref },
+      {
+        message: "Board updated.",
+        board: b.boardref,
+        created_at: b.created_at,
+        updated_at: b.updated_at,
+      },
       { status: 200 }
     );
   } catch (error) {
