@@ -1,5 +1,6 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
+import { riverStyles } from "@/library/styles/stylesIndex";
 
 function RiverLayer({ tiles, spacing, heightScale }) {
   return (
@@ -13,8 +14,10 @@ function RiverLayer({ tiles, spacing, heightScale }) {
             position={[x, y, z]}
             renderOrder={1000}
           >
-            <sphereGeometry args={[spacing * 0.1, 8, 8]} />
-            <meshStandardMaterial color="deepskyblue" />
+            <sphereGeometry
+              args={[spacing * riverStyles.geometry.args[0], 8, 8]}
+            />
+            <meshStandardMaterial color={riverStyles.color} />
           </mesh>
         );
       })}

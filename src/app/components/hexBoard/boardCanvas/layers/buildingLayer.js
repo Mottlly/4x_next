@@ -1,5 +1,6 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
+import { buildingTypeStyles } from "@/library/styles/stylesIndex";
 
 function BuildingLayer({ tiles, spacing, heightScale }) {
   return (
@@ -8,14 +9,15 @@ function BuildingLayer({ tiles, spacing, heightScale }) {
         const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
         const y = tile.height * heightScale + 0.2;
         let geom;
-        let color = "#c2a465";
+        let color =
+          buildingTypeStyles[tile.building]?.color ||
+          buildingTypeStyles.default.color;
 
         switch (tile.building) {
           case "reconstructed_shelter":
             geom = (
               <cylinderGeometry args={[0, spacing * 0.4, spacing * 0.6, 4]} />
             );
-            color = "#9b59b6";
             break;
           case "resource_extractor":
             geom = (
@@ -23,11 +25,9 @@ function BuildingLayer({ tiles, spacing, heightScale }) {
                 args={[spacing * 0.3, spacing * 0.3, spacing * 0.5, 16]}
               />
             );
-            color = "#27ae60";
             break;
           case "sensor_suite":
             geom = <sphereGeometry args={[spacing * 0.35, 16, 16]} />;
-            color = "#5f27cd";
             break;
           default:
             geom = (

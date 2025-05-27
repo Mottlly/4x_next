@@ -2,13 +2,13 @@
 
 import React, { useRef, useState } from "react";
 import { Edges } from "@react-three/drei";
+import { tileTypeStyles } from "@/library/styles/stylesIndex";
 
 const Bestagon = ({
   position,
-  color,
   userData,
   onClick: onExternalClick,
-  spacing = 1, // default, but will be passed in
+  spacing = 1,
 }) => {
   const meshRef = useRef();
   const [selected, setSelected] = useState(false);
@@ -28,16 +28,19 @@ const Bestagon = ({
     }
   };
 
+  const tileType = userData?.tile?.type || "default";
+  const style = tileTypeStyles[tileType] || tileTypeStyles.default;
+
   return (
     <mesh
       ref={meshRef}
       position={position}
-      onClick={handleClick} // now both internal + external fire
+      onClick={handleClick}
       userData={userData}
     >
-      <cylinderGeometry args={[spacing, spacing, 0.5, 6]} />
-      <meshStandardMaterial color={color} />
-      <Edges color="white" />
+      <cylinderGeometry args={[spacing, spacing, style.geometry.args[2], 6]} />
+      <meshStandardMaterial color={style.color} />
+      <Edges color={style.edgeColor} />
     </mesh>
   );
 };

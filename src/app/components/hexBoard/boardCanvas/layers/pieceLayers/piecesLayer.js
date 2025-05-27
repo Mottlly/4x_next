@@ -1,5 +1,6 @@
 import React from "react";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
+import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 
 function PiecesLayer({
   pieces,
@@ -17,6 +18,10 @@ function PiecesLayer({
 
         const [x, , z] = hexToPosition(p.q, p.r, spacing);
         const y = tile.height * heightScale + 0.5;
+        const style =
+          selectedPieceId === p.id
+            ? { color: "yellow" }
+            : pieceTypeStyles[p.type] || pieceTypeStyles.default;
 
         return (
           <mesh
@@ -28,15 +33,7 @@ function PiecesLayer({
             }}
           >
             <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-            <meshStandardMaterial
-              color={
-                selectedPieceId === p.id
-                  ? "yellow"
-                  : p.type === "pod"
-                  ? "green"
-                  : "red"
-              }
-            />
+            <meshStandardMaterial color={style.color} />
           </mesh>
         );
       })}

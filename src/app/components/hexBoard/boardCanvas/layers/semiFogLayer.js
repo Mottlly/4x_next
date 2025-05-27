@@ -1,9 +1,10 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import SemiFogBestagon from "../SemiFogBestagon";
+import { semiFogStyles } from "@/library/styles/stylesIndex";
 
 function SemiFogLayer({ tiles, spacing, heightScale }) {
-  const fogHeight = spacing * 0.05;
+  const fogHeight = semiFogStyles.geometry.args[2];
   const fogYOffset = 0.3;
 
   return (

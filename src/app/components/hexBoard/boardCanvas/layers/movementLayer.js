@@ -1,5 +1,6 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
+import { movementStyles } from "@/library/styles/stylesIndex";
 
 function MovementLayer({ reachableTiles, spacing, heightScale }) {
   return (
@@ -11,17 +12,22 @@ function MovementLayer({ reachableTiles, spacing, heightScale }) {
           <mesh
             key={`border-${tile.q}-${tile.r}`}
             position={[x, y, z]}
-            renderOrder={999}
+            renderOrder={movementStyles.renderOrder}
           >
             <cylinderGeometry
-              args={[spacing * 0.85, spacing * 0.85, 0.02, 6]}
+              args={[
+                spacing * movementStyles.borderScale,
+                spacing * movementStyles.borderScale,
+                movementStyles.thickness,
+                6,
+              ]}
             />
             <meshBasicMaterial
-              color="cyan"
-              wireframe
+              color={movementStyles.color}
+              wireframe={movementStyles.wireframe}
               transparent
-              opacity={0.8}
-              depthTest={false}
+              opacity={movementStyles.opacity}
+              depthTest={movementStyles.depthTest}
             />
           </mesh>
         );

@@ -10,7 +10,7 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { getAvailableUpgrades } from "../../../library/utililies/game/settlements/upgradeUtilities";
-import { settlementPanelStyles } from "@/library/styles";
+import { settlementPanelStyles } from "@/library/styles/stylesIndex";
 
 // Map unit keys to icons
 const unitIcons = {

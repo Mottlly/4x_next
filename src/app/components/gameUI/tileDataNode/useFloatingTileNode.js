@@ -1,13 +1,15 @@
 import { useRef, useCallback } from "react";
 import { settlementUpgradeOptions } from "../../../../library/utililies/game/settlements/settlementUpgrades";
 import { buildingOptions } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
-import { floatingTileInfoPanelStyles } from "@/library/styles"; // Adjust alias if needed
+import { floatingTileInfoPanelStyles } from "@/library/styles/stylesIndex";
 
 // Helper to convert style object to inline style string
 function styleObjToStr(obj) {
   return Object.entries(obj)
-    .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}:${v}`)
-    .join(';');
+    .map(
+      ([k, v]) => `${k.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())}:${v}`
+    )
+    .join(";");
 }
 
 // Combine upgrade and building key->label into one map
@@ -31,18 +33,30 @@ export default function useFloatingTileInfo() {
     if (!infoPanelRef.current) return;
     if (!tile) {
       infoPanelRef.current.innerHTML = `
-        <h2 style="${styleObjToStr(floatingTileInfoPanelStyles.heading)}">DATA NODE</h2>
-        <div style="${styleObjToStr(floatingTileInfoPanelStyles.noData)}">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
+        <h2 style="${styleObjToStr(
+          floatingTileInfoPanelStyles.heading
+        )}">DATA NODE</h2>
+        <div style="${styleObjToStr(
+          floatingTileInfoPanelStyles.noData
+        )}">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
       `;
       infoPanelRef.current.style.opacity = 0.7;
       return;
     }
     infoPanelRef.current.innerHTML = `
-      <h2 style="${styleObjToStr(floatingTileInfoPanelStyles.heading)}">DATA NODE</h2>
+      <h2 style="${styleObjToStr(
+        floatingTileInfoPanelStyles.heading
+      )}">DATA NODE</h2>
       <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
       <div><b>Type:</b> ${tile.type || "water"}</div>
       ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
-      ${tile.building ? `<div><b>Building:</b> ${keyToLabel[tile.building] || tile.building}</div>` : ""}
+      ${
+        tile.building
+          ? `<div><b>Building:</b> ${
+              keyToLabel[tile.building] || tile.building
+            }</div>`
+          : ""
+      }
       ${
         tile.building && tile.upgrades && tile.upgrades.length > 0
           ? `<div><b>Upgrades:</b> ${tile.upgrades
@@ -50,7 +64,9 @@ export default function useFloatingTileInfo() {
               .join(", ")}</div>`
           : ""
       }
-      <div style="${styleObjToStr(floatingTileInfoPanelStyles.sectorNote)}"><em>Sector coordinates ⎯ data stream stabilized</em></div>
+      <div style="${styleObjToStr(
+        floatingTileInfoPanelStyles.sectorNote
+      )}"><em>Sector coordinates ⎯ data stream stabilized</em></div>
     `;
     infoPanelRef.current.style.opacity = 1;
     if (pointerEvent) {

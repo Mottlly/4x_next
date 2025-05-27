@@ -1,6 +1,6 @@
 import React from "react";
 import { actionDetails } from "../../../library/utililies/game/gamePieces/actionsDictator";
-import { actionsMenuStyles } from "@/library/styles";
+import { actionsMenuStyles } from "@/library/styles/stylesIndex";
 
 export default function ActionsMenu({
   selectedPiece,

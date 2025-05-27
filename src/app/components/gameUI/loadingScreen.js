@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { loadingScreenStyles } from "@/library/styles";
+import { loadingScreenStyles } from "@/library/styles/stylesIndex";
 
 export default function LoadingScreen() {
   const messages = [

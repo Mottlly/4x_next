@@ -1,6 +1,6 @@
 import React from "react";
 import { Package, Printer, Sword } from "lucide-react";
-import { resourcePanelStyles } from "@/library/styles";
+import { resourcePanelStyles } from "@/library/styles/stylesIndex";
 
 export default function ResourcePanel({ resources }) {
   return (
@@ -9,15 +9,21 @@ export default function ResourcePanel({ resources }) {
         <ul className={resourcePanelStyles.list}>
           <li className={resourcePanelStyles.item}>
             <Package className={resourcePanelStyles.icon} />
-            <span className={resourcePanelStyles.value}>{resources.rations}</span>
+            <span className={resourcePanelStyles.value}>
+              {resources.rations}
+            </span>
           </li>
           <li className={resourcePanelStyles.item}>
             <Printer className={resourcePanelStyles.icon} />
-            <span className={resourcePanelStyles.value}>{resources.printingMaterial}</span>
+            <span className={resourcePanelStyles.value}>
+              {resources.printingMaterial}
+            </span>
           </li>
           <li className={resourcePanelStyles.item}>
             <Sword className={resourcePanelStyles.icon} />
-            <span className={resourcePanelStyles.value}>{resources.weapons}</span>
+            <span className={resourcePanelStyles.value}>
+              {resources.weapons}
+            </span>
           </li>
         </ul>
       </div>
