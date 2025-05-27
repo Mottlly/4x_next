@@ -1,14 +1,15 @@
 import React from "react";
+import { endTurnStyles } from "@/library/styles";
 
 // A sci-fi–styled circular "Next Turn" button with neon glow
 export default function NextTurnButton({ currentTurn, onNext }) {
   return (
-    <div className="absolute bottom-4 right-4 z-20">
+    <div className={endTurnStyles.container}>
       <button
         onClick={onNext}
-        className="neon-circle w-24 h-24 flex flex-col items-center justify-center rounded-full bg-[rgba(10,10,30,0.85)] text-cyan-200 font-mono uppercase hover:text-white transition"
+        className={endTurnStyles.button}
       >
-        <span className="text-[0.6rem] font-bold leading-none">
+        <span className={endTurnStyles.turnText}>
           Turn: {currentTurn}{" "}
         </span>
       </button>

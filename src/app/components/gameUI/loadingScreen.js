@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { loadingScreenStyles } from "@/library/styles";
 
 export default function LoadingScreen() {
   const messages = [
@@ -28,7 +29,6 @@ export default function LoadingScreen() {
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
-  // Update the message index every 3 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
@@ -36,22 +36,10 @@ export default function LoadingScreen() {
     return () => clearInterval(intervalId);
   }, [messages.length]);
 
-  const containerStyle = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#000",
-    color: "#fff",
-    textAlign: "center",
-    padding: "20px",
-  };
-
   return (
-    <div style={containerStyle}>
+    <div style={loadingScreenStyles.container}>
       <h1>Drop Ship System Diagnostics</h1>
-      <p style={{ fontSize: "1.5rem" }}>{messages[currentMessageIndex]}</p>
+      <p style={loadingScreenStyles.message}>{messages[currentMessageIndex]}</p>
     </div>
   );
 }

@@ -1,6 +1,14 @@
 import { useRef, useCallback } from "react";
 import { settlementUpgradeOptions } from "../../../../library/utililies/game/settlements/settlementUpgrades";
 import { buildingOptions } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
+import { floatingTileInfoPanelStyles } from "@/library/styles"; // Adjust alias if needed
+
+// Helper to convert style object to inline style string
+function styleObjToStr(obj) {
+  return Object.entries(obj)
+    .map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())}:${v}`)
+    .join(';');
+}
 
 // Combine upgrade and building key->label into one map
 const keyToLabel = {};
@@ -23,14 +31,14 @@ export default function useFloatingTileInfo() {
     if (!infoPanelRef.current) return;
     if (!tile) {
       infoPanelRef.current.innerHTML = `
-        <h2 style="margin-bottom:8px;">DATA NODE</h2>
-        <div style="color:#0ff;opacity:0.6;">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
+        <h2 style="${styleObjToStr(floatingTileInfoPanelStyles.heading)}">DATA NODE</h2>
+        <div style="${styleObjToStr(floatingTileInfoPanelStyles.noData)}">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
       `;
       infoPanelRef.current.style.opacity = 0.7;
       return;
     }
     infoPanelRef.current.innerHTML = `
-      <h2 style="margin-bottom:8px;">DATA NODE</h2>
+      <h2 style="${styleObjToStr(floatingTileInfoPanelStyles.heading)}">DATA NODE</h2>
       <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
       <div><b>Type:</b> ${tile.type || "water"}</div>
       ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
@@ -42,7 +50,7 @@ export default function useFloatingTileInfo() {
               .join(", ")}</div>`
           : ""
       }
-      <div style="margin-top:8px;font-size:12px;opacity:0.7;"><em>Sector coordinates ⎯ data stream stabilized</em></div>
+      <div style="${styleObjToStr(floatingTileInfoPanelStyles.sectorNote)}"><em>Sector coordinates ⎯ data stream stabilized</em></div>
     `;
     infoPanelRef.current.style.opacity = 1;
     if (pointerEvent) {
