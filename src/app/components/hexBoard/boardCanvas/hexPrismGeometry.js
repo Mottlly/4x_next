@@ -1,27 +1,28 @@
 import * as THREE from "three";
 
-// getNeighborTopY: (sideIndex: 0-5) => number (world Y of neighbor's top)
-export default function hexPrismGeometry(radius = 1, height = 0.5) {
+// topYList: array of 6 y-values for the top ring (relative to the tile's "topY" world position)
+export default function hexPrismGeometry(
+  radius = 1,
+  height = 0.5,
+  topYList = null
+) {
   const positions = [];
   const indices = [];
 
-  // Top at y=0, bottom at y=-height
-  const yTop = 0;
-  const yBot = -height;
-
   // Center vertices
-  positions.push(0, yTop, 0); // 0: top center
-  positions.push(0, yBot, 0); // 1: bottom center
+  positions.push(0, 0, 0); // 0: top center
+  positions.push(0, -height, 0); // 1: bottom center
 
   // Top ring (2..7)
   for (let i = 0; i < 6; i++) {
-    const angle = Math.PI / 3 * i;
-    positions.push(Math.cos(angle) * radius, yTop, Math.sin(angle) * radius);
+    const angle = (Math.PI / 3) * i;
+    const y = topYList ? topYList[i] : 0;
+    positions.push(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
   }
   // Bottom ring (8..13)
   for (let i = 0; i < 6; i++) {
-    const angle = Math.PI / 3 * i;
-    positions.push(Math.cos(angle) * radius, yBot, Math.sin(angle) * radius);
+    const angle = (Math.PI / 3) * i;
+    positions.push(Math.cos(angle) * radius, -height, Math.sin(angle) * radius);
   }
 
   // Top face
@@ -39,7 +40,10 @@ export default function hexPrismGeometry(radius = 1, height = 0.5) {
   }
 
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(positions, 3)
+  );
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   return geometry;
