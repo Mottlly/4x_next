@@ -29,23 +29,15 @@ const Bestagon = ({
   const tileY = tileHeight * heightScale;
   const neighborHeightsRaw = getNeighborHeights(userData.tile, boardTiles);
   const isEvenRow = userData.tile.r % 2 === 0;
-  const neighborHeights = isEvenRow
-    ? [
-        neighborHeightsRaw[3],
-        neighborHeightsRaw[1],
-        neighborHeightsRaw[0],
-        neighborHeightsRaw[2],
-        neighborHeightsRaw[4],
-        neighborHeightsRaw[5],
-      ]
-    : [
-        neighborHeightsRaw[3],
-        neighborHeightsRaw[1],
-        neighborHeightsRaw[0],
-        neighborHeightsRaw[2],
-        neighborHeightsRaw[4],
-        neighborHeightsRaw[5],
-      ]; // adjust if odd row order is different
+  // Map neighborHeightsRaw to [E, SE, SW, W, NW, NE]
+  const neighborHeights = [
+    neighborHeightsRaw[3], // E
+    neighborHeightsRaw[5], // SE
+    neighborHeightsRaw[4], // SW
+    neighborHeightsRaw[2], // W
+    neighborHeightsRaw[0], // NW
+    neighborHeightsRaw[1], // NE
+  ];
 
   const slopeVertices = whichVerticesShouldSlope(
     tileHeight,
@@ -53,9 +45,7 @@ const Bestagon = ({
     HEIGHT_THRESHOLD
   );
 
-  const vertexOrder = isEvenRow
-    ? [4, 5, 0, 1, 2, 3] // even rows
-    : [5, 0, 1, 2, 3, 4]; // odd rows
+  const vertexOrder = [0, 1, 2, 3, 4, 5];
 
   // For each vertex, if it should slope, set to the *lowest* adjacent neighbor's height; else, keep at tile height
   const topYList = vertexOrder.map((i) => {
