@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
+import { a, useSpring } from "@react-spring/three";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 
@@ -10,6 +11,16 @@ function PiecesLayer({
   heightScale,
   onTileClick,
 }) {
+  // Track previous positions for animation
+  const prevPositions = useRef({});
+
+  useEffect(() => {
+    // Update previous positions after every render
+    pieces.forEach((p) => {
+      prevPositions.current[p.id] = hexToPosition(p.q, p.r, spacing);
+    });
+  }, [pieces, spacing]);
+
   return (
     <>
       {pieces.map((p) => {
@@ -23,18 +34,28 @@ function PiecesLayer({
             ? { color: "yellow" }
             : pieceTypeStyles[p.type] || pieceTypeStyles.default;
 
+        // Animate from previous position to new position
+        const prev = prevPositions.current[p.id] || [x, y, z];
+        const spring = useSpring({
+          position: [x, y, z],
+          from: { position: prev },
+          config: { mass: 1, tension: 170, friction: 26 },
+        });
+
         return (
-          <mesh
+          <a.group
             key={`piece-${p.id}`}
-            position={[x, y, z]}
+            position={spring.position}
             onClick={(e) => {
               e.stopPropagation();
               onTileClick(tile);
             }}
           >
-            <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-            <meshStandardMaterial color={style.color} />
-          </mesh>
+            <mesh>
+              <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
+              <meshStandardMaterial color={style.color} />
+            </mesh>
+          </a.group>
         );
       })}
     </>
