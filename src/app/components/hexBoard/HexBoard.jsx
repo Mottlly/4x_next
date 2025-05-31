@@ -18,6 +18,7 @@ import { startUpgrade } from "../../../library/utililies/game/settlements/upgrad
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
 import useEndTurn from "./HexBoardFunctions/useEndTurn";
 import useRevealTiles from "./HexBoardFunctions/useRevealTiles";
+import useUnlockAudio from "./HexBoardFunctions/useUnlockAudio";
 
 // extracted functions
 import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
@@ -180,18 +181,25 @@ export default function HexBoard({ board: initialBoard }) {
     setOpenSettlement(null);
   };
 
+  const sciFiAudioRef = useRef();
+  const natureAudioRef = useRef();
+
+  useUnlockAudio(sciFiAudioRef, natureAudioRef);
+
   return (
     <div className="relative w-full h-full">
       <ResourcePanel resources={resources} />
 
       <BoardCanvas
-        board={{ ...board, tiles: tilesWithSemiFog }}
+        board={board}
         pieces={pieces}
         selectedPieceId={selectedPieceId}
         onTileClick={onTileClick}
         setHoveredTile={showTileInfo}
         isDraggingRef={isDraggingRef}
         spawnTiles={spawnTiles}
+        sciFiAudioRef={sciFiAudioRef}
+        natureAudioRef={natureAudioRef}
       />
 
       {/* Floating info panel */}
@@ -219,6 +227,19 @@ export default function HexBoard({ board: initialBoard }) {
           currentTurn={currentTurn}
         />
       )}
+
+      <audio
+        ref={sciFiAudioRef}
+        src="/music/sci-fi_loop.wav"
+        loop
+        preload="auto"
+      />
+      <audio
+        ref={natureAudioRef}
+        src="/music/nature_loop.wav"
+        loop
+        preload="auto"
+      />
     </div>
   );
 }

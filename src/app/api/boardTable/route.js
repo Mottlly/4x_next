@@ -95,8 +95,6 @@ export async function POST(req) {
     });
 
     // Generate 3–6 goody huts
-    const goodyHutCount = Math.floor(Math.random() * 4) + 3;
-    const shuffled = spawnable.sort(() => 0.5 - Math.random());
     const goodyHuts = generateGoodyHuts(spawnable);
 
     const boardState = {

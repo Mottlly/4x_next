@@ -26,6 +26,8 @@ const BoardCanvas = memo(function BoardCanvas({
   setHoveredTile,
   isDraggingRef,
   spawnTiles = [],
+  sciFiAudioRef,
+  natureAudioRef,
 }) {
   const heightScale = 0.5;
 
@@ -148,9 +150,9 @@ const BoardCanvas = memo(function BoardCanvas({
         maxPolarAngle={Math.PI / 4}
       />
       <AudioSwitcher
-        threshold={board.threshold}
-        sciFiAudioRef={useRef()}
-        natureAudioRef={useRef()}
+        threshold={board.threshold ?? 10}
+        sciFiAudioRef={sciFiAudioRef}
+        natureAudioRef={natureAudioRef}
       />
       <FogEnclosure
         board={board}
