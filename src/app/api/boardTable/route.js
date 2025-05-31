@@ -5,7 +5,7 @@ import path from "path";
 import { generateBiomeMap } from "../../../library/utililies/game/biomeGenerators/generateMap";
 import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import { v4 as uuidv4 } from "uuid";
-import { generateGoodyHuts } from "@/library/utililies/game/goodyHuts/generateGoodyHuts";
+import { generateGoodyHuts } from "../../../library/utililies/game/goodyHuts/generateGoodyHuts";
 
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
