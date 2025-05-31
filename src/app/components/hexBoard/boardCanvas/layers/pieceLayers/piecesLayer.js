@@ -3,8 +3,7 @@ import { a, useSpring } from "@react-spring/three";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 
-// Single animated piece component
-function Piece({
+const Piece = React.memo(function Piece({
   p,
   tile,
   selectedPieceId,
@@ -20,7 +19,6 @@ function Piece({
       ? { color: "yellow" }
       : pieceTypeStyles[p.type] || pieceTypeStyles.default;
 
-  // Animate from previous position to new position
   const prev = prevPositions.current[p.id] || [x, y, z];
   const spring = useSpring({
     position: [x, y, z],
@@ -43,9 +41,9 @@ function Piece({
       </mesh>
     </a.group>
   );
-}
+});
 
-function PiecesLayer({
+const PiecesLayer = React.memo(function PiecesLayer({
   pieces,
   selectedPieceId,
   tiles,
@@ -53,11 +51,9 @@ function PiecesLayer({
   heightScale,
   onTileClick,
 }) {
-  // Track previous positions for animation
   const prevPositions = useRef({});
 
   useEffect(() => {
-    // Update previous positions after every render
     pieces.forEach((p) => {
       prevPositions.current[p.id] = hexToPosition(p.q, p.r, spacing);
     });
@@ -83,6 +79,6 @@ function PiecesLayer({
       })}
     </>
   );
-}
+});
 
-export default React.memo(PiecesLayer);
+export default PiecesLayer;
