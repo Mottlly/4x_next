@@ -19,29 +19,29 @@ export default function whichVerticesShouldSlope(
   // f: between n5 and n6
 
   return [
-    (neighborHeights[0] !== null &&
-      tileHeight - neighborHeights[0] > threshold) ||
-      (neighborHeights[5] !== null &&
-        tileHeight - neighborHeights[5] > threshold), // a
-    (neighborHeights[0] !== null &&
-      tileHeight - neighborHeights[0] > threshold) ||
-      (neighborHeights[1] !== null &&
-        tileHeight - neighborHeights[1] > threshold), // b
-    (neighborHeights[1] !== null &&
-      tileHeight - neighborHeights[1] > threshold) ||
-      (neighborHeights[2] !== null &&
-        tileHeight - neighborHeights[2] > threshold), // c
-    (neighborHeights[2] !== null &&
-      tileHeight - neighborHeights[2] > threshold) ||
-      (neighborHeights[3] !== null &&
-        tileHeight - neighborHeights[3] > threshold), // d
-    (neighborHeights[3] !== null &&
-      tileHeight - neighborHeights[3] > threshold) ||
-      (neighborHeights[4] !== null &&
-        tileHeight - neighborHeights[4] > threshold), // e
-    (neighborHeights[4] !== null &&
-      tileHeight - neighborHeights[4] > threshold) ||
-      (neighborHeights[5] !== null &&
-        tileHeight - neighborHeights[5] > threshold), // f
+    neighborHeights[0] !== null &&
+      tileHeight - neighborHeights[0] > threshold &&
+      neighborHeights[5] !== null &&
+      tileHeight - neighborHeights[5] > threshold, // a
+    neighborHeights[0] !== null &&
+      tileHeight - neighborHeights[0] > threshold &&
+      neighborHeights[1] !== null &&
+      tileHeight - neighborHeights[1] > threshold, // b
+    neighborHeights[1] !== null &&
+      tileHeight - neighborHeights[1] > threshold &&
+      neighborHeights[2] !== null &&
+      tileHeight - neighborHeights[2] > threshold, // c
+    neighborHeights[2] !== null &&
+      tileHeight - neighborHeights[2] > threshold &&
+      neighborHeights[3] !== null &&
+      tileHeight - neighborHeights[3] > threshold, // d
+    neighborHeights[3] !== null &&
+      tileHeight - neighborHeights[3] > threshold &&
+      neighborHeights[4] !== null &&
+      tileHeight - neighborHeights[4] > threshold, // e
+    neighborHeights[4] !== null &&
+      tileHeight - neighborHeights[4] > threshold &&
+      neighborHeights[5] !== null &&
+      tileHeight - neighborHeights[5] > threshold, // f
   ];
 }
