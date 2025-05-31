@@ -5,6 +5,7 @@ import path from "path";
 import { generateBiomeMap } from "../../../library/utililies/game/biomeGenerators/generateMap";
 import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import { v4 as uuidv4 } from "uuid";
+import { generateGoodyHuts } from "@/library/utililies/game/goodyHuts/generateGoodyHuts";
 
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
@@ -96,12 +97,7 @@ export async function POST(req) {
     // Generate 3–6 goody huts
     const goodyHutCount = Math.floor(Math.random() * 4) + 3;
     const shuffled = spawnable.sort(() => 0.5 - Math.random());
-    const goodyHuts = Array.from({ length: goodyHutCount }).map((_, i) => ({
-      id: uuidv4(),
-      type: "goodyHut",
-      q: shuffled[i].q,
-      r: shuffled[i].r,
-    }));
+    const goodyHuts = generateGoodyHuts(spawnable);
 
     const boardState = {
       turn: 1,
