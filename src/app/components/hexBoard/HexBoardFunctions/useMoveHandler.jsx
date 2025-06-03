@@ -11,6 +11,17 @@ export default function useMoveHandler(
   setBoard,
   setResources
 ) {
+  function isTilePassableForPiece(tile, piece) {
+    if (!piece) return false;
+    const { abilities } = piece;
+    const { seafaring, coastfaring, amphibious, mountaineering, flying } = abilities || {};
+    const isWaterOrLake = tile.type === "water" || tile.type === "lake";
+    const waterPass = !isWaterOrLake || amphibious || seafaring;
+    const coastPass = !isWaterOrLake || coastfaring;
+    const mountainPass = tile.type !== "impassable mountain" || mountaineering;
+    return flying || (waterPass && coastPass && mountainPass);
+  }
+
   return useCallback(
     (tile) => {
       const clicked = pieces.find((p) => p.q === tile.q && p.r === tile.r);
@@ -22,7 +33,7 @@ export default function useMoveHandler(
         const sel = pieces.find((p) => p.id === selectedPieceId);
         if (!sel) return;
         const dist = hexDistance(tile, sel);
-        if (dist <= sel.movesLeft) {
+        if (dist <= sel.movesLeft && isTilePassableForPiece(tile, sel)) {
           setPieces((prev) =>
             prev.map((p) =>
               p.id === sel.id

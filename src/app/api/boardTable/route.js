@@ -84,9 +84,9 @@ export async function POST(req) {
     const cols = 25;
     const rows = 25;
     const spacing = 1.05;
-    const tiles = generateBiomeMap(cols, rows);
+    const board = generateBiomeMap(cols, rows);
     const forbidden = new Set(["water", "lake", "impassable mountain"]);
-    const spawnable = tiles.filter((t) => !forbidden.has(t.type));
+    const spawnable = board.tiles.filter((t) => !forbidden.has(t.type));
     const podTile = spawnable[Math.floor(Math.random() * spawnable.length)];
     const firstPiece = createPiece("Pod", {
       id: uuidv4(),
@@ -102,7 +102,8 @@ export async function POST(req) {
       cols,
       rows,
       spacing,
-      tiles,
+      tiles: board.tiles,
+      riverPaths: board.riverPaths,
       pieces: [firstPiece],
       neutralPieces: goodyHuts,
       hostilePieces: [],

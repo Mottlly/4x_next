@@ -106,9 +106,10 @@ const BoardCanvas = memo(function BoardCanvas({
         heightScale={heightScale}
       />
       <RiverLayer
-        tiles={riverTiles}
+        riverPaths={board.riverPaths || []}
         spacing={board.spacing}
         heightScale={heightScale}
+        tiles={board.tiles} // <-- pass the full tiles array here
       />
       <MovementLayer
         reachableTiles={reachableTiles}

@@ -155,7 +155,11 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
   const sources = tiles.filter(
     (t) => t.type === "mountain" && Math.random() < 0.04
   );
-  generateRivers(board, sources);
+  const riverPaths = generateRivers(board, sources);
 
-  return tiles;
+  // Return both tiles (with riverPresent set) and riverPaths
+  return {
+    ...board,
+    riverPaths,
+  };
 }

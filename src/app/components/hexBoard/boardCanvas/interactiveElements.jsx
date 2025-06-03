@@ -45,14 +45,6 @@ const InteractiveBoard = ({
               boardTiles={board.tiles}
               heightScale={heightScale}
             />
-
-            {/* draw a little blue sphere if this tile has a river */}
-            {riverPresent && (
-              <mesh position={[x, height * heightScale + 0.1, z]}>
-                <sphereGeometry args={[0.2, 16, 16]} />
-                <meshStandardMaterial color="deepskyblue" />
-              </mesh>
-            )}
           </group>
         );
       })}

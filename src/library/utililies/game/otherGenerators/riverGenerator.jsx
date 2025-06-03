@@ -3,7 +3,7 @@ import getNeighborsAxial from "../tileUtilities/Positioning/getNeighbors";
 
 /**
  * Given board.tiles and board.tileMap (a Map<"q,r",tile>), carve rivers from sourceTiles.
- * Returns an array of tiles that became river segments.
+ * Returns an array of river paths (each path is an array of tiles in order).
  */
 export function generateRivers(board, sourceTiles) {
   const { tiles, tileMap, spacing } = board;
@@ -11,13 +11,14 @@ export function generateRivers(board, sourceTiles) {
     (t) => t.type === "water" || t.type === "lake"
   );
 
-  const riverSegments = [];
+  const riverPaths = [];
 
   sourceTiles.forEach((source) => {
     let current = source;
+    const path = [];
     // mark the source
     current.riverPresent = true;
-    riverSegments.push(current);
+    path.push(current);
 
     let iterations = 0;
     while (
@@ -54,26 +55,27 @@ export function generateRivers(board, sourceTiles) {
         });
       });
 
-      // chance to spawn a lake after iteration 7–10
-      if (iterations >= 7) {
-        const lakeProb = (iterations - 7 + 1) / 3; // .33, .66, 1
-        if (Math.random() < lakeProb) {
-          best.type = "lake";
-          best.riverPresent = true;
-          riverSegments.push(best);
-          break;
-        }
+      // If the next tile is water or lake, stop here
+      if (best.type === "water" || best.type === "lake") {
+        best.riverPresent = true;
+        path.push(best);
+        break;
       }
 
       // carve the river
       best.riverPresent = true;
-      riverSegments.push(best);
+      path.push(best);
 
       // advance
       current = best;
       iterations++;
     }
+
+    // Only add non-trivial rivers (length > 1)
+    if (path.length > 1) {
+      riverPaths.push(path);
+    }
   });
 
-  return riverSegments;
+  return riverPaths;
 }

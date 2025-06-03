@@ -49,7 +49,7 @@ export default function useFloatingTileInfo() {
       )}">DATA NODE</h2>
       <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
       <div><b>Type:</b> ${tile.type || "water"}</div>
-      ${tile.river ? `<div><b>River:</b> Present</div>` : ""}
+      ${tile.riverPresent ? `<div><b>River:</b> Present</div>` : ""}
       ${
         tile.building
           ? `<div><b>Building:</b> ${
