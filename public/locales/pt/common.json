@@ -17,5 +17,29 @@
       "Loading": "Carregando o jogo...",
       "LoadingError": "Erro ao carregar o jogo",
       "NoMapData": "Sem dados do mapa"
-  }
+  },
+  "loadingMessages": [
+    "Descongelando a tripulação...",
+    "Preparando para pouso em [desconhecido]...",
+    "Desdobrando escudos térmicos...",
+    "Analisando flora e fauna local...",
+    "Identificando depósitos minerais...",
+    "Baixando protocolos de segurança ambiental alienígena...",
+    "Erro(503): Servidor indisponível, contate o suporte de TI...",
+    "Procurando local de pouso ideal...",
+    "Analisando condições atmosféricas...",
+    "CUIDADO: condições atmosféricas densas...",
+    "AVISO: falha nos escudos térmicos...",
+    "AVISO: 47,867% dos suprimentos de emergência perdidos...",
+    "AVISO: células de fusão de emergência perdidas...",
+    "Desviando energia para escudos térmicos secundários...",
+    "AVISO: sistemas de suporte à vida falhando, diagnosticando...",
+    "Sistemas de suporte à vida falhando devido a: déficit de energia",
+    "Cancelando descongelamento da tripulação...",
+    "Informando a empresa sobre ativos perdidos...",
+    "Subtraindo o valor dos ativos perdidos da sua conta bancária...",
+    "Informando os parentes sobre provável morte...",
+    "Erro(404): Nenhum parente encontrado...",
+    "Transferindo ativos da tripulação para conta corporativa para segurança..."
+  ]
   }

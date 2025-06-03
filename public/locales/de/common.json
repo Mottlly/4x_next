@@ -17,5 +17,29 @@
         "Loading": "Spiel wird geladen...",
         "LoadingError": "Fehler beim Laden des Spiels",
         "NoMapData": "Keine Kartendaten"
-  }
+  },
+  "loadingMessages": [
+    "Crew wird aufgetaut...",
+    "Vorbereitung zur Landung auf [unbekannt]...",
+    "Hitzeschilde werden eingesetzt...",
+    "Analyse der lokalen Flora und Fauna...",
+    "Mineralvorkommen werden identifiziert...",
+    "Herunterladen von außerirdischen Sicherheitsprotokollen...",
+    "Fehler(503): Server nicht verfügbar, IT-Support kontaktieren...",
+    "Suche nach optimalem Landeplatz...",
+    "Analyse der atmosphärischen Bedingungen...",
+    "VORSICHT: dichte atmosphärische Bedingungen...",
+    "WARNUNG: Hitzeschilde versagen...",
+    "WARNUNG: 47,867% der Notvorräte verloren...",
+    "WARNUNG: Notfall-Fusionszellen verloren...",
+    "Energie wird auf sekundäre Hitzeschilde umgeleitet...",
+    "WARNUNG: Lebenserhaltungssysteme fallen aus, Diagnose läuft...",
+    "Lebenserhaltungssysteme fallen aus wegen: Energiemangel",
+    "Auftauen der Crew wird abgebrochen...",
+    "Unternehmen über verlorene Vermögenswerte informieren...",
+    "Wert der verlorenen Vermögenswerte wird von Ihrem Bankkonto abgezogen...",
+    "Nächste Angehörige über wahrscheinlichen Tod informieren...",
+    "Fehler(404): Keine nächsten Angehörigen gefunden...",
+    "Crew-Vermögenswerte werden zum Schutz auf Firmenkonto übertragen..."
+  ]
   }

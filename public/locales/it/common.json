@@ -17,5 +17,29 @@
       "Loading": "Caricamento del gioco...",
       "LoadingError": "Errore nel caricamento del gioco",
       "NoMapData": "Nessun dato della mappa"
-  }
+  },
+  "loadingMessages": [
+    "Scongelamento dell'equipaggio...",
+    "Preparazione per l'atterraggio su [sconosciuto]...",
+    "Dispiegamento degli scudi termici...",
+    "Analisi della flora e fauna locale...",
+    "Identificazione dei depositi minerari...",
+    "Download dei protocolli di sicurezza ambientale aliena...",
+    "Errore(503): Server non disponibile, contattare il supporto IT...",
+    "Ricerca del sito di atterraggio ottimale...",
+    "Analisi delle condizioni atmosferiche...",
+    "ATTENZIONE: condizioni atmosferiche dense...",
+    "ATTENZIONE: scudi termici in avaria...",
+    "ATTENZIONE: 47,867% delle scorte di emergenza perse...",
+    "ATTENZIONE: celle di fusione di emergenza perse...",
+    "Deviazione dell'energia agli scudi termici secondari...",
+    "ATTENZIONE: sistemi di supporto vitale in avaria, diagnosi...",
+    "Sistemi di supporto vitale in avaria a causa di: deficit energetico",
+    "Annullamento scongelamento equipaggio...",
+    "Informazione alla società delle perdite...",
+    "Sottrazione del valore delle perdite dal tuo conto bancario...",
+    "Informazione ai parenti della probabile morte...",
+    "Errore(404): Nessun parente trovato...",
+    "Trasferimento dei beni dell'equipaggio sul conto aziendale per sicurezza..."
+  ]
   }

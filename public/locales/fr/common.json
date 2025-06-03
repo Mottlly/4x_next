@@ -17,5 +17,29 @@
       "Loading": "Chargement du jeu...",
       "LoadingError": "Erreur de chargement du jeu",
       "NoMapData": "Pas de données cartographiques"
-  }
+  },
+  "loadingMessages": [
+    "Décongélation de l'équipage...",
+    "Préparation pour l'atterrissage sur [inconnu]...",
+    "Déploiement des boucliers thermiques...",
+    "Analyse de la flore et de la faune locales...",
+    "Identification des gisements minéraux...",
+    "Téléchargement des protocoles de sécurité environnementale extraterrestre...",
+    "Erreur(503): Serveur indisponible, contactez le support informatique...",
+    "Recherche du site d'atterrissage optimal...",
+    "Analyse des conditions atmosphériques...",
+    "ATTENTION : conditions atmosphériques denses...",
+    "AVERTISSEMENT : échec des boucliers thermiques...",
+    "AVERTISSEMENT : 47,867% des fournitures d'urgence perdues...",
+    "AVERTISSEMENT : cellules de fusion d'urgence perdues...",
+    "Détournement d'énergie vers les boucliers thermiques secondaires...",
+    "AVERTISSEMENT : défaillance des systèmes de survie, diagnostic...",
+    "Défaillance des systèmes de survie due à : déficit énergétique",
+    "Annulation de la décongélation de l'équipage...",
+    "Information de l'entreprise sur les pertes d'actifs...",
+    "Soustraction de la valeur des actifs perdus de votre compte bancaire...",
+    "Information des proches du décès probable...",
+    "Erreur(404): Aucun proche trouvé...",
+    "Transfert des actifs de l'équipage sur le compte de l'entreprise pour sécurité..."
+  ]
 }
