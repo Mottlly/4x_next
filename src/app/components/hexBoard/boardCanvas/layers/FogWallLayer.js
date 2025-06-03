@@ -87,7 +87,9 @@ function FogWallLayer({ tiles, spacing, heightScale }) {
     const { q, r } = tile;
     const neighbors = getNeighborsAxial(q, r);
     neighbors.forEach(({ q: nq, r: nr }) => {
-      const neighbor = tiles.find((t) => t.q === nq && t.r === nr && !t.discovered);
+      const neighbor = tiles.find(
+        (t) => t.q === nq && t.r === nr && !t.discovered
+      );
       if (!neighbor) return;
       const fogTop1 = getFogTop(tile, heightScale);
       const fogTop2 = getFogTop(neighbor, heightScale);
