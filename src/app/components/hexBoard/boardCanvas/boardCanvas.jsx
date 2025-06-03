@@ -17,6 +17,7 @@ import PiecesLayer from "./layers/pieceLayers/piecesLayer";
 import SemiFogLayer from "./layers/semiFogLayer";
 import NeutralPiecesLayer from "./layers/pieceLayers/neutralPiecesLayer";
 import HostilePiecesLayer from "./layers/pieceLayers/hostilePiecesLayer";
+import FogWallLayer from "./layers/FogWallLayer";
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -144,6 +145,11 @@ const BoardCanvas = memo(function BoardCanvas({
         spacing={board.spacing}
         heightScale={heightScale}
         onTileClick={onTileClickCb}
+      />
+      <FogWallLayer
+        tiles={fogTiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
       />
       <MapControls
         enableDamping
