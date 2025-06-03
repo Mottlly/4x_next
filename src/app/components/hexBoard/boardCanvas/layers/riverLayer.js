@@ -4,8 +4,8 @@ import { riverStyles } from "@/library/styles/stylesIndex";
 import * as THREE from "three";
 
 function RiverPathMesh({ path, spacing, heightScale, radius, color }) {
-  const innerRadius = 0.5 * spacing; // match your hexPrismGeometry innerRadius
-  const outerRadius = 1.0 * spacing; // match your hexPrismGeometry radius
+  const innerRadius = 0.5 * spacing; // match hexPrismGeometry innerRadius
+  const outerRadius = 1.0 * spacing; // match hexPrismGeometry radius
 
   function getCenter(tile) {
     const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
