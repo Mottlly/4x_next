@@ -6,6 +6,7 @@ import { generateBiomeMap } from "../../../library/utililies/game/biomeGenerator
 import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import { v4 as uuidv4 } from "uuid";
 import { generateGoodyHuts } from "../../../library/utililies/game/goodyHuts/generateGoodyHuts";
+import { generateHostileFortress } from "../../../library/utililies/game/biomeGenerators/generateHostileFortress";
 
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
@@ -97,6 +98,10 @@ export async function POST(req) {
     // Generate 3–6 goody huts
     const goodyHuts = generateGoodyHuts(spawnable);
 
+    // --- Add fortress generation here ---
+    const fortress = generateHostileFortress(board.tiles, podTile, 6);
+    const hostilePieces = fortress ? [fortress] : [];
+
     const boardState = {
       turn: 1,
       cols,
@@ -106,7 +111,7 @@ export async function POST(req) {
       riverPaths: board.riverPaths,
       pieces: [firstPiece],
       neutralPieces: goodyHuts,
-      hostilePieces: [],
+      hostilePieces, // fortress will be rendered by HostilePiecesLayer
       resources: [20, 3, 3],
     };
 

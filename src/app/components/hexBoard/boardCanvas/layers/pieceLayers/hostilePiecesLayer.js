@@ -20,6 +20,22 @@ function HostilePiecesLayer({
         const y = tile.height * heightScale + 0.5;
         const style = pieceTypeStyles[p.type] || { color: "purple" };
 
+        if (p.type === "hostileFortress") {
+          return (
+            <mesh
+              key={`fortress-${p.id}`}
+              position={[x, y, z]}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTileClick?.(tile, p);
+              }}
+            >
+              <boxGeometry args={[0.7, 0.7, 0.7]} />
+              <meshStandardMaterial color="darkred" />
+            </mesh>
+          );
+        }
+
         return (
           <mesh
             key={`hostile-piece-${p.id}`}
