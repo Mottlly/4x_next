@@ -133,3 +133,50 @@ export const defaultHostilePiece: HostilePiece = {
     respawnTime: null,
   },
 }
+
+export const HOSTILE_PIECE_BANK = {
+  Raider: {
+    type: "Raider",
+    category: "human",
+    stats: { health: 2, attack: 2, defense: 1 },
+    abilities: {
+      seafaring: false,
+      coastfaring: false,
+      amphibious: false,
+      mountaineering: false,
+      flying: false,
+      stealthy: false,
+    },
+    movementCosts: {
+      water: Infinity,
+      plains: 1,
+      forest: 2,
+      grassland: 1,
+      mountain: 2,
+      "impassable mountain": Infinity,
+    },
+    aiBehavior: {
+      detectionRange: 3,
+      aggressionLevel: 0.7,
+      curiosity: 0.1,
+      packTactics: true,
+      ambush: false,
+      patrolRadius: 3,
+      fleeThreshold: 0.2,
+    },
+    lootTable: [],
+    spawnConfig: {
+      minCount: 1,
+      maxCount: 1,
+      respawnTime: null,
+    },
+  },
+};
+
+// Factory function
+import { v4 as uuidv4 } from "uuid";
+export function createHostilePiece(type, overrides = {}) {
+  const base = HOSTILE_PIECE_BANK[type];
+  if (!base) throw new Error(`Unknown hostile type: ${type}`);
+  return { ...base, ...overrides, id: overrides.id || uuidv4() };
+}

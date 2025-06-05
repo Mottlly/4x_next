@@ -66,6 +66,7 @@ export const pieceTypeStyles = {
   engineer: { color: "#facc15" },
   security: { color: "#f87171" },
   default: { color: "red" },
+  Raider: { color: "#b22222" },
 };
 
 export const buildingTypeStyles = {

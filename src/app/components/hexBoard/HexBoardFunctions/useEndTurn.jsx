@@ -1,5 +1,6 @@
 import { computeResourceChange } from "../../../../library/utililies/game/resources/resourceUtils";
 import { processUpgrades } from "../../../../library/utililies/game/settlements/upgradeUtilities";
+import { createHostilePiece } from "@/library/utililies/game/gamePieces/schemas/hostilePieces";
 
 export default function useEndTurn(
   boardId,
@@ -27,12 +28,38 @@ export default function useEndTurn(
     //    - Set the new turn number
     //    - Update resources to the new values
     //    - Process any upgrades in progress on tiles
-    setBoard((prev) => ({
-      ...prev,
-      turn: newTurn,
-      resources: newResources,
-      tiles: processUpgrades(prev.tiles, currentTurn + 1),
-    }));
+    setBoard((prev) => {
+      let newHostilePieces = [...(prev.hostilePieces || [])];
+      prev.hostilePieces?.forEach((fortress) => {
+        if (fortress.type === "hostileFortress" && Math.random() < 0.1) {
+          // Find an adjacent empty tile
+          const neighbors = getNeighborsAxial(fortress.q, fortress.r)
+            .map(({ q, r }) => prev.tiles.find((t) => t.q === q && t.r === r))
+            .filter(
+              (tile) =>
+                tile &&
+                !tile.building &&
+                !prev.pieces.some((p) => p.q === tile.q && p.r === tile.r) &&
+                !newHostilePieces.some((p) => p.q === tile.q && p.r === tile.r)
+            );
+          if (neighbors.length > 0) {
+            const spawnTile = neighbors[Math.floor(Math.random() * neighbors.length)];
+            const newHostile = createHostilePiece("Raider", {
+              q: spawnTile.q,
+              r: spawnTile.r,
+            });
+            newHostilePieces.push(newHostile);
+          }
+        }
+      });
+      return {
+        ...prev,
+        turn: newTurn,
+        resources: newResources,
+        tiles: processUpgrades(prev.tiles, currentTurn + 1),
+        hostilePieces: newHostilePieces,
+      };
+    });
 
     // 5. Update the UI resource state object for display
     setResources({
