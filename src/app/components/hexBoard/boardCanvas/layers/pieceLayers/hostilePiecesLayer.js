@@ -82,7 +82,8 @@ function HostilePiecesLayer({
     <>
       {hostilePieces.map((p) => {
         const tile = tiles.find((t) => t.q === p.q && t.r === p.r);
-        if (!tile || !isTileVisible(tile)) return null;
+        // Only show if tile is visible and NOT semi-fogged
+        if (!tile || !tile.visible || tile.semiFogged) return null;
         return (
           <HostilePiece
             key={p.id}

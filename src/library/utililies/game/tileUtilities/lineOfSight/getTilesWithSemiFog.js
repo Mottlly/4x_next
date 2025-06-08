@@ -27,11 +27,22 @@ export function getTilesWithSemiFog(tiles, pieces) {
   // Use LOS to determine visible tiles
   const tilesWithLOS = getTilesWithLOS(tiles, visionSources);
 
-  return tilesWithLOS.map((tile) => {
+  const result = tilesWithLOS.map((tile) => {
     const hasBuilding = !!tile.building;
     return {
       ...tile,
       semiFogged: tile.discovered && !tile.visible && !hasBuilding,
     };
   });
+
+  // Log all semi-fogged tiles once
+  if (typeof window !== "undefined") {
+    const semiFoggedTiles = result.filter((t) => t.semiFogged);
+    console.log(
+      "[SemiFog] Tiles with semi-fog:",
+      semiFoggedTiles.map((t) => ({ q: t.q, r: t.r }))
+    );
+  }
+
+  return result;
 }

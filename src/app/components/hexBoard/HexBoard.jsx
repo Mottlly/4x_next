@@ -61,6 +61,22 @@ export default function HexBoard({ board: initialBoard }) {
 
   useRevealTiles(board, pieces, setBoard);
 
+  // --- Add this effect to update semi-fogged tiles ---
+  useEffect(() => {
+    const tilesWithSemiFog = getTilesWithSemiFog(board.tiles, pieces);
+    // Only update if something changed (avoid infinite loop)
+    const changed = tilesWithSemiFog.some(
+      (t, i) => t.semiFogged !== board.tiles[i]?.semiFogged
+    );
+    if (changed) {
+      setBoard((prev) => ({
+        ...prev,
+        tiles: tilesWithSemiFog,
+      }));
+    }
+  }, [board.tiles, pieces]);
+  // --- End addition ---
+
   const baseMove = useMoveHandler(
     pieces,
     selectedPieceId,

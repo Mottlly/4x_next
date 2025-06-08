@@ -24,12 +24,6 @@ export function getTilesWithLOS(tiles, visionSources) {
       for (const target of linesToCheck) {
         const line = hexLine(source, target);
 
-        // Add this debug log:
-        console.log(
-          `LOS from (${source.q},${source.r}) to (${tile.q},${tile.r}):`,
-          line.map((l) => tileMap.get(`${l.q},${l.r}`)?.type)
-        );
-
         let blocked = false;
         for (let i = 1; i < line.length; i++) {
           const step = tileMap.get(`${line[i].q},${line[i].r}`);
