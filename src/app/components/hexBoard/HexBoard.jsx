@@ -75,10 +75,7 @@ export default function HexBoard({ board: initialBoard }) {
     pieces,
     setPieces,
     board.hostilePieces,
-    (hostiles) => setBoard((prev) => ({
-      ...prev,
-      hostilePieces: Array.isArray(hostiles) ? hostiles : [],
-    })),
+    null, // setHostilePieces is not needed
     board,
     setBoard
   );

@@ -14,7 +14,8 @@ export default function useMoveHandler(
   function isTilePassableForPiece(tile, piece) {
     if (!piece) return false;
     const { abilities } = piece;
-    const { seafaring, coastfaring, amphibious, mountaineering, flying } = abilities || {};
+    const { seafaring, coastfaring, amphibious, mountaineering, flying } =
+      abilities || {};
     const isWaterOrLake = tile.type === "water" || tile.type === "lake";
     const waterPass = !isWaterOrLake || amphibious || seafaring;
     const coastPass = !isWaterOrLake || coastfaring;
@@ -24,8 +25,7 @@ export default function useMoveHandler(
       (h) => h.q === tile.q && h.r === tile.r
     );
     return (
-      (flying || (waterPass && coastPass && mountainPass)) &&
-      !hostileOnTile
+      (flying || (waterPass && coastPass && mountainPass)) && !hostileOnTile
     );
   }
 

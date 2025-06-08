@@ -24,7 +24,13 @@ export default function useEndTurn(
     setCurrentTurn(newTurn);
 
     // 3. Reset each piece's movesLeft to its max move value for the new turn
-    setPieces((prev) => prev.map((p) => ({ ...p, movesLeft: p.move })));
+    setPieces((prev) =>
+      prev.map((p) => ({
+        ...p,
+        movesLeft: p.move,
+        attacked: false, // Reset attack status
+      }))
+    );
 
     // 4. Update the board state:
     //    - Set the new turn number

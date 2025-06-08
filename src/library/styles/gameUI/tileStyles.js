@@ -3,42 +3,42 @@
 export const tileTypeStyles = {
   water: {
     color: "#3ec6f0",
-    edgeColor: "#b3e6ff",
+    edgeColor: "#888888", // grey
     geometry: { type: "cylinder", args: [1, 1, 0.5, 6] },
   },
   lake: {
     color: "#4fc3f7",
-    edgeColor: "#b3e6ff",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.5, 6] },
   },
   plains: {
     color: "#b8e994",
-    edgeColor: "#eaffd0",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.5, 6] },
   },
   grassland: {
     color: "#7bed9f",
-    edgeColor: "#d4f9e2",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.5, 6] },
   },
   forest: {
     color: "#218c5c",
-    edgeColor: "#a3e635",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.5, 6] },
   },
   mountain: {
     color: "#636e72",
-    edgeColor: "#b2bec3",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.7, 6] },
   },
   "impassable mountain": {
     color: "#2d3436",
-    edgeColor: "#636e72",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.8, 6] },
   },
   default: {
     color: "#cccccc",
-    edgeColor: "#ffffff",
+    edgeColor: "#888888",
     geometry: { type: "cylinder", args: [1, 1, 0.5, 6] },
   },
 };

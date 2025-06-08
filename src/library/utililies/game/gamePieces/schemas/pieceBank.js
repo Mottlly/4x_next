@@ -110,5 +110,5 @@ export function createPiece(type, overrides = {}) {
   if (!base) {
     throw new Error(`Unknown piece type: ${type}`);
   }
-  return { ...base, ...overrides };
+  return { ...base, attacked: false, ...overrides }; // <-- Ensure attacked: false
 }

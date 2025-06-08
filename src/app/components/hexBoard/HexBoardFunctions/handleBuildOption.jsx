@@ -1,3 +1,5 @@
+import { buildingOptions } from "../../../../library/utililies/game/gamePieces/schemas/buildBank";
+
 export function handleBuildOption(
   buildingKey,
   selectedPiece,
@@ -14,13 +16,17 @@ export function handleBuildOption(
     setSelectedPieceId(null);
     setBoard((prev) => ({
       ...prev,
-      pieces: prev.pieces.filter((p) => p.id !== pieceId), // <-- Remove from board.pieces too!
+      pieces: prev.pieces.filter((p) => p.id !== pieceId),
     }));
   }
 
   setBoard((prev) => {
+    const buildingStats =
+      buildingOptions[buildingKey]?.stats || { health: 10, attack: 0, defense: 2 };
     const newTiles = prev.tiles.map((tile) =>
-      tile.q === q && tile.r === r ? { ...tile, building: buildingKey } : tile
+      tile.q === q && tile.r === r
+        ? { ...tile, building: buildingKey, stats: buildingStats }
+        : tile
     );
     return { ...prev, tiles: newTiles };
   });

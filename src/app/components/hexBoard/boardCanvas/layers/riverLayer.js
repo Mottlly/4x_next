@@ -196,10 +196,11 @@ const areRiverPropsEqual = (prev, next) =>
   prev.radius === next.radius &&
   prev.color === next.color &&
   prev.path.length === next.path.length &&
-  prev.path.every((tile, i) =>
-    tile.q === next.path[i].q &&
-    tile.r === next.path[i].r &&
-    tile.height === next.path[i].height
+  prev.path.every(
+    (tile, i) =>
+      tile.q === next.path[i].q &&
+      tile.r === next.path[i].r &&
+      tile.height === next.path[i].height
   );
 
 const MemoRiverPathMesh = React.memo(RiverPathMesh, areRiverPropsEqual);
