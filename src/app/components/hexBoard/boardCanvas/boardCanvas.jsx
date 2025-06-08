@@ -29,6 +29,7 @@ const BoardCanvas = memo(function BoardCanvas({
   spawnTiles = [],
   sciFiAudioRef,
   natureAudioRef,
+  activeAction,
 }) {
   const heightScale = 0.5;
 
@@ -58,6 +59,12 @@ const BoardCanvas = memo(function BoardCanvas({
       const dist = hexDistance(tile, sel);
       if (dist > movesLeft) return false;
 
+      // Exclude tiles with hostile pieces
+      const hostileOnTile = (board.hostilePieces || []).some(
+        (h) => h.q === tile.q && h.r === tile.r
+      );
+      if (hostileOnTile) return false;
+
       const isWaterOrLake = tile.type === "water" || tile.type === "lake";
       const waterPass = !isWaterOrLake || amphibious || seafaring;
       const coastPass = !isWaterOrLake || coastfaring;
@@ -66,7 +73,32 @@ const BoardCanvas = memo(function BoardCanvas({
       const passable = flying || (waterPass && coastPass && mountainPass);
       return passable;
     });
-  }, [selectedPieceId, pieces, board.tiles]);
+  }, [selectedPieceId, pieces, board.tiles, board.hostilePieces]);
+
+  // Compute attackable hostile tiles (adjacent to selected piece)
+  const attackableHostileTiles = useMemo(() => {
+    if (activeAction !== "attack" || selectedPieceId == null) return [];
+    const sel = pieces.find((p) => p.id === selectedPieceId);
+    if (!sel) return [];
+    const range = sel.range ?? 1;
+    const vision = sel.vision ?? 2;
+    // Find all hostiles within range and vision, and on discovered tiles
+    return (board.hostilePieces || [])
+      .map((h) => {
+        const dist = hexDistance(h, sel);
+        const tile = board.tiles.find((t) => t.q === h.q && t.r === h.r);
+        if (
+          dist <= range &&
+          dist <= vision &&
+          tile &&
+          tile.discovered // only attack visible hostiles
+        ) {
+          return tile;
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }, [activeAction, selectedPieceId, pieces, board.hostilePieces, board.tiles]);
 
   // stabilize callback
   const onTileClickCb = useCallback(onTileClick, [onTileClick]);
@@ -112,11 +144,26 @@ const BoardCanvas = memo(function BoardCanvas({
         heightScale={heightScale}
         tiles={board.tiles} // <-- pass the full tiles array here
       />
-      <MovementLayer
-        reachableTiles={reachableTiles}
-        spacing={board.spacing}
-        heightScale={heightScale}
-      />
+      {activeAction === "move" && (
+        <MovementLayer
+          reachableTiles={reachableTiles}
+          spacing={board.spacing}
+          heightScale={heightScale}
+          hostilePieces={[]} // don't show red in move mode
+          attackMode={false}
+          tiles={board.tiles}
+        />
+      )}
+      {activeAction === "attack" && (
+        <MovementLayer
+          reachableTiles={attackableHostileTiles}
+          spacing={board.spacing}
+          heightScale={heightScale}
+          hostilePieces={board.hostilePieces || []}
+          attackMode={true}
+          tiles={board.tiles}
+        />
+      )}
       {spawnTiles.length > 0 && (
         <MovementLayer
           reachableTiles={spawnTiles}

@@ -69,6 +69,7 @@ export type HostilePiece = {
   aiBehavior: AIBehavior
   lootTable?: LootTableEntry[]
   spawnConfig: SpawnConfig
+  range?: number
 }
 export const hostilePiecePropType = PropTypes.shape({
   id: PropTypes.string.isRequired,
@@ -132,6 +133,7 @@ export const defaultHostilePiece: HostilePiece = {
     maxCount: 3,
     respawnTime: null,
   },
+  range: 1,
 }
 
 export const HOSTILE_PIECE_BANK = {
@@ -170,6 +172,7 @@ export const HOSTILE_PIECE_BANK = {
       maxCount: 1,
       respawnTime: null,
     },
+    range: 1,
   },
 };
 

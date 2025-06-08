@@ -86,20 +86,6 @@ const Bestagon = ({
     }
   };
 
-  console.log(
-    "Tile",
-    userData.tile.q,
-    userData.tile.r,
-    "tileHeight:",
-    tileHeight,
-    "neighborHeights:",
-    neighborHeights,
-    "slopeVertices:",
-    slopeVertices,
-    "vertexOrder:",
-    vertexOrder
-  );
-
   // For each geometry vertex, print which logical vertex it maps to and the neighbors checked:
   vertexOrder.forEach((i, geoIdx) => {
     const neighborPairs = [
@@ -111,13 +97,6 @@ const Bestagon = ({
       [4, 5], // f
     ];
     const [ni1, ni2] = neighborPairs[i];
-    console.log(
-      `geoVert ${geoIdx}: logicalVert ${i}, neighbors ${ni1},${ni2}, heights:`,
-      neighborHeights[ni1],
-      neighborHeights[ni2],
-      "shouldDrop:",
-      slopeVertices[i]
-    );
   });
 
   return (

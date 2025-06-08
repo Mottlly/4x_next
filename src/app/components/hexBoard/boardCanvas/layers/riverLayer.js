@@ -147,7 +147,7 @@ function LakeMesh({
 function RiverLayer({ riverPaths, spacing, heightScale, tiles }) {
   const radius = spacing * 0.07;
   const lakeColor = "#3ec6ff";
-  const lakeRadius = spacing * 0.3; // half the previous 0.6
+  const lakeRadius = spacing * 0.3;
   const lakeThickness = 0.12;
 
   return (
@@ -156,7 +156,7 @@ function RiverLayer({ riverPaths, spacing, heightScale, tiles }) {
         if (path.length < 1) return null;
         return (
           <React.Fragment key={`river-path-${i}`}>
-            <LakeMesh
+            <MemoLakeMesh
               tile={path[0]}
               spacing={spacing}
               heightScale={heightScale}
@@ -164,7 +164,7 @@ function RiverLayer({ riverPaths, spacing, heightScale, tiles }) {
               thickness={lakeThickness}
               color={lakeColor}
             />
-            <RiverPathMesh
+            <MemoRiverPathMesh
               path={path}
               spacing={spacing}
               heightScale={heightScale}
@@ -178,5 +178,30 @@ function RiverLayer({ riverPaths, spacing, heightScale, tiles }) {
     </>
   );
 }
+
+const areLakePropsEqual = (prev, next) =>
+  prev.tile.q === next.tile.q &&
+  prev.tile.r === next.tile.r &&
+  prev.baseRadius === next.baseRadius &&
+  prev.thickness === next.thickness &&
+  prev.heightScale === next.heightScale &&
+  prev.color === next.color &&
+  prev.spacing === next.spacing;
+
+const MemoLakeMesh = React.memo(LakeMesh, areLakePropsEqual);
+
+const areRiverPropsEqual = (prev, next) =>
+  prev.spacing === next.spacing &&
+  prev.heightScale === next.heightScale &&
+  prev.radius === next.radius &&
+  prev.color === next.color &&
+  prev.path.length === next.path.length &&
+  prev.path.every((tile, i) =>
+    tile.q === next.path[i].q &&
+    tile.r === next.path[i].r &&
+    tile.height === next.path[i].height
+  );
+
+const MemoRiverPathMesh = React.memo(RiverPathMesh, areRiverPropsEqual);
 
 export default React.memo(RiverLayer);

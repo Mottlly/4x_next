@@ -155,6 +155,8 @@ export async function PATCH(req) {
     const boardToSave = {
       ...newBoard,
       pieces: (newBoard.pieces || []).map((p) => ({ ...p })),
+      hostilePieces: (newBoard.hostilePieces || []).map((p) => ({ ...p })), // <-- add this
+      neutralPieces: (newBoard.neutralPieces || []).map((p) => ({ ...p })), // <-- optional
     };
 
     const { rows: updated } = await pool.query(patchBoardQuery, [

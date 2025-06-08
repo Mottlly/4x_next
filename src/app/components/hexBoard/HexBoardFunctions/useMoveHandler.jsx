@@ -19,7 +19,14 @@ export default function useMoveHandler(
     const waterPass = !isWaterOrLake || amphibious || seafaring;
     const coastPass = !isWaterOrLake || coastfaring;
     const mountainPass = tile.type !== "impassable mountain" || mountaineering;
-    return flying || (waterPass && coastPass && mountainPass);
+    // Prevent friendly pieces from moving onto hostile pieces
+    const hostileOnTile = (board.hostilePieces || []).some(
+      (h) => h.q === tile.q && h.r === tile.r
+    );
+    return (
+      (flying || (waterPass && coastPass && mountainPass)) &&
+      !hostileOnTile
+    );
   }
 
   return useCallback(

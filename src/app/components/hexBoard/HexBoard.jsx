@@ -19,6 +19,7 @@ import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
 import useEndTurn from "./HexBoardFunctions/useEndTurn";
 import useRevealTiles from "./HexBoardFunctions/useRevealTiles";
 import useUnlockAudio from "./HexBoardFunctions/useUnlockAudio";
+import useAttackHandler from "./HexBoardFunctions/useAttackHandler";
 
 // extracted functions
 import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
@@ -70,6 +71,18 @@ export default function HexBoard({ board: initialBoard }) {
     setResources
   );
 
+  const attack = useAttackHandler(
+    pieces,
+    setPieces,
+    board.hostilePieces,
+    (hostiles) => setBoard((prev) => ({
+      ...prev,
+      hostilePieces: Array.isArray(hostiles) ? hostiles : [],
+    })),
+    board,
+    setBoard
+  );
+
   const onTileClick = (tile) => {
     if (spawnMode) {
       // Only allow clicking on highlighted spawn tiles
@@ -91,6 +104,21 @@ export default function HexBoard({ board: initialBoard }) {
       }
       return;
     }
+
+    // --- Add this block ---
+    if (activeAction === "attack" && selectedPieceId) {
+      // Is this tile attackable?
+      const selectedPiece = pieces.find((p) => p.id === selectedPieceId);
+      const hostile = (board.hostilePieces || []).find(
+        (h) => h.q === tile.q && h.r === tile.r
+      );
+      if (selectedPiece && hostile) {
+        attack(selectedPiece, hostile);
+        return;
+      }
+    }
+    // --- End block ---
+
     handleTileClick(tile, baseMove, setOpenSettlement);
   };
 
@@ -200,6 +228,7 @@ export default function HexBoard({ board: initialBoard }) {
         spawnTiles={spawnTiles}
         sciFiAudioRef={sciFiAudioRef}
         natureAudioRef={natureAudioRef}
+        activeAction={activeAction} // <-- ADD THIS LINE
       />
 
       {/* Floating info panel */}

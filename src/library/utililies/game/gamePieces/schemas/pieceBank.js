@@ -8,6 +8,7 @@ export const PIECE_BANK = {
     build: 1,
     fortify: 0,
     scout: 0,
+    range: 1,
     abilities: {
       seafaring: false,
       coastfaring: false,
@@ -27,6 +28,7 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 1,
+    range: 2,
     abilities: {
       seafaring: false,
       coastfaring: false,
@@ -46,6 +48,7 @@ export const PIECE_BANK = {
     build: 1,
     fortify: 1,
     scout: 0,
+    range: 1,
     abilities: {
       seafaring: false,
       coastfaring: false,
@@ -65,6 +68,7 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 0,
+    range: 1,
     abilities: {
       seafaring: false,
       coastfaring: false,
@@ -84,6 +88,7 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 0,
+    range: 2,
     abilities: {
       seafaring: false,
       coastfaring: false,

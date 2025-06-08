@@ -1,6 +1,8 @@
 import { computeResourceChange } from "../../../../library/utililies/game/resources/resourceUtils";
 import { processUpgrades } from "../../../../library/utililies/game/settlements/upgradeUtilities";
 import { createHostilePiece } from "@/library/utililies/game/gamePieces/schemas/hostilePieces";
+import getNeighborsAxial from "@/library/utililies/game/tileUtilities/Positioning/getNeighbors";
+import { processHostileActions } from "@/library/utililies/game/ai/hostileAI";
 
 export default function useEndTurn(
   boardId,
@@ -43,15 +45,28 @@ export default function useEndTurn(
                 !newHostilePieces.some((p) => p.q === tile.q && p.r === tile.r)
             );
           if (neighbors.length > 0) {
-            const spawnTile = neighbors[Math.floor(Math.random() * neighbors.length)];
+            const spawnTile =
+              neighbors[Math.floor(Math.random() * neighbors.length)];
             const newHostile = createHostilePiece("Raider", {
               q: spawnTile.q,
               r: spawnTile.r,
+              homeFortressId: fortress.id, // <-- ADD THIS LINE
             });
             newHostilePieces.push(newHostile);
           }
         }
       });
+
+      // Move and aggro logic
+      processHostileActions({
+        hostilePieces: newHostilePieces,
+        friendlyPieces: pieces, // <-- use the up-to-date pieces prop
+        tiles: prev.tiles,
+        fortressAggroRadius: 4, // or whatever you want
+        basePatrolRadius: 2,
+        patrolRadiusPerRaider: 1,
+      });
+
       return {
         ...prev,
         turn: newTurn,
