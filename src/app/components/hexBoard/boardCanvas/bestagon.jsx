@@ -71,8 +71,8 @@ const Bestagon = ({
 
   // Memoize geometry
   const geometry = useMemo(
-    () => hexPrismGeometry(spacing, thickness, topYList),
-    [spacing, thickness, JSON.stringify(topYList)]
+    () => hexPrismGeometry(spacing, thickness),
+    [spacing, thickness]
   );
 
   const handleClick = (event) => {
