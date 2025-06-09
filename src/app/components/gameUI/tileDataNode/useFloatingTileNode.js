@@ -26,7 +26,7 @@ Object.values(settlementUpgradeOptions).forEach((arr) => {
   });
 });
 
-export default function useFloatingTileInfo() {
+export default function useFloatingTileInfo(pieces = []) {
   const infoPanelRef = useRef();
 
   const showTileInfo = useCallback((tile, pointerEvent) => {
@@ -43,27 +43,61 @@ export default function useFloatingTileInfo() {
       infoPanelRef.current.style.opacity = 0.7;
       return;
     }
+
+    const isFogged = !tile.discovered;
+
+    // --- PIECE INFO SECTION ---
+    const piecesOnTile = pieces.filter(
+      (p) => p.q === tile.q && p.r === tile.r
+    );
+    let pieceSection = "";
+    if (piecesOnTile.length > 0) {
+      pieceSection = `
+        <div style="margin-top:10px;">
+          <b>Piece${piecesOnTile.length > 1 ? "s" : ""} on Tile:</b>
+          <ul style="margin:4px 0 0 14px;padding:0;">
+            ${piecesOnTile
+              .map(
+                (p) =>
+                  `<li>
+                    <b>Type:</b> ${p.type} &nbsp;
+                    <b>Moves:</b> ${p.movesLeft ?? "?"} &nbsp;
+                    <b>Vision:</b> ${p.vision ?? "?"}
+                  </li>`
+              )
+              .join("")}
+          </ul>
+        </div>
+      `;
+    }
+    // --- END PIECE INFO SECTION ---
+
     infoPanelRef.current.innerHTML = `
       <h2 style="${styleObjToStr(
         floatingTileInfoPanelStyles.heading
       )}">DATA NODE</h2>
       <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
-      <div><b>Type:</b> ${tile.type || "water"}</div>
-      ${tile.riverPresent ? `<div><b>River:</b> Present</div>` : ""}
+      <div><b>Type:</b> ${isFogged ? "?" : tile.type || "water"}</div>
+      ${isFogged ? "" : tile.riverPresent ? `<div><b>River:</b> Present</div>` : ""}
       ${
-        tile.building
+        isFogged
+          ? ""
+          : tile.building
           ? `<div><b>Building:</b> ${
               keyToLabel[tile.building] || tile.building
             }</div>`
           : ""
       }
       ${
-        tile.building && tile.upgrades && tile.upgrades.length > 0
+        isFogged
+          ? ""
+          : tile.building && tile.upgrades && tile.upgrades.length > 0
           ? `<div><b>Upgrades:</b> ${tile.upgrades
               .map((key) => keyToLabel[key] || key)
               .join(", ")}</div>`
           : ""
       }
+      ${pieceSection}
       <div style="${styleObjToStr(
         floatingTileInfoPanelStyles.sectorNote
       )}"><em>Sector coordinates ⎯ data stream stabilized</em></div>
@@ -73,7 +107,7 @@ export default function useFloatingTileInfo() {
       infoPanelRef.current.style.left = pointerEvent.clientX + 24 + "px";
       infoPanelRef.current.style.top = pointerEvent.clientY - 24 + "px";
     }
-  }, []);
+  }, [pieces]);
 
   return { infoPanelRef, showTileInfo };
 }

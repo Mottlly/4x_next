@@ -50,7 +50,7 @@ const SemiFogHexShaderMaterial = shaderMaterial(
     // Use the same fog color as main fog
     vec3 col = mix(vec3(0.15), vec3(0.35), f);
     // Lower alpha for semi-fog (main fog is 1.0)
-    gl_FragColor = vec4(col, 0.4);
+    gl_FragColor = vec4(col, 0.5);
   }
   `
 );

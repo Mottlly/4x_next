@@ -44,7 +44,7 @@ export default function HexBoard({ board: initialBoard }) {
   const [activeAction, setActiveAction] = useState(null);
   const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
-  const { infoPanelRef, showTileInfo } = useFloatingTileInfo();
+  const { infoPanelRef, showTileInfo } = useFloatingTileInfo(pieces);
   const [spawnMode, setSpawnMode] = useState(null);
   const [spawnTiles, setSpawnTiles] = useState([]);
 
