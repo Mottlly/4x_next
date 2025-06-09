@@ -30,16 +30,16 @@ export function processHostileActions({
   hostilePieces.forEach((piece) => {
     if (piece.type !== "Raider") return;
 
-    const ai = piece.aiBehavior || {};
-    const detectionRange = ai.detectionRange ?? 3;
-    const patrolRadiusBase = ai.patrolRadius ?? 2;
+    const ai = piece.aiBehavior;
+    const detectionRange = ai.detectionRange;
+    const patrolRadiusBase = ai.patrolRadius;
     // High aggro chance for raiders
-    const aggressionLevel = ai.aggressionLevel ?? 0.95;
+    const aggressionLevel = ai.aggressionLevel;
 
     const fortress = fortresses.find((f) => f.id === piece.homeFortressId);
     if (!fortress) return;
 
-    const raiders = raidersByFortress[fortress.id] || [];
+    const raiders = raidersByFortress[fortress.id];
     const patrolRadius = patrolRadiusBase + (raiders.length - 1);
 
     // Maintain aggro if already aggroed and target is still in range

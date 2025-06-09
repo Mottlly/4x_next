@@ -18,6 +18,7 @@ import SemiFogLayer from "./layers/semiFogLayer";
 import NeutralPiecesLayer from "./layers/pieceLayers/neutralPiecesLayer";
 import HostilePiecesLayer from "./layers/pieceLayers/hostilePiecesLayer";
 import FogWallLayer from "./layers/FogWallLayer";
+import SemiFogWallLayer from "./layers/SemiFogWallLayer";
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -135,6 +136,11 @@ const BoardCanvas = memo(function BoardCanvas({
       />
       <SemiFogLayer
         tiles={board.tiles.filter((t) => t.semiFogged)}
+        spacing={board.spacing}
+        heightScale={heightScale}
+      />
+      <SemiFogWallLayer
+        tiles={board.tiles}
         spacing={board.spacing}
         heightScale={heightScale}
       />

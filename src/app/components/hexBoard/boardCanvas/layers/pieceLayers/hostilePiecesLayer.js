@@ -28,6 +28,7 @@ const HostilePiece = React.memo(function HostilePiece({
   }, [p.id, x, y, z]);
 
   if (p.type === "hostileFortress") {
+    console.log("Rendering fortress at", p.q, p.r, "tile:", tile);
     return (
       <a.mesh
         key={`fortress-${p.id}`}
@@ -38,7 +39,7 @@ const HostilePiece = React.memo(function HostilePiece({
         }}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshStandardMaterial color="darkred" />
+        <meshStandardMaterial color="yellow" /> {/* Make it bright for debug */}
       </a.mesh>
     );
   }
@@ -65,6 +66,7 @@ function HostilePiecesLayer({
   heightScale,
   onTileClick,
 }) {
+  console.log("HostilePiecesLayer hostilePieces:", hostilePieces);
   const prevPositions = useRef({});
 
   useEffect(() => {

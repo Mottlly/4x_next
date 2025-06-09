@@ -87,31 +87,15 @@ function FogWallLayer({ tiles, spacing, heightScale }) {
     const { q, r } = tile;
     const neighbors = getNeighborsAxial(q, r);
     neighbors.forEach(({ q: nq, r: nr }) => {
-      const neighbor = tiles.find(
-        (t) => t.q === nq && t.r === nr && !t.discovered
-      );
-      if (!neighbor) return;
+      // Always draw a wall for every edge of a fog tile
       const fogTop1 = getFogTop(tile, heightScale);
-      const fogTop2 = getFogTop(neighbor, heightScale);
-      if (Math.abs(fogTop1 - fogTop2) < 0.01) return;
-
-      // Unique key for this wall (order q,r < q2,r2)
-      const key =
-        q < nq || (q === nq && r < nr)
-          ? `${q},${r}-${nq},${nr}`
-          : `${nq},${nr}-${q},${r}`;
-      if (seen.has(key)) return;
-      seen.add(key);
-
-      // Wall properties
-      const minFogTop = Math.min(fogTop1, fogTop2);
-      const maxFogTop = Math.max(fogTop1, fogTop2);
-      const wallHeight = maxFogTop - minFogTop;
-      const wallY = minFogTop + wallHeight / 2;
-
-      // Edge transform
+      const surfaceY1 = tile.height * heightScale;
+      const wallBottom = surfaceY1;
+      const wallTop = fogTop1;
+      if (wallTop - wallBottom < 0.01) return;
+      const wallHeight = wallTop - wallBottom;
+      const wallY = wallBottom + wallHeight / 2;
       const { mx, mz, angle } = getEdgeTransform(q, r, nq, nr, spacing);
-
       wallSegments.push({
         position: [mx, wallY, mz],
         rotation: [0, angle, 0],
