@@ -19,6 +19,10 @@ import NeutralPiecesLayer from "./layers/pieceLayers/neutralPiecesLayer";
 import HostilePiecesLayer from "./layers/pieceLayers/hostilePiecesLayer";
 import FogWallLayer from "./layers/FogWallLayer";
 import SemiFogWallLayer from "./layers/SemiFogWallLayer";
+import PineTreeLayer from "./layers/PineTreeLayer";
+import GrassPatchLayer from "./layers/GrassPatchLayer";
+import BerryBushLayer from "./layers/BerryBushLayer";
+import MountainLayer from "./layers/MountainLayer";
 
 const BoardCanvas = memo(function BoardCanvas({
   board,
@@ -177,6 +181,26 @@ const BoardCanvas = memo(function BoardCanvas({
           heightScale={0.5}
         />
       )}
+      <GrassPatchLayer
+        tiles={board.tiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+      />
+      <PineTreeLayer
+        tiles={board.tiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+      />
+      <BerryBushLayer
+        tiles={board.tiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+      />
+      <MountainLayer
+        tiles={board.tiles}
+        spacing={board.spacing}
+        heightScale={heightScale}
+      />
       <PiecesLayer
         pieces={pieces}
         selectedPieceId={selectedPieceId}

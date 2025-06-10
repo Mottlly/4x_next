@@ -7,6 +7,7 @@ import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/
 import { v4 as uuidv4 } from "uuid";
 import { generateGoodyHuts } from "../../../library/utililies/game/goodyHuts/generateGoodyHuts";
 import { generateHostileFortress } from "../../../library/utililies/game/biomeGenerators/generateHostileFortress";
+import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 
 const getBoardQuery = fs.readFileSync(
   path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
@@ -95,8 +96,13 @@ export async function POST(req) {
       r: podTile.r,
     });
 
-    // Generate 3–6 goody huts
-    const goodyHuts = generateGoodyHuts(spawnable);
+    // Only allow goody huts within 10 tiles of the pod
+    const goodyHutSpawnable = spawnable.filter(
+      (t) => hexDistance(t, podTile) <= 8
+    );
+
+    // Generate 3–6 goody huts within range
+    const goodyHuts = generateGoodyHuts(goodyHutSpawnable);
 
     // --- Add fortress generation here ---
     const fortress = generateHostileFortress(board.tiles, podTile, 6);

@@ -6,7 +6,7 @@ export const buildingOptions = {
     label: "Reconstructed Shelter",
     icon: Home,
     buttonClass: "hover:bg-purple-700 border-purple-500",
-    vision: 2,
+    vision: 1,
     stats: { health: 10, attack: 0, defense: 2 },
   },
   resource_extractor: {
@@ -27,18 +27,18 @@ export const buildingOptions = {
 
 export const buildingEffects = {
   reconstructed_shelter: {
-    rations: -1, // upkeep: consumes 1 ration
+    rations: 1,
     printingMaterial: 1, // produces 1 printing material
     weapons: 0,
   },
   resource_extractor: {
     rations: 0,
-    printingMaterial: 2,
+    printingMaterial: -1,
     weapons: 0,
   },
   sensor_suite: {
     rations: 0,
-    printingMaterial: 0,
+    printingMaterial: -1,
     weapons: 0,
   },
 };
