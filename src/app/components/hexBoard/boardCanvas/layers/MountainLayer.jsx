@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import MountainMesh from "../models/mountainMesh";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
@@ -15,23 +15,29 @@ function getOuterRingPositions(q, r, spacing, tileHeight, count = 8, radiusFacto
   return positions;
 }
 
-export default function MountainLayer({ tiles, spacing, heightScale }) {
+function MountainLayer({ tiles, spacing, heightScale }) {
+  const mountains = useMemo(() => {
+    return tiles
+      .filter((tile) => tile.type === "mountain" && tile.discovered)
+      .flatMap((tile) => {
+        const y = tile.height * heightScale + 0.01;
+        const positions = getOuterRingPositions(tile.q, tile.r, spacing, y, 8, 0.7);
+        return positions.map(({ pos, rot }, i) => ({
+          key: `mountain-${tile.q}-${tile.r}-${i}`,
+          pos,
+          scale: 0.55 + 0.18 * Math.sin(i * 1.7 + tile.q + tile.r),
+          rot,
+        }));
+      });
+  }, [tiles, spacing, heightScale]);
+
   return (
     <>
-      {tiles
-        .filter((tile) => tile.type === "mountain" && tile.discovered)
-        .flatMap((tile) => {
-          const y = tile.height * heightScale + 0.01;
-          const positions = getOuterRingPositions(tile.q, tile.r, spacing, y, 8, 0.7);
-          return positions.map(({ pos, rot }, i) => (
-            <MountainMesh
-              key={`mountain-${tile.q}-${tile.r}-${i}`}
-              position={pos}
-              scale={0.55 + 0.18 * Math.sin(i * 1.7 + tile.q + tile.r)}
-              rotation={rot}
-            />
-          ));
-        })}
+      {mountains.map(({ key, pos, scale, rot }) => (
+        <MountainMesh key={key} position={pos} scale={scale} rotation={rot} />
+      ))}
     </>
   );
 }
+
+export default React.memo(MountainLayer);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import BerryBush from "../models/berryBush";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
@@ -15,23 +15,29 @@ function getOuterRingPositions(q, r, spacing, tileHeight, count = 12, radiusFact
   return positions;
 }
 
-export default function BerryBushLayer({ tiles, spacing, heightScale }) {
+function BerryBushLayer({ tiles, spacing, heightScale }) {
+  const berryBushes = useMemo(() => {
+    return tiles
+      .filter((tile) => tile.type === "grassland" && tile.discovered)
+      .flatMap((tile) => {
+        const y = tile.height * heightScale + 0.01;
+        const positions = getOuterRingPositions(tile.q, tile.r, spacing, y, 12, 0.78);
+        return positions.map(({ pos, rot }, i) => ({
+          key: `berry-${tile.q}-${tile.r}-${i}`,
+          pos,
+          scale: 0.38 + 0.12 * Math.sin(i * 1.7 + tile.q + tile.r),
+          rot,
+        }));
+      });
+  }, [tiles, spacing, heightScale]);
+
   return (
     <>
-      {tiles
-        .filter((tile) => tile.type === "grassland" && tile.discovered)
-        .flatMap((tile) => {
-          const y = tile.height * heightScale + 0.01;
-          const positions = getOuterRingPositions(tile.q, tile.r, spacing, y, 12, 0.78);
-          return positions.map(({ pos, rot }, i) => (
-            <BerryBush
-              key={`berry-${tile.q}-${tile.r}-${i}`}
-              position={pos}
-              scale={0.38 + 0.12 * Math.sin(i * 1.7 + tile.q + tile.r)}
-              rotation={rot}
-            />
-          ));
-        })}
+      {berryBushes.map(({ key, pos, scale, rot }) => (
+        <BerryBush key={key} position={pos} scale={scale} rotation={rot} />
+      ))}
     </>
   );
 }
+
+export default React.memo(BerryBushLayer);
