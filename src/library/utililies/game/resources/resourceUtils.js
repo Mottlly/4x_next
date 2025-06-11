@@ -1,4 +1,4 @@
-import { buildingEffects } from "../gamePieces/schemas/buildBank";
+import { buildingEffects, getResourceExtractorEffect } from "../gamePieces/schemas/buildBank";
 import { PIECE_BANK } from "../gamePieces/schemas/pieceBank";
 
 // resources: [rations, printingMaterial, weapons]
@@ -7,7 +7,12 @@ export function computeResourceChange(board) {
 
   // Building effects
   for (const tile of board.tiles) {
-    if (tile.building && buildingEffects[tile.building]) {
+    if (tile.building === "resource_extractor") {
+      const b = getResourceExtractorEffect(tile);
+      effect.rations += b.rations;
+      effect.printingMaterial += b.printingMaterial;
+      effect.weapons += b.weapons;
+    } else if (tile.building && buildingEffects[tile.building]) {
       const b = buildingEffects[tile.building];
       effect.rations += b.rations;
       effect.printingMaterial += b.printingMaterial;

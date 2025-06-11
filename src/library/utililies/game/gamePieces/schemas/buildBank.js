@@ -28,12 +28,7 @@ export const buildingOptions = {
 export const buildingEffects = {
   reconstructed_shelter: {
     rations: 1,
-    printingMaterial: 1, // produces 1 printing material
-    weapons: 0,
-  },
-  resource_extractor: {
-    rations: 0,
-    printingMaterial: -1,
+    printingMaterial: 1,
     weapons: 0,
   },
   sensor_suite: {
@@ -47,6 +42,21 @@ export const buildOptions_byUnitType = {
   Pod: ["reconstructed_shelter"],
   Engineer: ["resource_extractor", "sensor_suite"],
 };
+
+export function getResourceExtractorEffect(tile) {
+  switch (tile.type) {
+    case "grassland":
+      return { rations: 2, printingMaterial: 0, weapons: 0 };
+    case "plains":
+      return { rations: 1, printingMaterial: 0, weapons: 0 };
+    case "forest":
+      return { rations: 0, printingMaterial: 2, weapons: 0 };
+    case "mountain":
+      return { rations: 0, printingMaterial: 3, weapons: 1 };
+    default:
+      return { rations: 0, printingMaterial: 1, weapons: 0 };
+  }
+}
 
 export function getBuildOptionsForType(type) {
   const keys = buildOptions_byUnitType[type] || [];

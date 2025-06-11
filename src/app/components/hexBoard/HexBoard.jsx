@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { allowedActionsByType } from "../../../library/utililies/game/gamePieces/actionsDictator";
 import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
@@ -13,6 +13,8 @@ import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 import ActionsMenu from "../gameUI/actionsMenu";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
 import { startUpgrade } from "../../../library/utililies/game/settlements/upgradeUtilities";
+import { computeOutpostInfo } from "../../../library/utililies/game/resources/computeOutpostCap";
+import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -165,7 +167,8 @@ export default function HexBoard({ board: initialBoard }) {
       setPieces,
       setSelectedPieceId,
       setBoard,
-      setActiveAction
+      setActiveAction,
+      board // <-- add this!
     );
 
   const tilesWithSemiFog = getTilesWithSemiFog(board.tiles, pieces);
@@ -227,9 +230,28 @@ export default function HexBoard({ board: initialBoard }) {
 
   useUnlockAudio(sciFiAudioRef, natureAudioRef);
 
+  const outpostInfo = computeOutpostInfo(board);
+
+  const attackableHostileTiles = useMemo(() => {
+    if (activeAction !== "attack" || selectedPieceId == null) return [];
+    const sel = pieces.find((p) => p.id === selectedPieceId);
+    if (!sel) return [];
+    const range = sel.stats?.range ?? sel.range ?? 1;
+    return (board.hostilePieces || [])
+      .map((h) => {
+        const dist = hexDistance(h, sel);
+        const tile = board.tiles.find((t) => t.q === h.q && t.r === h.r);
+        if (dist <= range && tile && tile.discovered) {
+          return tile;
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }, [activeAction, selectedPieceId, pieces, board.hostilePieces, board.tiles]);
+
   return (
     <div className="relative w-full h-full">
-      <ResourcePanel resources={resources} />
+      <ResourcePanel resources={resources} outpostInfo={outpostInfo} />
 
       <BoardCanvas
         board={board}
