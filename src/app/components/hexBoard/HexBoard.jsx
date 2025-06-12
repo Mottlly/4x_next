@@ -15,6 +15,7 @@ import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtiliti
 import { startUpgrade } from "../../../library/utililies/game/settlements/upgradeUtilities";
 import { computeOutpostInfo } from "../../../library/utililies/game/resources/computeOutpostCap";
 import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
+import useFloatingHostileInfo from "../gameUI/tileDataNode/useFloatingHostileNode";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -47,6 +48,7 @@ export default function HexBoard({ board: initialBoard }) {
   const [openSettlement, setOpenSettlement] = useState(null);
   const isDraggingRef = useRef(false);
   const { infoPanelRef, showTileInfo } = useFloatingTileInfo(pieces);
+  const { hostileInfoPanelRef, showHostileInfo } = useFloatingHostileInfo();
   const [spawnMode, setSpawnMode] = useState(null);
   const [spawnTiles, setSpawnTiles] = useState([]);
 
@@ -264,6 +266,7 @@ export default function HexBoard({ board: initialBoard }) {
         sciFiAudioRef={sciFiAudioRef}
         natureAudioRef={natureAudioRef}
         activeAction={activeAction} // <-- ADD THIS LINE
+        hostilePieceHover={showHostileInfo}
       />
 
       {/* Floating info panel */}
@@ -303,6 +306,20 @@ export default function HexBoard({ board: initialBoard }) {
         src="/music/nature_loop.wav"
         loop
         preload="auto"
+      />
+
+      {/* Floating hostile info panel */}
+      <div
+        ref={hostileInfoPanelRef}
+        style={{
+          position: "fixed",
+          left: 12,
+          top: 12,
+          pointerEvents: "none",
+          zIndex: 2001,
+          opacity: 0,
+          transition: "opacity 0.15s",
+        }}
       />
     </div>
   );

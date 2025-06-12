@@ -2,7 +2,14 @@ import React, { useMemo } from "react";
 import TallGrassPatch from "../models/tallGrassPatch";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
-function getOuterRingPositions(q, r, spacing, tileHeight, count = 12, radiusFactor = 0.78) {
+function getOuterRingPositions(
+  q,
+  r,
+  spacing,
+  tileHeight,
+  count = 12,
+  radiusFactor = 0.78
+) {
   const [cx, , cz] = hexToPosition(q, r, spacing);
   const y = tileHeight;
   const positions = [];
@@ -21,7 +28,14 @@ function GrassPatchLayer({ tiles, spacing, heightScale }) {
       .filter((tile) => tile.type === "plains" && tile.discovered)
       .flatMap((tile) => {
         const y = tile.height * heightScale + 0.01;
-        const positions = getOuterRingPositions(tile.q, tile.r, spacing, y, 30, 0.78);
+        const positions = getOuterRingPositions(
+          tile.q,
+          tile.r,
+          spacing,
+          y,
+          30,
+          0.78
+        );
         return positions.map(({ pos, rot }, i) => ({
           key: `grass-${tile.q}-${tile.r}-${i}`,
           pos,

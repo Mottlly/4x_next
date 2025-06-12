@@ -77,6 +77,7 @@ export default function useAttackHandler(
       } else if (isSettlementTile || isFortressTile) {
         // Attacking a settlement or fortress tile
         setBoard((prev) => {
+          // Update the tile's health
           const newTiles = prev.tiles.map((t) =>
             t.q === tile.q && t.r === tile.r && t.stats
               ? {
@@ -94,7 +95,26 @@ export default function useAttackHandler(
               ? { ...t, building: null, stats: null }
               : t
           );
-          return { ...prev, tiles: updatedTiles };
+          // --- FIX: Also update the hostile piece's health if it's a fortress ---
+          let newHostilePieces = prev.hostilePieces;
+          if (isFortressTile) {
+            newHostilePieces = prev.hostilePieces.map((h) =>
+              h.q === tile.q && h.r === tile.r && h.type === "hostileFortress"
+                ? {
+                    ...h,
+                    stats: {
+                      ...h.stats,
+                      health: h.stats.health - damage,
+                    },
+                  }
+                : h
+            );
+          }
+          return {
+            ...prev,
+            tiles: updatedTiles,
+            hostilePieces: newHostilePieces,
+          };
         });
         toast.success(
           `${attacker.type} attacked ${

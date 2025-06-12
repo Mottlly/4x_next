@@ -35,6 +35,7 @@ const BoardCanvas = memo(function BoardCanvas({
   sciFiAudioRef,
   natureAudioRef,
   activeAction,
+  hostilePieceHover, // NEW
 }) {
   const heightScale = 0.5;
 
@@ -222,6 +223,7 @@ const BoardCanvas = memo(function BoardCanvas({
         spacing={board.spacing}
         heightScale={heightScale}
         onTileClick={onTileClickCb}
+        onPieceHover={hostilePieceHover} // NEW
       />
       <FogWallLayer
         tiles={fogTiles}
