@@ -2,6 +2,9 @@ import React, { useRef, useEffect } from "react";
 import { a, useSpring } from "@react-spring/three";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
+import { Edges } from "@react-three/drei";
+import ScoutMeepleGroup from "../../models/ScoutMeepleGroup";
+import UnitFloatingIcon from "../../models/UnitFloatingIcon";
 
 const Piece = React.memo(function Piece({
   p,
@@ -35,10 +38,16 @@ const Piece = React.memo(function Piece({
         onTileClick(tile);
       }}
     >
-      <mesh>
-        <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-        <meshStandardMaterial color={style.color} />
-      </mesh>
+      <UnitFloatingIcon type={p.type} />
+      {p.type === "Scout" ? (
+        <ScoutMeepleGroup color={style.color} edgeColor="#222" />
+      ) : (
+        // Default cylinder for other types
+        <mesh>
+          <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
+          <meshStandardMaterial color={style.color} />
+        </mesh>
+      )}
     </a.group>
   );
 });

@@ -1,6 +1,7 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { buildingTypeStyles } from "@/library/styles/stylesIndex";
+import ReconstructedShelterMesh from "../models/reconstructedShelterMesh";
 
 function BuildingLayer({ tiles, spacing, heightScale }) {
   return (
@@ -16,7 +17,7 @@ function BuildingLayer({ tiles, spacing, heightScale }) {
         switch (tile.building) {
           case "reconstructed_shelter":
             geom = (
-              <cylinderGeometry args={[0, spacing * 0.4, spacing * 0.6, 4]} />
+              <ReconstructedShelterMesh scale={spacing * 0.7} />
             );
             break;
           case "resource_extractor":
