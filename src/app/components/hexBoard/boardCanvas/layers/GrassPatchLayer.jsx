@@ -1,56 +1,67 @@
-import React, { useMemo } from "react";
-import TallGrassPatch from "../models/tallGrassPatch";
+import React, { useMemo, useRef, useLayoutEffect } from "react";
+import * as THREE from "three";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
-function getOuterRingPositions(
-  q,
-  r,
-  spacing,
-  tileHeight,
-  count = 12,
-  radiusFactor = 0.78
-) {
+// Each patch is a cluster of 4 blades, each instanced
+function getBladeTransforms(q, r, spacing, tileHeight, patchCount = 30, radiusFactor = 0.78) {
   const [cx, , cz] = hexToPosition(q, r, spacing);
   const y = tileHeight;
-  const positions = [];
-  for (let i = 0; i < count; i++) {
-    const angle = Math.PI / 6 + i * ((2 * Math.PI) / count);
-    const px = cx + Math.cos(angle) * spacing * radiusFactor;
-    const pz = cz + Math.sin(angle) * spacing * radiusFactor;
-    positions.push({ pos: [px, y, pz], rot: angle + Math.random() * 0.6 });
+  const transforms = [];
+  for (let i = 0; i < patchCount; i++) {
+    const patchAngle = Math.PI / 6 + i * ((2 * Math.PI) / patchCount);
+    const px = cx + Math.cos(patchAngle) * spacing * radiusFactor;
+    const pz = cz + Math.sin(patchAngle) * spacing * radiusFactor;
+    const patchPos = [px, y, pz];
+    const patchRot = patchAngle + Math.random() * 0.6;
+    const patchScale = (0.5 + 0.18 * Math.sin(i * 1.7 + q + r)) * 1.1;
+
+    // 4 blades per patch, slightly offset and rotated
+    for (let b = 0; b < 4; b++) {
+      const angle = (b / 4) * Math.PI * 2 + patchRot;
+      const bx = Math.cos(angle) * 0.08 * patchScale;
+      const bz = Math.sin(angle) * 0.08 * patchScale;
+      const bladeRot = angle + (Math.random() - 0.5) * 0.3;
+      const bladeTilt = (Math.random() - 0.5) * 0.3;
+      transforms.push({
+        pos: [patchPos[0] + bx, patchPos[1] + 0.18 * patchScale, patchPos[2] + bz],
+        scale: patchScale,
+        rot: [0, bladeRot, bladeTilt],
+      });
+    }
   }
-  return positions;
+  return transforms;
 }
 
 function GrassPatchLayer({ tiles, spacing, heightScale }) {
-  const grassPatches = useMemo(() => {
+  const blades = useMemo(() => {
     return tiles
       .filter((tile) => tile.type === "plains" && tile.discovered)
-      .flatMap((tile) => {
-        const y = tile.height * heightScale + 0.01;
-        const positions = getOuterRingPositions(
-          tile.q,
-          tile.r,
-          spacing,
-          y,
-          30,
-          0.78
-        );
-        return positions.map(({ pos, rot }, i) => ({
-          key: `grass-${tile.q}-${tile.r}-${i}`,
-          pos,
-          scale: (0.5 + 0.18 * Math.sin(i * 1.7 + tile.q + tile.r)) * 1.1,
-          rot,
-        }));
-      });
+      .flatMap((tile) =>
+        getBladeTransforms(tile.q, tile.r, spacing, tile.height * heightScale + 0.01)
+      );
   }, [tiles, spacing, heightScale]);
 
+  const count = blades.length;
+  const meshRef = useRef();
+
+  useLayoutEffect(() => {
+    blades.forEach(({ pos, scale, rot }, i) => {
+      const matrix = new THREE.Matrix4();
+      matrix.compose(
+        new THREE.Vector3(...pos),
+        new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),
+        new THREE.Vector3(scale, scale, scale)
+      );
+      meshRef.current.setMatrixAt(i, matrix);
+    });
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  }, [blades]);
+
   return (
-    <>
-      {grassPatches.map(({ key, pos, scale, rot }) => (
-        <TallGrassPatch key={key} position={pos} scale={scale} rotation={rot} />
-      ))}
-    </>
+    <instancedMesh ref={meshRef} args={[null, null, count]}>
+      <cylinderGeometry args={[0.015, 0.025, 0.36, 6]} />
+      <meshStandardMaterial color="#7ec850" />
+    </instancedMesh>
   );
 }
 

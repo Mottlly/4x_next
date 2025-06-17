@@ -35,7 +35,7 @@ const BoardCanvas = memo(function BoardCanvas({
   sciFiAudioRef,
   natureAudioRef,
   activeAction,
-  hostilePieceHover, // NEW
+  hostilePieceHover,
 }) {
   const heightScale = 0.5;
 
@@ -153,14 +153,14 @@ const BoardCanvas = memo(function BoardCanvas({
         riverPaths={board.riverPaths || []}
         spacing={board.spacing}
         heightScale={heightScale}
-        tiles={board.tiles} // <-- pass the full tiles array here
+        tiles={board.tiles}
       />
       {activeAction === "move" && (
         <MovementLayer
           reachableTiles={reachableTiles}
           spacing={board.spacing}
           heightScale={heightScale}
-          hostilePieces={[]} // don't show red in move mode
+          hostilePieces={[]}
           attackMode={false}
           tiles={board.tiles}
         />
@@ -223,7 +223,7 @@ const BoardCanvas = memo(function BoardCanvas({
         spacing={board.spacing}
         heightScale={heightScale}
         onTileClick={onTileClickCb}
-        onPieceHover={hostilePieceHover} // NEW
+        onPieceHover={hostilePieceHover}
       />
       <FogWallLayer
         tiles={fogTiles}
