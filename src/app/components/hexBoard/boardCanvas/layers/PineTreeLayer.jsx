@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useLayoutEffect } from "react";
 import * as THREE from "three";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
+// Get positions for trees in a ring around the tile
 function getOuterRingPositions(
   q,
   r,
@@ -23,7 +24,7 @@ function getOuterRingPositions(
 }
 
 function PineTreeLayer({ tiles, spacing, heightScale }) {
-  // Gather all tree transforms
+  // Compute transforms for all pine trees (memoized)
   const pineTrees = useMemo(() => {
     return tiles
       .filter((tile) => tile.type === "forest" && tile.discovered)
@@ -45,13 +46,13 @@ function PineTreeLayer({ tiles, spacing, heightScale }) {
       });
   }, [tiles, spacing, heightScale]);
 
-  // Refs for instanced meshes
+  // Refs for each instanced mesh part
   const trunkRef = useRef();
   const foliage1Ref = useRef();
   const foliage2Ref = useRef();
   const foliage3Ref = useRef();
 
-  // Set instance matrices with correct vertical offsets for each part
+  // Set transform matrices for each tree part instance
   useLayoutEffect(() => {
     pineTrees.forEach(({ pos, scale, rot }, i) => {
       // Trunk
@@ -99,6 +100,7 @@ function PineTreeLayer({ tiles, spacing, heightScale }) {
         foliage3Ref.current.setMatrixAt(i, matrix);
       }
     });
+    // Mark all instance matrices as needing update
     trunkRef.current.instanceMatrix.needsUpdate = true;
     foliage1Ref.current.instanceMatrix.needsUpdate = true;
     foliage2Ref.current.instanceMatrix.needsUpdate = true;
@@ -107,6 +109,7 @@ function PineTreeLayer({ tiles, spacing, heightScale }) {
 
   const count = pineTrees.length;
 
+  // Each instancedMesh draws all trees for that part (trunk/foliage)
   return (
     <>
       {/* Trunk */}

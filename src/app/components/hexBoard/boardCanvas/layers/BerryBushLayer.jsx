@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useLayoutEffect } from "react";
 import * as THREE from "three";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
-// Berry offsets and colors (from berryBush.js)
+// Berry offsets/colors for each bush
 const berryDefs = [
   { pos: [0.09, 0.28, 0.04], scale: 1, color: "#b71c1c", radius: 0.045 },
   { pos: [-0.08, 0.23, -0.07], scale: 0.78, color: "#b71c1c", radius: 0.035 },
@@ -10,7 +10,15 @@ const berryDefs = [
   { pos: [-0.07, 0.29, 0.06], scale: 0.56, color: "#b71c1c", radius: 0.025 },
 ];
 
-function getBushTransforms(q, r, spacing, tileHeight, bushCount = 12, radiusFactor = 0.78) {
+// Generate transforms for all bushes on a tile
+function getBushTransforms(
+  q,
+  r,
+  spacing,
+  tileHeight,
+  bushCount = 12,
+  radiusFactor = 0.78
+) {
   const [cx, , cz] = hexToPosition(q, r, spacing);
   const y = tileHeight;
   const bushes = [];
@@ -26,7 +34,7 @@ function getBushTransforms(q, r, spacing, tileHeight, bushCount = 12, radiusFact
 }
 
 function BerryBushLayer({ tiles, spacing, heightScale }) {
-  // Gather transforms for bush bodies and each berry type
+  // Compute transforms for bush bodies and berries (memoized)
   const { bodies, berries } = useMemo(() => {
     const bodies = [];
     const berries = berryDefs.map(() => []);
@@ -34,33 +42,38 @@ function BerryBushLayer({ tiles, spacing, heightScale }) {
       .filter((tile) => tile.type === "grassland" && tile.discovered)
       .forEach((tile) => {
         const y = tile.height * heightScale + 0.01;
-        getBushTransforms(tile.q, tile.r, spacing, y).forEach(({ pos, rot, scale }) => {
-          // Bush body
-          bodies.push({ pos: [pos[0], pos[1] + 0.18 * scale, pos[2]], rot, scale });
-          // Berries (relative to bush)
-          berryDefs.forEach((def, idx) => {
-            const berryPos = [
-              pos[0] + def.pos[0] * scale,
-              pos[1] + def.pos[1] * scale,
-              pos[2] + def.pos[2] * scale,
-            ];
-            berries[idx].push({
-              pos: berryPos,
+        getBushTransforms(tile.q, tile.r, spacing, y).forEach(
+          ({ pos, rot, scale }) => {
+            // Bush body transform
+            bodies.push({
+              pos: [pos[0], pos[1] + 0.18 * scale, pos[2]],
               rot,
-              scale: scale * def.scale,
+              scale,
             });
-          });
-        });
+            // Each berry: position relative to bush, scaled
+            berryDefs.forEach((def, idx) => {
+              const berryPos = [
+                pos[0] + def.pos[0] * scale,
+                pos[1] + def.pos[1] * scale,
+                pos[2] + def.pos[2] * scale,
+              ];
+              berries[idx].push({
+                pos: berryPos,
+                rot,
+                scale: scale * def.scale,
+              });
+            });
+          }
+        );
       });
     return { bodies, berries };
   }, [tiles, spacing, heightScale]);
 
-  // Bush body
+  // Refs for bush body and each berry type
   const bodyRef = useRef();
-  // One ref per berry type
   const berryRefs = berryDefs.map(() => useRef());
 
-  // Set matrices
+  // Set transform matrices for each bush and berry instance
   useLayoutEffect(() => {
     bodies.forEach(({ pos, rot, scale }, i) => {
       const matrix = new THREE.Matrix4();
@@ -87,6 +100,7 @@ function BerryBushLayer({ tiles, spacing, heightScale }) {
     });
   }, [bodies, berries]);
 
+  // Instanced meshes: one for bush bodies, one for each berry type
   return (
     <>
       {/* Bush body */}
