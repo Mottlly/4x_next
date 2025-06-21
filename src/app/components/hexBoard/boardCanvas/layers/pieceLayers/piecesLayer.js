@@ -4,7 +4,10 @@ import hexToPosition from "../../../../../../library/utililies/game/tileUtilitie
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 import { Edges } from "@react-three/drei";
 import ScoutMeepleGroup from "../../models/ScoutMeepleGroup";
+import EngineerMeepleGroup from "../../models/EngineerMeepleGroup";
+import RaiderMeepleGroup from "../../models/RaiderMeepleGroup";
 import UnitFloatingIcon from "../../models/UnitFloatingIcon";
+import Meeple from "../../models/Meeple";
 
 const Piece = React.memo(function Piece({
   p,
@@ -41,8 +44,11 @@ const Piece = React.memo(function Piece({
       <UnitFloatingIcon type={p.type} />
       {p.type === "Scout" ? (
         <ScoutMeepleGroup color={style.color} edgeColor="#222" />
+      ) : p.type === "Engineer" ? (
+        <EngineerMeepleGroup color={style.color} edgeColor="#222" />
+      ) : p.type === "Raider" ? (
+        <RaiderMeepleGroup color={style.color} edgeColor="#222" />
       ) : (
-        // Default cylinder for other types
         <mesh>
           <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
           <meshStandardMaterial color={style.color} />

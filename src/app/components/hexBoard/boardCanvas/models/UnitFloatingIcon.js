@@ -21,12 +21,36 @@ function BinocularsIcon({ color = "#fff" }) {
   );
 }
 
+// Hammer icon for Engineer
+function HammerIcon({ color = "#fff" }) {
+  // 15% larger for handle, 30% larger for head
+  return (
+    <group>
+      {/* Handle */}
+      <mesh position={[0, -0.0345, 0]} rotation={[0, 0, 0]}>
+        <cylinderGeometry args={[0.0138, 0.0138, 0.1495, 10]} />
+        <meshStandardMaterial color="#bfa76a" />
+      </mesh>
+      {/* Head */}
+      <mesh position={[0, 0.052, 0]}>
+        <boxGeometry args={[0.098, 0.0525, 0.0525]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+    </group>
+  );
+}
+
 const ICONS = {
   Scout: BinocularsIcon,
+  Engineer: HammerIcon,
   // Add more mappings for other unit types here
 };
 
-export default function UnitFloatingIcon({ type = "Scout", color = "#38bdf8", yOffset = 0.7 }) {
+export default function UnitFloatingIcon({
+  type = "Scout",
+  color = "#38bdf8",
+  yOffset = 0.7,
+}) {
   const groupRef = useRef();
   useFrame(({ camera }) => {
     if (groupRef.current) {
