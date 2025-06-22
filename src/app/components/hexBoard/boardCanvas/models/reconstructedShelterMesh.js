@@ -1,4 +1,5 @@
 import React from "react";
+import BuildingFloatingIcon from "./BuildingFloatingIcon";
 
 function SmallHouse({ position, scale = 1, rotation = 0 }) {
   // Lower the whole house so the base sits on the ground
@@ -52,6 +53,8 @@ export default function ReconstructedShelterMesh({
       <SmallHouse position={[0, 0, 0]} scale={1} rotation={0} />
       <SmallHouse position={[0.45, 0, -0.18]} scale={0.85} rotation={0.3} />
       <SmallHouse position={[-0.38, 0, 0.22]} scale={0.75} rotation={-0.2} />
+      {/* Add the floating icon above the houses */}
+      <BuildingFloatingIcon type="reconstructed_shelter" yOffset={0.7} />
     </group>
   );
 }

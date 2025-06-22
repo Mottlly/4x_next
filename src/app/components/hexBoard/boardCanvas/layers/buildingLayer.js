@@ -2,6 +2,9 @@ import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { buildingTypeStyles } from "@/library/styles/stylesIndex";
 import ReconstructedShelterMesh from "../models/reconstructedShelterMesh";
+import ResourceExtractorMesh from "../models/resourceExtractorMesh";
+import SensorSuiteMesh from "../models/SensorSuiteMesh";
+import HostileFortressMesh from "../models/hostileFortressMesh";
 
 function BuildingLayer({ tiles, spacing, heightScale }) {
   return (
@@ -16,19 +19,16 @@ function BuildingLayer({ tiles, spacing, heightScale }) {
 
         switch (tile.building) {
           case "reconstructed_shelter":
-            geom = (
-              <ReconstructedShelterMesh scale={spacing * 0.7} />
-            );
+            geom = <ReconstructedShelterMesh scale={spacing * 0.7} />;
             break;
           case "resource_extractor":
-            geom = (
-              <cylinderGeometry
-                args={[spacing * 0.3, spacing * 0.3, spacing * 0.5, 16]}
-              />
-            );
+            geom = <ResourceExtractorMesh scale={spacing * 0.7} />;
             break;
           case "sensor_suite":
-            geom = <sphereGeometry args={[spacing * 0.35, 16, 16]} />;
+            geom = <SensorSuiteMesh scale={spacing * 0.7} />;
+            break;
+          case "hostileFortress":
+            geom = <HostileFortressMesh scale={spacing * 0.7} />;
             break;
           default:
             geom = (

@@ -146,3 +146,29 @@ export const Sword = (
     </mesh>
   </group>
 );
+
+// Large vertical sword for Raider (right hand)
+export const RaiderSword = (
+  <group>
+    {/* Handle */}
+    <mesh position={[0.33, 0.17, 0.13]}>
+      <cylinderGeometry args={[0.018, 0.018, 0.09, 12]} />
+      <meshStandardMaterial color="#888" />
+    </mesh>
+    {/* Crossguard (hilt) */}
+    <mesh position={[0.33, 0.23, 0.13]}>
+      <boxGeometry args={[0.06, 0.018, 0.045]} />
+      <meshStandardMaterial color="#bbb" />
+    </mesh>
+    {/* Blade */}
+    <mesh position={[0.33, 0.38, 0.13]}>
+      <boxGeometry args={[0.028, 0.24, 0.028]} />
+      <meshStandardMaterial color="#eee" />
+    </mesh>
+    {/* Pyramid tip, edges aligned with blade */}
+    <mesh position={[0.33, 0.52, 0.13]}>
+      <coneGeometry args={[0.028, 0.04, 4]} /> {/* 4 sides = pyramid */}
+      <meshStandardMaterial color="#ccc" />
+    </mesh>
+  </group>
+);

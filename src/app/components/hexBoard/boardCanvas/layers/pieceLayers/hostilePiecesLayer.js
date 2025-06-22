@@ -5,6 +5,9 @@ import { isTileVisible } from "../../../../../../library/utililies/game/tileUtil
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import HostileFortressMesh from "../../models/hostileFortressMesh";
+import RaiderMeepleGroup from "../../models/RaiderMeepleGroup";
+import UnitFloatingIcon from "../../models/UnitFloatingIcon";
 
 const HealthBar = ({
   health,
@@ -12,6 +15,7 @@ const HealthBar = ({
   width = 0.7,
   height = 0.08,
   yOffset = 0.45,
+  vertical = false,
 }) => {
   const percent = Math.max(0, Math.min(1, health / maxHealth));
   const groupRef = useRef();
@@ -28,21 +32,37 @@ const HealthBar = ({
 
   const borderColor = "#00bfff"; // Your UI blue
 
+  // Swap width/height for vertical, and adjust bar fill direction
+  const barWidth = vertical ? height : width;
+  const barHeight = vertical ? width : height;
+
   return (
     <group ref={groupRef} position={[0, yOffset, 0]}>
-      {/* Blue border/board for the bar */}
+      {/* Border */}
       <mesh position={[0, 0, 0]}>
-        <planeGeometry args={[width + 0.04, height + 0.04]} />
+        <planeGeometry args={[barWidth + 0.04, barHeight + 0.04]} />
         <meshBasicMaterial color={borderColor} transparent opacity={0.95} />
       </mesh>
-      {/* Background bar */}
+      {/* Background */}
       <mesh position={[0, 0, 0.01]}>
-        <planeGeometry args={[width, height]} />
+        <planeGeometry args={[barWidth, barHeight]} />
         <meshBasicMaterial color="#333" transparent opacity={0.85} />
       </mesh>
-      {/* Health bar (foreground) */}
-      <mesh position={[-(width * (1 - percent)) / 2, 0, 0.02]}>
-        <planeGeometry args={[width * percent, height]} />
+      {/* Foreground (health) */}
+      <mesh
+        position={
+          vertical
+            ? [0, -(barHeight * (1 - percent)) / 2, 0.02]
+            : [-(barWidth * (1 - percent)) / 2, 0, 0.02]
+        }
+      >
+        <planeGeometry
+          args={
+            vertical
+              ? [barWidth, barHeight * percent]
+              : [barWidth * percent, barHeight]
+          }
+        />
         <meshBasicMaterial color={color} />
       </mesh>
     </group>
@@ -75,22 +95,27 @@ const HostilePiece = React.memo(function HostilePiece({
 
   if (p.type === "hostileFortress") {
     // Fortress health bar
-    const maxHealth = p.stats?.maxHealth || 15; // You can set maxHealth in your fortress stats if you want
+    const maxHealth = p.stats?.maxHealth || 15;
     const health = p.stats?.health ?? maxHealth;
     return (
       <a.group position={spring.position}>
-        <mesh
-          key={`fortress-${p.id}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onTileClick?.(tile, p);
-          }}
-        >
-          <boxGeometry args={[0.7, 0.7, 0.7]} />
-          <meshStandardMaterial color="yellow" />
-        </mesh>
-        {/* Health bar above fortress */}
-        <HealthBar health={health} maxHealth={maxHealth} yOffset={0.5} />
+        <HostileFortressMesh scale={0.7} />
+        {/* Floating icon above fortress */}
+        <UnitFloatingIcon type="hostileFortress" yOffset={0.7} />
+        {/* Vertical health bar beside the icon */}
+        <group position={[0.26, 0.7, 0]}>
+          <HealthBar health={health} maxHealth={maxHealth} yOffset={0} vertical />
+        </group>
+      </a.group>
+    );
+  }
+
+  // --- NEW: Render Raider as a Meeple with Axe and Sword ---
+  if (p.type === "Raider") {
+    return (
+      <a.group position={spring.position}>
+        <RaiderMeepleGroup color={style.color} edgeColor="#222" />
+        <UnitFloatingIcon type="Raider" yOffset={0.7} />
       </a.group>
     );
   }

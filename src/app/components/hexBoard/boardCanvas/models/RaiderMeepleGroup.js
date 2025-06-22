@@ -1,8 +1,11 @@
 import React from "react";
 import Meeple from "./Meeple";
-import { Axe, Sword } from "./MeepleAccessories";
+import { RaiderSword } from "./MeepleAccessories";
 
-const RaiderMeepleGroup = ({ color, edgeColor }) => (
+// Much lighter red for visibility
+const LIGHT_RED = "#e57373";
+
+const RaiderMeepleGroup = ({ color = LIGHT_RED, edgeColor }) => (
   <group position={[0, -0.18, 0]}>
     <Meeple
       color={color}
@@ -10,12 +13,7 @@ const RaiderMeepleGroup = ({ color, edgeColor }) => (
       position={[-0.26, 0, -0.09]}
       scale={1}
       rotation={0.12}
-      accessories={
-        <>
-          {Axe}
-          {Sword}
-        </>
-      }
+      accessories={RaiderSword}
     />
     <Meeple
       color={color}
@@ -23,12 +21,7 @@ const RaiderMeepleGroup = ({ color, edgeColor }) => (
       position={[0.26, 0, 0.09]}
       scale={0.92}
       rotation={-0.12}
-      accessories={
-        <>
-          {Axe}
-          {Sword}
-        </>
-      }
+      accessories={RaiderSword}
     />
   </group>
 );
