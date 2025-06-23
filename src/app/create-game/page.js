@@ -120,60 +120,71 @@ export default function CreateGamePage() {
             {currentStep.key === "biome" &&
               "Computer, prepare survival equipment for...?"}
           </p>
-        </div>
-        <div
-          className="w-full max-w-4xl grid gap-6"
+        </div>        <div
+          className="w-full max-w-6xl grid gap-8"
           style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           }}
         >
           {currentStep.options.map((opt) => {
             const isSel = settings[currentStep.key] === opt.key;
+            const isComingSoon = 
+              opt.key === "medium" || opt.key === "large" ||
+              opt.key === "normal" || opt.key === "hard" ||
+              opt.key === "desert" || opt.key === "tundra" || opt.key === "random";
+            
             return (
               <button
                 key={opt.key}
-                onClick={() => selectOption(currentStep.key, opt.key)}
-                className={`flex flex-col overflow-hidden rounded-lg focus:outline-none transition-all duration-200 transform ${
+                onClick={() => !isComingSoon && selectOption(currentStep.key, opt.key)}
+                disabled={isComingSoon}
+                className={`relative flex flex-col overflow-hidden rounded-lg focus:outline-none transition-all duration-200 transform ${
                   isSel
-                    ? "border-2 border-green-400 shadow-[0_0_10px_#00ff00]"
-                    : "border-2 border-gray-700 shadow-[0_0_5px_#000]"
-                }`}
+                    ? "border-3 border-green-400 shadow-[0_0_15px_#00ff00]"
+                    : "border-3 border-gray-700 shadow-[0_0_8px_#000]"
+                } ${isComingSoon ? "opacity-60 cursor-not-allowed" : "hover:scale-105"}`}
               >
-                {" "}
-                <div className="h-32 bg-[#111] flex items-center justify-center">
+                <div className="h-48 bg-[#111] flex items-center justify-center">
                   {opt.icon ? (
                     <opt.icon
-                      size={48}
+                      size={72}
                       className={`transition-colors duration-200 ${
-                        isSel ? "text-green-400" : "text-gray-400"
+                        isSel ? "text-green-400" : isComingSoon ? "text-gray-500" : "text-gray-400"
                       }`}
                     />
                   ) : (
-                    <span className="text-gray-600 text-sm">Icon</span>
+                    <span className="text-gray-600 text-lg">Icon</span>
                   )}
                 </div>
-                <div className="py-3 text-base text-white text-center flex-1 flex items-center justify-center">
+                <div className="py-4 text-xl text-white text-center flex-1 flex items-center justify-center font-medium">
                   {opt.label}
                 </div>
+                
+                {isComingSoon && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="bg-red-600 text-white px-8 py-2 transform rotate-45 text-lg font-bold shadow-lg">
+                      COMING SOON
+                    </div>
+                  </div>
+                )}
               </button>
             );
           })}
         </div>
         <p className="text-sm text-gray-400">{progressText}</p>
-      </main>
-      {/* FOOTER: Back / Next */}
-      <footer className="flex justify-center items-center gap-6">
+      </main>      {/* FOOTER: Back / Next */}
+      <footer className="flex justify-center items-center gap-8 mt-8">
         <button
           onClick={onBack}
-          className="py-2 px-6 text-sm rounded-lg border-2 border-gray-400 text-gray-400 shadow-[0_0_5px_#9ca3af] hover:border-gray-200 hover:shadow-[0_0_10px_#9ca3af] transition-all duration-200 transform hover:scale-105"
+          className="py-3 px-8 text-lg font-medium rounded-lg border-2 border-gray-500 text-gray-300 bg-gray-800 hover:bg-gray-700 hover:border-gray-400 hover:text-white transition-all duration-200 transform hover:scale-105 shadow-lg"
         >
-          {stepIndex === 0 ? t("back to menu") : t("back")}
+          {stepIndex === 0 ? "← Back to Menu" : "← Back"}
         </button>
         <button
           onClick={onNext}
-          className="py-2 px-6 text-sm rounded-lg border-2 border-green-400 text-green-400 shadow-[0_0_10px_#00ff00] hover:shadow-[0_0_20px_#00ff00] transition-all duration-200 transform hover:scale-105"
+          className="py-3 px-8 text-lg font-medium rounded-lg border-2 border-green-500 text-green-400 bg-green-900 hover:bg-green-800 hover:border-green-400 hover:text-green-300 shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)] transition-all duration-200 transform hover:scale-105"
         >
-          {stepIndex < totalSteps - 1 ? t("next") : t("start game")}
+          {stepIndex < totalSteps - 1 ? "Next →" : "🚀 Start Game"}
         </button>
       </footer>
     </div>
