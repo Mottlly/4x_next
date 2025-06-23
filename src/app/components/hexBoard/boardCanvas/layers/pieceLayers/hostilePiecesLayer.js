@@ -7,7 +7,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import HostileFortressMesh from "../../models/hostileFortressMesh";
 import RaiderMeepleGroup from "../../models/RaiderMeepleGroup";
-import UnitFloatingIcon from "../../models/UnitFloatingIcon";
+import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
 
 const HealthBar = ({
   health,
@@ -104,7 +104,12 @@ const HostilePiece = React.memo(function HostilePiece({
         <UnitFloatingIcon type="hostileFortress" yOffset={0.7} />
         {/* Vertical health bar beside the icon */}
         <group position={[0.26, 0.7, 0]}>
-          <HealthBar health={health} maxHealth={maxHealth} yOffset={0} vertical />
+          <HealthBar
+            health={health}
+            maxHealth={maxHealth}
+            yOffset={0}
+            vertical
+          />
         </group>
       </a.group>
     );

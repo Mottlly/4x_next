@@ -1,7 +1,7 @@
 import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { buildingTypeStyles } from "@/library/styles/stylesIndex";
-import ReconstructedShelterMesh from "../models/reconstructedShelterMesh";
+import ReconstructedShelterMesh from "../models/buildings/reconstructedShelterMesh";
 import ResourceExtractorMesh from "../models/resourceExtractorMesh";
 import SensorSuiteMesh from "../models/SensorSuiteMesh";
 import HostileFortressMesh from "../models/hostileFortressMesh";

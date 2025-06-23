@@ -6,8 +6,8 @@ import { Edges } from "@react-three/drei";
 import ScoutMeepleGroup from "../../models/ScoutMeepleGroup";
 import EngineerMeepleGroup from "../../models/EngineerMeepleGroup";
 import RaiderMeepleGroup from "../../models/RaiderMeepleGroup";
-import UnitFloatingIcon from "../../models/UnitFloatingIcon";
-import Meeple from "../../models/Meeple";
+import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
+import Meeple from "../../models/meeples/Meeple";
 
 const Piece = React.memo(function Piece({
   p,

@@ -1,5 +1,5 @@
 import React from "react";
-import BuildingFloatingIcon from "./BuildingFloatingIcon";
+import BuildingFloatingIcon from "../icons/BuildingFloatingIcon";
 
 function SmallHouse({ position, scale = 1, rotation = 0 }) {
   // Lower the whole house so the base sits on the ground

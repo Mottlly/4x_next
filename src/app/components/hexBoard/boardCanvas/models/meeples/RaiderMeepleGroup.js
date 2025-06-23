@@ -1,6 +1,6 @@
 import React from "react";
-import Meeple from "./Meeple";
-import { RaiderSword } from "./MeepleAccessories";
+import Meeple from "./meeples/Meeple";
+import { RaiderSword } from "./meeples/MeepleAccessories";
 
 // Much lighter red for visibility
 const LIGHT_RED = "#e57373";
