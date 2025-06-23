@@ -14,11 +14,33 @@ function getOuterRingPositions(
   const [cx, , cz] = hexToPosition(q, r, spacing);
   const y = tileHeight;
   const positions = [];
+  
+  // Create a seeded random generator based on tile coordinates for consistency
+  const seed = q * 1000 + r + 42; // Different seed offset than bushes
+  const random = (offset = 0) => {
+    const x = Math.sin(seed + offset) * 10000;
+    return x - Math.floor(x);
+  };
+  
   for (let i = 0; i < count; i++) {
-    const angle = Math.PI / 6 + i * ((2 * Math.PI) / count);
-    const px = cx + Math.cos(angle) * spacing * radiusFactor;
-    const pz = cz + Math.sin(angle) * spacing * radiusFactor;
-    positions.push({ pos: [px, y, pz], rot: angle });
+    // Base angle with some randomness
+    const baseAngle = Math.PI / 6 + i * ((2 * Math.PI) / count);
+    const angleVariation = (random(i * 6.7) - 0.5) * 0.6; // ±0.3 radians variation
+    const angle = baseAngle + angleVariation;
+    
+    // Variable radius with randomness - creates more organic clusters
+    const minRadius = spacing * 0.55; // Minimum distance from center (slightly larger for trees)
+    const maxRadius = spacing * radiusFactor;
+    const radiusVariation = random(i * 4.1) * 0.3 + 0.85; // 0.85 to 1.15 multiplier
+    const radius = (minRadius + (maxRadius - minRadius) * random(i * 2.8)) * radiusVariation;
+    
+    // Occasionally skip some positions for gaps (more natural)
+    if (random(i * 7.3) < 0.12) continue; // 12% chance to skip
+    
+    const px = cx + Math.cos(angle) * radius;
+    const pz = cz + Math.sin(angle) * radius;
+    
+    positions.push({ pos: [px, y, pz], rot: angle + random(i * 3.4) * 0.4 });
   }
   return positions;
 }

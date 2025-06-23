@@ -57,10 +57,9 @@ export default function CreateGamePage() {
   const totalSteps = steps.length;
   const [stepIndex, setStepIndex] = useState(0);
   const currentStep = steps[stepIndex];
-
   const [settings, setSettings] = useState({
-    mapSize: "medium",
-    difficulty: "normal",
+    mapSize: "small",
+    difficulty: "easy",
     biome: "temperate",
   });
 
@@ -120,7 +119,8 @@ export default function CreateGamePage() {
             {currentStep.key === "biome" &&
               "Computer, prepare survival equipment for...?"}
           </p>
-        </div>        <div
+        </div>{" "}
+        <div
           className="w-full max-w-6xl grid gap-8"
           style={{
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
@@ -128,28 +128,42 @@ export default function CreateGamePage() {
         >
           {currentStep.options.map((opt) => {
             const isSel = settings[currentStep.key] === opt.key;
-            const isComingSoon = 
-              opt.key === "medium" || opt.key === "large" ||
-              opt.key === "normal" || opt.key === "hard" ||
-              opt.key === "desert" || opt.key === "tundra" || opt.key === "random";
-            
+            const isComingSoon =
+              opt.key === "medium" ||
+              opt.key === "large" ||
+              opt.key === "normal" ||
+              opt.key === "hard" ||
+              opt.key === "desert" ||
+              opt.key === "tundra" ||
+              opt.key === "random";
+
             return (
               <button
                 key={opt.key}
-                onClick={() => !isComingSoon && selectOption(currentStep.key, opt.key)}
+                onClick={() =>
+                  !isComingSoon && selectOption(currentStep.key, opt.key)
+                }
                 disabled={isComingSoon}
                 className={`relative flex flex-col overflow-hidden rounded-lg focus:outline-none transition-all duration-200 transform ${
                   isSel
                     ? "border-3 border-green-400 shadow-[0_0_15px_#00ff00]"
                     : "border-3 border-gray-700 shadow-[0_0_8px_#000]"
-                } ${isComingSoon ? "opacity-60 cursor-not-allowed" : "hover:scale-105"}`}
+                } ${
+                  isComingSoon
+                    ? "opacity-60 cursor-not-allowed"
+                    : "hover:scale-105"
+                }`}
               >
                 <div className="h-48 bg-[#111] flex items-center justify-center">
                   {opt.icon ? (
                     <opt.icon
                       size={72}
                       className={`transition-colors duration-200 ${
-                        isSel ? "text-green-400" : isComingSoon ? "text-gray-500" : "text-gray-400"
+                        isSel
+                          ? "text-green-400"
+                          : isComingSoon
+                          ? "text-gray-500"
+                          : "text-gray-400"
                       }`}
                     />
                   ) : (
@@ -159,7 +173,7 @@ export default function CreateGamePage() {
                 <div className="py-4 text-xl text-white text-center flex-1 flex items-center justify-center font-medium">
                   {opt.label}
                 </div>
-                
+
                 {isComingSoon && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="bg-red-600 text-white px-8 py-2 transform rotate-45 text-lg font-bold shadow-lg">
@@ -172,7 +186,8 @@ export default function CreateGamePage() {
           })}
         </div>
         <p className="text-sm text-gray-400">{progressText}</p>
-      </main>      {/* FOOTER: Back / Next */}
+      </main>{" "}
+      {/* FOOTER: Back / Next */}
       <footer className="flex justify-center items-center gap-8 mt-8">
         <button
           onClick={onBack}

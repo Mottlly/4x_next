@@ -1,6 +1,6 @@
 import React from "react";
-import Meeple from "./meeples/Meeple";
-import { Binoculars } from "./meeples/MeepleAccessories";
+import Meeple from "./Meeple";
+import { Binoculars } from "./MeepleAccessories";
 
 const ScoutMeepleGroup = ({ color, edgeColor }) => (
   <group position={[0, -0.18, 0]}>

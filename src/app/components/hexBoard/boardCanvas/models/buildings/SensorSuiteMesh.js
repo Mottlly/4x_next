@@ -1,6 +1,6 @@
 import React from "react";
 import { Edges } from "@react-three/drei";
-import BuildingFloatingIcon from "./BuildingFloatingIcon";
+import BuildingFloatingIcon from "../icons/BuildingFloatingIcon";
 
 // SmallHouse reused from reconstructedShelterMesh.js
 function SmallHouse({ position, scale = 1, rotation = 0 }) {

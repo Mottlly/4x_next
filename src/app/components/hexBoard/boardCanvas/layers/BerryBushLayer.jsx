@@ -22,14 +22,39 @@ function getBushTransforms(
   const [cx, , cz] = hexToPosition(q, r, spacing);
   const y = tileHeight;
   const bushes = [];
+  
+  // Create a seeded random generator based on tile coordinates for consistency
+  const seed = q * 1000 + r;
+  const random = (offset = 0) => {
+    const x = Math.sin(seed + offset) * 10000;
+    return x - Math.floor(x);
+  };
+  
   for (let i = 0; i < bushCount; i++) {
-    const angle = Math.PI / 6 + i * ((2 * Math.PI) / bushCount);
-    const px = cx + Math.cos(angle) * spacing * radiusFactor;
-    const pz = cz + Math.sin(angle) * spacing * radiusFactor;
-    const rot = angle + Math.random() * 0.6;
-    const scale = 0.38 + 0.12 * Math.sin(i * 1.7 + q + r);
+    // Base angle with some randomness
+    const baseAngle = Math.PI / 6 + i * ((2 * Math.PI) / bushCount);
+    const angleVariation = (random(i * 7.3) - 0.5) * 0.8; // ±0.4 radians variation
+    const angle = baseAngle + angleVariation;
+    
+    // Variable radius with randomness - creates more organic clusters
+    const minRadius = spacing * 0.5; // Minimum distance from center
+    const maxRadius = spacing * radiusFactor;
+    const radiusVariation = random(i * 3.7) * 0.4 + 0.8; // 0.8 to 1.2 multiplier
+    const radius = (minRadius + (maxRadius - minRadius) * random(i * 2.1)) * radiusVariation;
+    
+    // Occasionally skip some positions for gaps (more natural)
+    if (random(i * 5.9) < 0.15) continue; // 15% chance to skip
+    
+    const px = cx + Math.cos(angle) * radius;
+    const pz = cz + Math.sin(angle) * radius;
+    
+    // Random rotation and scale
+    const rot = angle + random(i * 4.2) * 0.6;
+    const scale = 0.32 + 0.16 * (random(i * 1.7 + q + r) * 0.5 + Math.sin(i * 1.7 + q + r) * 0.5);
+    
     bushes.push({ pos: [px, y, pz], rot, scale });
   }
+  
   return bushes;
 }
 

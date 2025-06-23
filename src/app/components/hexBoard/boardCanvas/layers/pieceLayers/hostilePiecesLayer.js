@@ -5,8 +5,8 @@ import { isTileVisible } from "../../../../../../library/utililies/game/tileUtil
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import HostileFortressMesh from "../../models/hostileFortressMesh";
-import RaiderMeepleGroup from "../../models/RaiderMeepleGroup";
+import HostileFortressMesh from "../../models/buildings/hostileFortressMesh";
+import RaiderMeepleGroup from "../../models/meeples/RaiderMeepleGroup";
 import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
 
 const HealthBar = ({

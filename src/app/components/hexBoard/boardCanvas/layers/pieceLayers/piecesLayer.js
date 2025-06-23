@@ -3,9 +3,9 @@ import { a, useSpring } from "@react-spring/three";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 import { Edges } from "@react-three/drei";
-import ScoutMeepleGroup from "../../models/ScoutMeepleGroup";
-import EngineerMeepleGroup from "../../models/EngineerMeepleGroup";
-import RaiderMeepleGroup from "../../models/RaiderMeepleGroup";
+import ScoutMeepleGroup from "../../models/meeples/ScoutMeepleGroup";
+import EngineerMeepleGroup from "../../models/meeples/EngineerMeepleGroup";
+import RaiderMeepleGroup from "../../models/meeples/RaiderMeepleGroup";
 import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
 import Meeple from "../../models/meeples/Meeple";
 

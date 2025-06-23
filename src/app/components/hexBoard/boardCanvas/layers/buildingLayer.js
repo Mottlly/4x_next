@@ -2,9 +2,9 @@ import React from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { buildingTypeStyles } from "@/library/styles/stylesIndex";
 import ReconstructedShelterMesh from "../models/buildings/reconstructedShelterMesh";
-import ResourceExtractorMesh from "../models/resourceExtractorMesh";
-import SensorSuiteMesh from "../models/SensorSuiteMesh";
-import HostileFortressMesh from "../models/hostileFortressMesh";
+import ResourceExtractorMesh from "../models/buildings/resourceExtractorMesh";
+import SensorSuiteMesh from "../models/buildings/SensorSuiteMesh";
+import HostileFortressMesh from "../models/buildings/hostileFortressMesh";
 
 function BuildingLayer({ tiles, spacing, heightScale }) {
   return (

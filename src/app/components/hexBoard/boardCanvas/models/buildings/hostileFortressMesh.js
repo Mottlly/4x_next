@@ -1,5 +1,5 @@
 import React from "react";
-import HostileBuildingFloatingIcon from "./HostileBuildingFloatingIcon";
+import HostileBuildingFloatingIcon from "../icons/HostileBuildingFloatingIcon";
 
 // A single hut: short lighter brown cylinder with a lighter, smaller cone roof and a door on a random side
 function Hut({ position = [0, 0, 0], scale = 1, rotation = 0 }) {
