@@ -65,6 +65,7 @@ export const pieceTypeStyles = {
   scout: { color: "#38bdf8" },
   engineer: { color: "#facc15" },
   security: { color: "#f87171" },
+  goodyHut: { color: "#ffd700" },
   default: { color: "red" },
   Raider: { color: "#b22222" },
 };

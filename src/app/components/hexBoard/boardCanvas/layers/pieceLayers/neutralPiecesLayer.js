@@ -2,6 +2,7 @@ import React from "react";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { isTileVisible } from "../../../../../../library/utililies/game/tileUtilities/lineOfSight/isVisibleHelper";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
+import GoodyHut from "../../models/pieces/GoodyHut";
 
 function NeutralPiecesLayer({
   neutralPieces,
@@ -21,7 +22,7 @@ function NeutralPiecesLayer({
         const style = pieceTypeStyles[p.type] || { color: "orange" };
 
         return (
-          <mesh
+          <group
             key={`neutral-piece-${p.id}`}
             position={[x, y, z]}
             onClick={(e) => {
@@ -29,9 +30,15 @@ function NeutralPiecesLayer({
               onTileClick?.(tile, p);
             }}
           >
-            <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-            <meshStandardMaterial color={style.color} />
-          </mesh>
+            {p.type === "goodyHut" ? (
+              <GoodyHut />
+            ) : (
+              <mesh>
+                <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
+                <meshStandardMaterial color={style.color} />
+              </mesh>
+            )}
+          </group>
         );
       })}
     </>
