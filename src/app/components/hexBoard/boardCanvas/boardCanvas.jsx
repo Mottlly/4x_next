@@ -151,8 +151,7 @@ const BoardCanvas = memo(function BoardCanvas({
       />
       <RiverLayer
         riverPaths={board.riverPaths || []}
-        spacing={board.spacing}
-        heightScale={heightScale}
+        spacing={board.spacing}        heightScale={heightScale}
         tiles={board.tiles}
       />
       {activeAction === "move" && (

@@ -1,11 +1,14 @@
-import { buildingEffects, getResourceExtractorEffect } from "../gamePieces/schemas/buildBank";
+import {
+  buildingEffects,
+  getResourceExtractorEffect,
+} from "../gamePieces/schemas/buildBank";
 import { PIECE_BANK } from "../gamePieces/schemas/pieceBank";
 
-// resources: [rations, printingMaterial, weapons]
-export function computeResourceChange(board) {
+// Compute the net resource changes that will occur next turn
+export function computeResourceDelta(board) {
   const effect = { rations: 0, printingMaterial: 0, weapons: 0 };
 
-  // Building effects
+  // Building effects (positive)
   for (const tile of board.tiles) {
     if (tile.building === "resource_extractor") {
       const b = getResourceExtractorEffect(tile);
@@ -17,23 +20,25 @@ export function computeResourceChange(board) {
       effect.rations += b.rations;
       effect.printingMaterial += b.printingMaterial;
       effect.weapons += b.weapons;
-      console.log(
-        `[Resource] Building '${tile.building}' at (${tile.q},${tile.r}) effect:`,
-        b
-      );
     }
   }
-  // Subtract unit upkeep
+
+  // Subtract unit upkeep (negative)
   for (const piece of board.pieces || []) {
     const upkeep = PIECE_BANK[piece.type]?.upkeep;
-    effect.rations -= upkeep.rations;
-    effect.printingMaterial -= upkeep.printingMaterial;
-    effect.weapons -= upkeep.weapons;
-    console.log(
-      `[Resource] Piece '${piece.type}' (id:${piece.id}) upkeep:`,
-      upkeep
-    );
+    if (upkeep) {
+      effect.rations -= upkeep.rations;
+      effect.printingMaterial -= upkeep.printingMaterial;
+      effect.weapons -= upkeep.weapons;
+    }
   }
+
+  return effect;
+}
+
+// resources: [rations, printingMaterial, weapons]
+export function computeResourceChange(board) {
+  const effect = computeResourceDelta(board);
 
   const before = {
     rations: board.resources?.[0] ?? 0,

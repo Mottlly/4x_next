@@ -1,6 +1,6 @@
 export const settlementPanelStyles = {
   container: `
-    absolute bottom-4 right-4 z-20
+    absolute top-32 right-4 z-20
     w-96 p-4
     bg-gray-900 bg-opacity-90
     border border-yellow-500

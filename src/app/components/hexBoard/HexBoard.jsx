@@ -28,7 +28,10 @@ import useAttackHandler from "./HexBoardFunctions/useAttackHandler";
 import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
 import { handleAction } from "./HexBoardFunctions/handleAction";
 import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
-import { subtractResources } from "../../../library/utililies/game/resources/resourceUtils";
+import {
+  subtractResources,
+  computeResourceDelta,
+} from "../../../library/utililies/game/resources/resourceUtils";
 import { handleBuildUnit } from "../../../library/utililies/game/gamePieces/handleBuildUnit";
 
 export default function HexBoard({ board: initialBoard }) {
@@ -229,10 +232,19 @@ export default function HexBoard({ board: initialBoard }) {
 
   const sciFiAudioRef = useRef();
   const natureAudioRef = useRef();
-
   useUnlockAudio(sciFiAudioRef, natureAudioRef);
 
   const outpostInfo = computeOutpostInfo(board);
+
+  // Compute expected resource changes for next turn
+  const resourceDelta = useMemo(() => {
+    // Create a board state that includes current pieces for accurate calculation
+    const boardWithCurrentPieces = {
+      ...board,
+      pieces: pieces,
+    };
+    return computeResourceDelta(boardWithCurrentPieces);
+  }, [board, pieces]);
 
   const attackableHostileTiles = useMemo(() => {
     if (activeAction !== "attack" || selectedPieceId == null) return [];
@@ -250,10 +262,13 @@ export default function HexBoard({ board: initialBoard }) {
       })
       .filter(Boolean);
   }, [activeAction, selectedPieceId, pieces, board.hostilePieces, board.tiles]);
-
   return (
     <div className="relative w-full h-full">
-      <ResourcePanel resources={resources} outpostInfo={outpostInfo} />
+      <ResourcePanel
+        resources={resources}
+        outpostInfo={outpostInfo}
+        resourceDelta={resourceDelta}
+      />
 
       <BoardCanvas
         board={board}

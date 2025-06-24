@@ -39,35 +39,38 @@ function getMountainTransforms(
   const [cx, , cz] = hexToPosition(q, r, spacing); // Tile center
   const y = tileHeight;
   const mountains = [];
-  
+
   // Create a seeded random generator based on tile coordinates for consistency
   const seed = q * 1000 + r + 84; // Different seed offset than other terrain
   const random = (offset = 0) => {
     const x = Math.sin(seed + offset) * 10000;
     return x - Math.floor(x);
   };
-  
+
   for (let i = 0; i < count; i++) {
     // Base angle with some randomness
     const baseAngle = Math.PI / 6 + i * ((2 * Math.PI) / count);
     const angleVariation = (random(i * 5.9) - 0.5) * 0.7; // ±0.35 radians variation
     const angle = baseAngle + angleVariation;
-    
+
     // Variable radius with randomness - creates more organic mountain ranges
     const minRadius = spacing * 0.45; // Minimum distance from center
     const maxRadius = spacing * radiusFactor;
     const radiusVariation = random(i * 3.3) * 0.35 + 0.8; // 0.8 to 1.15 multiplier
-    const radius = (minRadius + (maxRadius - minRadius) * random(i * 2.5)) * radiusVariation;
-    
+    const radius =
+      (minRadius + (maxRadius - minRadius) * random(i * 2.5)) * radiusVariation;
+
     // Occasionally skip some positions for gaps (natural mountain formation)
     if (random(i * 6.1) < 0.1) continue; // 10% chance to skip
-    
+
     const px = cx + Math.cos(angle) * radius;
     const pz = cz + Math.sin(angle) * radius;
-    
+
     const rot = angle + random(i * 4.7) * 0.6;
-    const scale = 0.45 + 0.28 * (random(i * 1.7 + q + r) * 0.5 + Math.sin(i * 1.7 + q + r) * 0.5);
-    
+    const scale =
+      0.45 +
+      0.28 * (random(i * 1.7 + q + r) * 0.5 + Math.sin(i * 1.7 + q + r) * 0.5);
+
     mountains.push({ pos: [px, y, pz], rot, scale });
   }
   return mountains;

@@ -63,7 +63,8 @@ export default function MainMenu() {
                   {userData.name || userData.nickname || "Commander"}!
                 </p>
                 <p className="text-sm text-gray-400">
-                  Ready for another expedition?
+                  Ready for another expedition? I'm sure nothing bad will happen
+                  this time!
                 </p>
               </div>
             </div>

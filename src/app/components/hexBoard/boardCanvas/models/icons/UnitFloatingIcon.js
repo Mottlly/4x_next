@@ -2,6 +2,50 @@ import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
+// Simple shuttle icon for Pod with downward arrow
+function ShuttleIcon({ color = "#fff" }) {
+  return (
+    <group>
+      {/* Main body */}
+      <mesh position={[0, 0.02, 0]}>
+        <boxGeometry args={[0.08, 0.04, 0.12]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Nose */}
+      <mesh position={[0, 0.02, 0.08]}>
+        <coneGeometry args={[0.025, 0.05, 6]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Wings */}
+      <mesh position={[-0.06, 0.02, -0.02]}>
+        <boxGeometry args={[0.04, 0.02, 0.06]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      <mesh position={[0.06, 0.02, -0.02]}>
+        <boxGeometry args={[0.04, 0.02, 0.06]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Engine */}
+      <mesh position={[0, 0.02, -0.08]}>
+        <cylinderGeometry args={[0.02, 0.025, 0.03, 6]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+
+      {/* Downward arrow to suggest landing */}
+      {/* Arrow shaft */}
+      <mesh position={[0, -0.06, 0]}>
+        <boxGeometry args={[0.008, 0.04, 0.008]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Arrow head */}
+      <mesh position={[0, -0.09, 0]} rotation={[0, 0, Math.PI]}>
+        <coneGeometry args={[0.015, 0.025, 6]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+    </group>
+  );
+}
+
 // Simple binoculars icon using geometry
 function BinocularsIcon({ color = "#fff" }) {
   return (
@@ -140,6 +184,7 @@ function RoundedSquare({
 }
 
 const ICONS = {
+  Pod: ShuttleIcon,
   Scout: BinocularsIcon,
   Engineer: HammerIcon,
   Raider: SwordIcon,

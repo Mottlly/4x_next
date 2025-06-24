@@ -6,6 +6,7 @@ import { Edges } from "@react-three/drei";
 import ScoutMeepleGroup from "../../models/meeples/ScoutMeepleGroup";
 import EngineerMeepleGroup from "../../models/meeples/EngineerMeepleGroup";
 import RaiderMeepleGroup from "../../models/meeples/RaiderMeepleGroup";
+import Pod from "../../models/pieces/Pod";
 import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
 import Meeple from "../../models/meeples/Meeple";
 
@@ -41,8 +42,11 @@ const Piece = React.memo(function Piece({
         onTileClick(tile);
       }}
     >
+      {" "}
       <UnitFloatingIcon type={p.type} />
-      {p.type === "Scout" ? (
+      {p.type === "Pod" ? (
+        <Pod selected={selectedPieceId === p.id} />
+      ) : p.type === "Scout" ? (
         <ScoutMeepleGroup color={style.color} edgeColor="#222" />
       ) : p.type === "Engineer" ? (
         <EngineerMeepleGroup color={style.color} edgeColor="#222" />

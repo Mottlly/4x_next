@@ -1,7 +1,7 @@
 export const resourcePanelStyles = {
   container: "absolute top-4 right-4 z-10 pointer-events-none",
   panel: `
-    w-48 p-4
+    w-60 p-4
     bg-gray-900 bg-opacity-80 backdrop-blur-sm
     border border-cyan-500 rounded-lg
     shadow-lg ring-2 ring-cyan-400 ring-opacity-50
