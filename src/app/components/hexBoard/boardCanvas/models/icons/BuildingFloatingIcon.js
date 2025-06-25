@@ -56,11 +56,11 @@ function FactoryIcon({ color = "#111" }) {
       {/* Smoke */}
       <mesh position={[-0.09, 0.21, 0]}>
         <sphereGeometry args={[0.025, 12, 12]} />
-        <meshStandardMaterial color="#fff" transparent opacity={0.7} />
+        <meshStandardMaterial color="#000" transparent opacity={0.7} />
       </mesh>
       <mesh position={[-0.09, 0.25, 0]}>
         <sphereGeometry args={[0.017, 12, 12]} />
-        <meshStandardMaterial color="#fff" transparent opacity={0.5} />
+        <meshStandardMaterial color="#000" transparent opacity={0.5} />
       </mesh>
     </group>
   );

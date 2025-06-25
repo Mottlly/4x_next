@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 // Simple shuttle icon for Pod with downward arrow
-function ShuttleIcon({ color = "#fff" }) {
+function ShuttleIcon({ color = "#000" }) {
   return (
     <group>
       {/* Main body */}
@@ -47,7 +47,7 @@ function ShuttleIcon({ color = "#fff" }) {
 }
 
 // Simple binoculars icon using geometry
-function BinocularsIcon({ color = "#fff" }) {
+function BinocularsIcon({ color = "#000" }) {
   return (
     <group>
       <mesh position={[-0.07, 0, 0]}>
@@ -67,13 +67,13 @@ function BinocularsIcon({ color = "#fff" }) {
 }
 
 // Hammer icon for Engineer
-function HammerIcon({ color = "#fff" }) {
+function HammerIcon({ color = "#000" }) {
   return (
     <group>
       {/* Handle */}
       <mesh position={[0, -0.0345, 0]} rotation={[0, 0, 0]}>
         <cylinderGeometry args={[0.0138, 0.0138, 0.1495, 10]} />
-        <meshStandardMaterial color="#bfa76a" />
+        <meshStandardMaterial color="#000" />
       </mesh>
       {/* Head */}
       <mesh position={[0, 0.052, 0]}>
@@ -85,7 +85,7 @@ function HammerIcon({ color = "#fff" }) {
 }
 
 // Simple sword icon for Raider
-function SwordIcon({ color = "#fff" }) {
+function SwordIcon({ color = "#000" }) {
   return (
     <group>
       {/* Blade */}
@@ -108,7 +108,7 @@ function SwordIcon({ color = "#fff" }) {
 }
 
 // Simple castle icon for hostile fortress, moved down to fit inside background
-function CastleIcon({ color = "#fff" }) {
+function CastleIcon({ color = "#000" }) {
   return (
     <group position={[0, -0.04, 0]}>
       {/* Main square */}
@@ -145,7 +145,7 @@ function CastleIcon({ color = "#fff" }) {
       {/* Flag */}
       <mesh position={[0.025, 0.185, 0.012]}>
         <boxGeometry args={[0.03, 0.018, 0.012]} />
-        <meshStandardMaterial color="#e57373" />
+        <meshStandardMaterial color="#000" />
       </mesh>
     </group>
   );
@@ -226,7 +226,7 @@ export default function UnitFloatingIcon({
         </mesh>
       )}
       {/* White icon */}
-      {Icon && <Icon color="#fff" />}
+      {Icon && <Icon color="#000" />}
     </group>
   );
 }
