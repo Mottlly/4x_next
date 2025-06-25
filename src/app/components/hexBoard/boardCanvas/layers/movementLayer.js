@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { Shape, ExtrudeGeometry } from "three";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { movementStyles } from "@/library/styles/stylesIndex";
 
@@ -13,10 +14,66 @@ const hostileHighlightStyle = {
   depthTest: false,
 };
 
+// Create hexagon border geometry
+function createHexagonBorderGeometry(spacing, borderScale, thickness) {
+  const radius = spacing * borderScale;
+  const innerRadius = radius * 0.9; // Create a border effect
+  
+  // Create outer hexagon shape (rotated 30 degrees for odd-r offset grid)
+  const outerShape = new Shape();
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3 + Math.PI / 6; // Add 30 degree rotation for flat-top hexagons
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    if (i === 0) {
+      outerShape.moveTo(x, y);
+    } else {
+      outerShape.lineTo(x, y);
+    }
+  }
+  outerShape.closePath();
+  
+  // Create inner hexagon hole (rotated 30 degrees for odd-r offset grid)
+  const innerHole = new Shape();
+  for (let i = 0; i < 6; i++) {
+    const angle = (i * Math.PI) / 3 + Math.PI / 6; // Add 30 degree rotation for flat-top hexagons
+    const x = Math.cos(angle) * innerRadius;
+    const y = Math.sin(angle) * innerRadius;
+    if (i === 0) {
+      innerHole.moveTo(x, y);
+    } else {
+      innerHole.lineTo(x, y);
+    }
+  }
+  innerHole.closePath();
+  
+  // Add hole to shape
+  outerShape.holes = [innerHole];
+  
+  // Extrude settings
+  const extrudeSettings = {
+    depth: thickness,
+    bevelEnabled: false,
+  };
+  
+  return new ExtrudeGeometry(outerShape, extrudeSettings);
+}
+
 function MovementLayer({ reachableTiles, spacing, heightScale, hostilePieces = [], attackMode = false, tiles = [] }) {
   // Get unique hostile tile positions
   const hostileTiles = hostilePieces.map((p) => `${p.q},${p.r}`);
   const hostileTileSet = new Set(hostileTiles);
+
+  // Create geometries for reuse
+  const movementHexGeometry = useMemo(
+    () => createHexagonBorderGeometry(spacing, movementStyles.borderScale, movementStyles.thickness),
+    [spacing]
+  );
+  
+  const hostileHexGeometry = useMemo(
+    () => createHexagonBorderGeometry(spacing, hostileHighlightStyle.borderScale, hostileHighlightStyle.thickness),
+    [spacing]
+  );
 
   return (
     <>
@@ -28,19 +85,13 @@ function MovementLayer({ reachableTiles, spacing, heightScale, hostilePieces = [
           <mesh
             key={`border-${tile.q}-${tile.r}`}
             position={[x, y, z]}
+            rotation={[-Math.PI / 2, 0, 0]} // Rotate to lay flat
             renderOrder={movementStyles.renderOrder}
+            geometry={movementHexGeometry}
           >
-            <cylinderGeometry
-              args={[
-                spacing * movementStyles.borderScale,
-                spacing * movementStyles.borderScale,
-                movementStyles.thickness,
-                6,
-              ]}
-            />
             <meshBasicMaterial
               color={movementStyles.color}
-              wireframe={movementStyles.wireframe}
+              wireframe={false}
               transparent
               opacity={movementStyles.opacity}
               depthTest={movementStyles.depthTest}
@@ -59,19 +110,13 @@ function MovementLayer({ reachableTiles, spacing, heightScale, hostilePieces = [
             <mesh
               key={`hostile-highlight-${p.q}-${p.r}`}
               position={[x, y, z]}
+              rotation={[-Math.PI / 2, 0, 0]} // Rotate to lay flat
               renderOrder={hostileHighlightStyle.renderOrder}
+              geometry={hostileHexGeometry}
             >
-              <cylinderGeometry
-                args={[
-                  spacing * hostileHighlightStyle.borderScale,
-                  spacing * hostileHighlightStyle.borderScale,
-                  hostileHighlightStyle.thickness,
-                  6,
-                ]}
-              />
               <meshBasicMaterial
                 color={hostileHighlightStyle.color}
-                wireframe={hostileHighlightStyle.wireframe}
+                wireframe={false}
                 transparent
                 opacity={hostileHighlightStyle.opacity}
                 depthTest={hostileHighlightStyle.depthTest}
