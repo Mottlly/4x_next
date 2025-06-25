@@ -178,8 +178,21 @@ export const HOSTILE_PIECE_BANK = {
 
 // Factory function
 import { v4 as uuidv4 } from "uuid";
-export function createHostilePiece(type, overrides = {}) {
+export function createHostilePiece(type: string, overrides: any = {}) {
   const base = HOSTILE_PIECE_BANK[type];
   if (!base) throw new Error(`Unknown hostile type: ${type}`);
-  return { ...base, ...overrides, id: overrides.id || uuidv4() };
+  
+  // Initialize currentHealth to the same value as health if not provided
+  const stats = {
+    ...base.stats,
+    currentHealth: base.stats.health,
+    ...(overrides.stats || {})
+  };
+  
+  return { 
+    ...base, 
+    ...overrides, 
+    stats,
+    id: overrides.id || uuidv4() 
+  };
 }

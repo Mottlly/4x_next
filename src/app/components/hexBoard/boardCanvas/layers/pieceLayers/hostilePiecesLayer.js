@@ -91,42 +91,71 @@ const HostilePiece = React.memo(function HostilePiece({
 
   useEffect(() => {
     prevPositions.current[p.id] = [x, y, z];
-  }, [p.id, x, y, z]);
+  }, [p.id, x, y, z, prevPositions]);
 
   if (p.type === "hostileFortress") {
     // Fortress health bar
-    const maxHealth = p.stats?.maxHealth || 15;
-    const health = p.stats?.health ?? maxHealth;
+    const maxHealth = p.stats?.health;
+    const currentHealth = p.stats?.currentHealth;
+    const hasHealthStats = maxHealth !== null && currentHealth !== null;
+    
+    
     return (
       <a.group position={spring.position}>
         <HostileFortressMesh scale={0.7} />
         {/* Floating icon above fortress */}
         <UnitFloatingIcon type="hostileFortress" yOffset={0.7} />
         {/* Vertical health bar beside the icon */}
-        <group position={[0.26, 0.7, 0]}>
-          <HealthBar
-            health={health}
-            maxHealth={maxHealth}
-            yOffset={0}
-            vertical
-          />
-        </group>
+        {hasHealthStats && (
+          <group position={[0.26, 0.7, 0]}>
+            <HealthBar
+              health={currentHealth}
+              maxHealth={maxHealth}
+              yOffset={0}
+              vertical
+            />
+          </group>
+        )}
       </a.group>
     );
   }
 
   // --- NEW: Render Raider as a Meeple with Axe and Sword ---
   if (p.type === "Raider") {
+    // Get actual health stats
+    const maxHealth = p.stats?.health;
+    const currentHealth = p.stats?.currentHealth;
+    const hasHealthStats = maxHealth !== null && currentHealth !== null;
+    
+
     return (
       <a.group position={spring.position}>
         <RaiderMeepleGroup color={style.color} edgeColor="#222" />
         <UnitFloatingIcon type="Raider" yOffset={0.7} />
+        {/* Show health bar beside the icon if has health stats */}
+        {hasHealthStats && (
+          <group position={[0.3, 0.7, 0]}>
+            <HealthBar
+              health={currentHealth}
+              maxHealth={maxHealth}
+              yOffset={0}
+              vertical
+              width={0.6}
+              height={0.07}
+            />
+          </group>
+        )}
       </a.group>
     );
   }
 
+  // For other hostile piece types
+  const maxHealth = p.stats?.health;
+  const currentHealth = p.stats?.currentHealth;
+  const hasHealthStats = maxHealth !== null && currentHealth !== null;
+
   return (
-    <a.mesh
+    <a.group
       key={`hostile-piece-${p.id}`}
       position={spring.position}
       onClick={(e) => {
@@ -142,9 +171,25 @@ const HostilePiece = React.memo(function HostilePiece({
         onPieceHover?.(null, null, e);
       }}
     >
-      <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-      <meshStandardMaterial color={style.color} />
-    </a.mesh>
+      <mesh>
+        <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
+        <meshStandardMaterial color={style.color} />
+      </mesh>
+      <UnitFloatingIcon type={p.type} yOffset={0.7} />
+      {/* Show health bar beside the icon if has health stats */}
+      {hasHealthStats && (
+        <group position={[0.3, 0.7, 0]}>
+          <HealthBar
+            health={currentHealth}
+            maxHealth={maxHealth}
+            yOffset={0}
+            vertical
+            width={0.6}
+            height={0.07}
+          />
+        </group>
+      )}
+    </a.group>
   );
 });
 
@@ -156,7 +201,6 @@ function HostilePiecesLayer({
   onTileClick,
   onPieceHover,
 }) {
-  console.log("HostilePiecesLayer hostilePieces:", hostilePieces);
   const prevPositions = useRef({});
 
   useEffect(() => {

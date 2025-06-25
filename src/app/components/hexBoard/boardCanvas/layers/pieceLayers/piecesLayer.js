@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from "react";
 import { a, useSpring } from "@react-spring/three";
+import { useFrame } from "@react-three/fiber";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
 import { Edges } from "@react-three/drei";
@@ -9,6 +10,66 @@ import RaiderMeepleGroup from "../../models/meeples/RaiderMeepleGroup";
 import Pod from "../../models/pieces/Pod";
 import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
 import Meeple from "../../models/meeples/Meeple";
+
+const HealthBar = ({
+  health,
+  maxHealth = 15,
+  width = 0.7,
+  height = 0.08,
+  yOffset = 0.45,
+  vertical = false,
+}) => {
+  const percent = Math.max(0, Math.min(1, health / maxHealth));
+  const groupRef = useRef();
+  useFrame(({ camera }) => {
+    if (groupRef.current) {
+      groupRef.current.lookAt(camera.position);
+    }
+  });
+
+  // Solid color based on health percent
+  let color = "#4caf50"; // green
+  if (percent <= 0.25) color = "#e53935"; // red
+  else if (percent <= 0.5) color = "#ffb300"; // yellow
+
+  const borderColor = "#00bfff"; // Your UI blue
+
+  // Swap width/height for vertical, and adjust bar fill direction
+  const barWidth = vertical ? height : width;
+  const barHeight = vertical ? width : height;
+
+  return (
+    <group ref={groupRef} position={[0, yOffset, 0]}>
+      {/* Border */}
+      <mesh position={[0, 0, 0]}>
+        <planeGeometry args={[barWidth + 0.04, barHeight + 0.04]} />
+        <meshBasicMaterial color={borderColor} transparent opacity={0.95} />
+      </mesh>
+      {/* Background */}
+      <mesh position={[0, 0, 0.01]}>
+        <planeGeometry args={[barWidth, barHeight]} />
+        <meshBasicMaterial color="#333" transparent opacity={0.85} />
+      </mesh>
+      {/* Foreground (health) */}
+      <mesh
+        position={
+          vertical
+            ? [0, -(barHeight * (1 - percent)) / 2, 0.02]
+            : [-(barWidth * (1 - percent)) / 2, 0, 0.02]
+        }
+      >
+        <planeGeometry
+          args={
+            vertical
+              ? [barWidth, barHeight * percent]
+              : [barWidth * percent, barHeight]
+          }
+        />
+        <meshBasicMaterial color={color} />
+      </mesh>
+    </group>
+  );
+};
 
 const Piece = React.memo(function Piece({
   p,
@@ -33,6 +94,11 @@ const Piece = React.memo(function Piece({
     config: { mass: 1, tension: 170, friction: 26 },
   });
 
+  // Get the piece's health from stats
+  const maxHealth = p.stats?.health;
+  const currentHealth = p.stats?.currentHealth;
+  const hasHealthStats = maxHealth !== null && currentHealth !== null;
+
   return (
     <a.group
       key={`piece-${p.id}`}
@@ -42,8 +108,20 @@ const Piece = React.memo(function Piece({
         onTileClick(tile);
       }}
     >
-      {" "}
       <UnitFloatingIcon type={p.type} />
+      {/* Show health bar beside the icon if piece has health stats */}
+      {hasHealthStats && (
+        <group position={[0.3, 0.7, 0]}>
+          <HealthBar
+            health={currentHealth}
+            maxHealth={maxHealth}
+            yOffset={0}
+            vertical
+            width={0.6}
+            height={0.07}
+          />
+        </group>
+      )}
       {p.type === "Pod" ? (
         <Pod selected={selectedPieceId === p.id} />
       ) : p.type === "Scout" ? (

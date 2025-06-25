@@ -25,6 +25,6 @@ export function generateHostileFortress(tiles, playerSpawn, minDistance = 6) {
     type: "hostileFortress",
     q: tile.q,
     r: tile.r,
-    stats: { health: 15, attack: 2, defense: 4 },
+    stats: { health: 15, currentHealth: 15, attack: 2, defense: 4 },
   };
 }

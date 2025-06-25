@@ -87,13 +87,13 @@ const BoardCanvas = memo(function BoardCanvas({
     const sel = pieces.find((p) => p.id === selectedPieceId);
     if (!sel) return [];
     const range = sel.range ?? 1;
-    
+
     // Find all hostiles within attack range that are visible and not semi-fogged
     return (board.hostilePieces || [])
       .map((h) => {
         const dist = hexDistance(h, sel);
         const tile = board.tiles.find((t) => t.q === h.q && t.r === h.r);
-        
+
         if (
           dist <= range &&
           tile &&

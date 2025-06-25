@@ -69,7 +69,7 @@ function MovementLayer({
 }) {
   const movementInstanceRef = useRef();
   const hostileInstanceRef = useRef();
-  
+
   // Create geometries for reuse
   const movementHexGeometry = useMemo(
     () =>
@@ -94,43 +94,44 @@ function MovementLayer({
   // Update movement instances
   useEffect(() => {
     if (!movementInstanceRef.current || !reachableTiles.length) return;
-    
+
     const tempObject = new Object3D();
     const matrix = new Matrix4();
-    
+
     reachableTiles.forEach((tile, index) => {
       const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
       const y = tile.height * heightScale + 0.1;
-      
+
       tempObject.position.set(x, y, z);
       tempObject.rotation.set(-Math.PI / 2, 0, 0);
       tempObject.updateMatrix();
-      
+
       movementInstanceRef.current.setMatrixAt(index, tempObject.matrix);
     });
-    
+
     movementInstanceRef.current.instanceMatrix.needsUpdate = true;
     movementInstanceRef.current.count = reachableTiles.length;
   }, [reachableTiles, spacing, heightScale]);
 
   // Update hostile instances
   useEffect(() => {
-    if (!hostileInstanceRef.current || !attackMode || !reachableTiles.length) return;
-    
+    if (!hostileInstanceRef.current || !attackMode || !reachableTiles.length)
+      return;
+
     const tempObject = new Object3D();
-    
+
     // reachableTiles in attack mode contains the attackable hostile tiles
     reachableTiles.forEach((tile, index) => {
       const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
       const y = tile.height * heightScale + 0.13;
-      
+
       tempObject.position.set(x, y, z);
       tempObject.rotation.set(-Math.PI / 2, 0, 0);
       tempObject.updateMatrix();
-      
+
       hostileInstanceRef.current.setMatrixAt(index, tempObject.matrix);
     });
-    
+
     hostileInstanceRef.current.instanceMatrix.needsUpdate = true;
     hostileInstanceRef.current.count = reachableTiles.length;
   }, [reachableTiles, attackMode, spacing, heightScale]);
@@ -153,7 +154,7 @@ function MovementLayer({
           />
         </instancedMesh>
       )}
-      
+
       {/* Hostile piece highlights - instanced (only in attack mode) */}
       {attackMode && hostilePieces.length > 0 && (
         <instancedMesh

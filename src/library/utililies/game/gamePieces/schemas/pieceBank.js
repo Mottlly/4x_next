@@ -18,6 +18,7 @@ export const PIECE_BANK = {
       stealthy: false,
     },
     upkeep: { rations: 1, printingMaterial: 0, weapons: 0 },
+    stats: { health: 80, currentHealth: 80 },
   },
   Scout: {
     type: "Scout",
@@ -38,6 +39,7 @@ export const PIECE_BANK = {
       stealthy: true,
     },
     upkeep: { rations: 1, printingMaterial: 0, weapons: 0 },
+    stats: { health: 60, currentHealth: 60 },
   },
   Engineer: {
     type: "Engineer",
@@ -58,6 +60,7 @@ export const PIECE_BANK = {
       stealthy: false,
     },
     upkeep: { rations: 1, printingMaterial: 1, weapons: 0 },
+    stats: { health: 70, currentHealth: 70 },
   },
   Armed_Settler: {
     type: "Armed_Settler",
@@ -78,6 +81,7 @@ export const PIECE_BANK = {
       stealthy: false,
     },
     upkeep: { rations: 2, printingMaterial: 0, weapons: 1 },
+    stats: { health: 90, currentHealth: 90 },
   },
   Security: {
     type: "Security",
@@ -98,6 +102,7 @@ export const PIECE_BANK = {
       stealthy: false,
     },
     upkeep: { rations: 2, printingMaterial: 0, weapons: 2 },
+    stats: { health: 100, currentHealth: 100 },
   },
 };
 

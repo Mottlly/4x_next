@@ -40,9 +40,14 @@ export function handleBuildOption(
       attack: 0,
       defense: 2,
     };
+    // Add currentHealth to building stats
+    const statsWithCurrentHealth = {
+      ...buildingStats,
+      currentHealth: buildingStats.health,
+    };
     const newTiles = prev.tiles.map((tile) =>
       tile.q === q && tile.r === r
-        ? { ...tile, building: buildingKey, stats: buildingStats }
+        ? { ...tile, building: buildingKey, stats: statsWithCurrentHealth }
         : tile
     );
     return { ...prev, tiles: newTiles };

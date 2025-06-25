@@ -58,7 +58,7 @@ export default function useAttackHandler(
               h.id === defender.id
                 ? {
                     ...h,
-                    stats: { ...h.stats, health: h.stats.health - damage },
+                    stats: { ...h.stats, currentHealth: h.stats.currentHealth - damage },
                   }
                 : h
             )
@@ -66,8 +66,8 @@ export default function useAttackHandler(
               (h) =>
                 h.type === "hostileFortress" ||
                 (h.stats &&
-                  typeof h.stats.health === "number" &&
-                  h.stats.health > 0)
+                  typeof h.stats.currentHealth === "number" &&
+                  h.stats.currentHealth > 0)
             );
           return { ...prev, hostilePieces: newHostilePieces };
         });
@@ -84,14 +84,14 @@ export default function useAttackHandler(
                   ...t,
                   stats: {
                     ...t.stats,
-                    health: t.stats.health - damage,
+                    currentHealth: t.stats.currentHealth - damage,
                   },
                 }
               : t
           );
           // Remove building if destroyed
           const updatedTiles = newTiles.map((t) =>
-            t.stats && t.stats.health <= 0
+            t.stats && t.stats.currentHealth <= 0
               ? { ...t, building: null, stats: null }
               : t
           );
@@ -104,7 +104,7 @@ export default function useAttackHandler(
                     ...h,
                     stats: {
                       ...h.stats,
-                      health: h.stats.health - damage,
+                      currentHealth: h.stats.currentHealth - damage,
                     },
                   }
                 : h
