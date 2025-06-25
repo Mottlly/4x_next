@@ -28,7 +28,7 @@ export const PIECE_BANK = {
     build: 0,
     fortify: 1,
     scout: 1,
-    range: 2,
+    range: 1,
     abilities: {
       seafaring: false,
       coastfaring: false,
