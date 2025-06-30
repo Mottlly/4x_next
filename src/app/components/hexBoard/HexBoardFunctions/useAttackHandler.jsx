@@ -58,7 +58,10 @@ export default function useAttackHandler(
               h.id === defender.id
                 ? {
                     ...h,
-                    stats: { ...h.stats, currentHealth: h.stats.currentHealth - damage },
+                    stats: {
+                      ...h.stats,
+                      currentHealth: h.stats.currentHealth - damage,
+                    },
                   }
                 : h
             )

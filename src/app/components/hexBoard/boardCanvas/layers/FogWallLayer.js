@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useMemo, useLayoutEffect } from "react";
 import * as THREE from "three";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import getNeighborsAxial from "../../../../../library/utililies/game/tileUtilities/Positioning/getNeighbors";
@@ -6,14 +6,16 @@ import { fogStyles } from "@/library/styles/stylesIndex";
 import { extend, useFrame } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
 
-// Import or define the same shader as in FogBestagon
-const FogHexShaderMaterial = shaderMaterial(
+// Define material with unique name for instanced fog wall layer
+const InstancedFogWallShaderMaterial = shaderMaterial(
   { time: 0.0 },
   `
   varying vec2 vUv;
   void main() {
     vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec3 transformed = position;
+    vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(transformed, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
   }
   `,
   `
@@ -57,7 +59,7 @@ const FogHexShaderMaterial = shaderMaterial(
   }
   `
 );
-extend({ FogHexShaderMaterial });
+extend({ InstancedFogWallShaderMaterial });
 
 function getFogTop(tile, heightScale) {
   const fogThickness = fogStyles.geometry.args[2];
@@ -78,58 +80,87 @@ function getEdgeTransform(q1, r1, q2, r2, spacing) {
 }
 
 function FogWallLayer({ tiles, spacing, heightScale }) {
-  const fogTiles = tiles.filter((t) => !t.discovered);
+  const instanceRef = useRef();
+  const matRef = useRef();
 
-  const wallSegments = [];
-  const seen = new Set();
+  // Compute wall segments (memoized)
+  const wallSegments = useMemo(() => {
+    const fogTiles = tiles; // tiles are already filtered in boardCanvas
+    const segments = [];
 
-  fogTiles.forEach((tile) => {
-    const { q, r } = tile;
-    const neighbors = getNeighborsAxial(q, r);
-    neighbors.forEach(({ q: nq, r: nr }) => {
-      // Always draw a wall for every edge of a fog tile
-      const fogTop1 = getFogTop(tile, heightScale);
-      const surfaceY1 = tile.height * heightScale;
-      const wallBottom = surfaceY1;
-      const wallTop = fogTop1;
-      if (wallTop - wallBottom < 0.01) return;
-      const wallHeight = wallTop - wallBottom;
-      const wallY = wallBottom + wallHeight / 2;
-      const { mx, mz, angle } = getEdgeTransform(q, r, nq, nr, spacing);
-      wallSegments.push({
-        position: [mx, wallY, mz],
-        rotation: [0, angle, 0],
-        height: wallHeight,
+    fogTiles.forEach((tile) => {
+      const { q, r } = tile;
+      const neighbors = getNeighborsAxial(q, r);
+      neighbors.forEach(({ q: nq, r: nr }) => {
+        // Always draw a wall for every edge of a fog tile
+        const fogTop1 = getFogTop(tile, heightScale);
+        const surfaceY1 = tile.height * heightScale;
+        const wallBottom = surfaceY1;
+        const wallTop = fogTop1;
+        if (wallTop - wallBottom < 0.01) return;
+        const wallHeight = wallTop - wallBottom;
+        const wallY = wallBottom + wallHeight / 2;
+        const { mx, mz, angle } = getEdgeTransform(q, r, nq, nr, spacing);
+        segments.push({
+          position: [mx, wallY, mz],
+          rotation: [0, angle, 0],
+          height: wallHeight,
+        });
       });
     });
-  });
 
-  // Wall thickness and width (match fog's radius for width)
+    return segments;
+  }, [tiles, spacing, heightScale]);
+
+  // Wall dimensions
   const thickness = spacing * 0.09;
   const width = spacing * 0.95;
 
+  // Create base geometry for instancing
+  const baseGeometry = useMemo(() => {
+    return new THREE.BoxGeometry(width, 1, thickness); // Height will be scaled per instance
+  }, [width, thickness]);
+
+  // Update instance matrices
+  useLayoutEffect(() => {
+    if (!instanceRef.current || wallSegments.length === 0) return;
+
+    wallSegments.forEach((seg, index) => {
+      const matrix = new THREE.Matrix4();
+      const position = new THREE.Vector3(...seg.position);
+      const rotation = new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(...seg.rotation)
+      );
+      const scale = new THREE.Vector3(1, seg.height, 1); // Scale height individually
+
+      matrix.compose(position, rotation, scale);
+      instanceRef.current.setMatrixAt(index, matrix);
+    });
+
+    instanceRef.current.instanceMatrix.needsUpdate = true;
+    instanceRef.current.count = wallSegments.length;
+  }, [wallSegments]);
+
   // Animate the shader time
-  const matRef = useRef();
   useFrame((_, delta) => {
     if (matRef.current) {
       matRef.current.uniforms.time.value += delta * 0.5;
     }
   });
 
+  if (wallSegments.length === 0) {
+    return null;
+  }
+
   return (
-    <>
-      {wallSegments.map((seg, i) => (
-        <mesh
-          key={`fogwall-${i}`}
-          position={seg.position}
-          rotation={seg.rotation}
-          renderOrder={fogStyles.renderOrder || 900}
-        >
-          <boxGeometry args={[width, seg.height, thickness]} />
-          <fogHexShaderMaterial ref={matRef} transparent />
-        </mesh>
-      ))}
-    </>
+    <instancedMesh
+      ref={instanceRef}
+      args={[baseGeometry, null, wallSegments.length]}
+      renderOrder={fogStyles.renderOrder || 900}
+      visible={true}
+    >
+      <instancedFogWallShaderMaterial ref={matRef} transparent />
+    </instancedMesh>
   );
 }
 

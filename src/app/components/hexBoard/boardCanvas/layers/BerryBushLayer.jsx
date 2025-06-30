@@ -16,7 +16,7 @@ function getBushTransforms(
   r,
   spacing,
   tileHeight,
-  bushCount = 12,
+  bushCount = 10,
   radiusFactor = 0.78
 ) {
   const [cx, , cz] = hexToPosition(q, r, spacing);

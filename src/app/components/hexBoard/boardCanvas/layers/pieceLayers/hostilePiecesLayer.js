@@ -98,8 +98,7 @@ const HostilePiece = React.memo(function HostilePiece({
     const maxHealth = p.stats?.health;
     const currentHealth = p.stats?.currentHealth;
     const hasHealthStats = maxHealth !== null && currentHealth !== null;
-    
-    
+
     return (
       <a.group position={spring.position}>
         <HostileFortressMesh scale={0.7} />
@@ -126,7 +125,6 @@ const HostilePiece = React.memo(function HostilePiece({
     const maxHealth = p.stats?.health;
     const currentHealth = p.stats?.currentHealth;
     const hasHealthStats = maxHealth !== null && currentHealth !== null;
-    
 
     return (
       <a.group position={spring.position}>

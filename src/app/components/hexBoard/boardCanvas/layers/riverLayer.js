@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useLayoutEffect } from "react";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { riverStyles } from "@/library/styles/stylesIndex";
 import * as THREE from "three";
@@ -93,54 +93,81 @@ function RiverPathMesh({ path, spacing, heightScale, radius, color }) {
   );
 }
 
-function LakeMesh({
-  tile,
+// Instanced Lake Component
+function InstancedLakes({
+  riverPaths,
   spacing,
   heightScale,
-  baseRadius,
-  thickness,
-  color,
+  lakeRadius,
+  lakeThickness,
+  lakeColor,
 }) {
-  const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
-  const y = tile.height * heightScale - 0.13 + thickness / 2;
+  const instanceRef = useRef();
 
-  // Lower frequency, lower amplitude for rounder, more natural lake
-  const segments = 48;
-  const shape = useMemo(() => {
-    const s = new THREE.Shape();
+  // Extract all starting tiles (lakes) from river paths
+  const lakeTiles = useMemo(() => {
+    return riverPaths.filter((path) => path.length > 0).map((path) => path[0]); // First tile of each path is a lake
+  }, [riverPaths]);
+
+  // Create base geometry for all lakes
+  const baseGeometry = useMemo(() => {
+    const segments = 48;
+    const shape = new THREE.Shape();
+
     for (let i = 0; i <= segments; i++) {
       const angle = (i / segments) * Math.PI * 2;
-      // Lower frequency and amplitude for rounder edges
-      const wobbleSeed = Math.sin(tile.q * 7.13 + tile.r * 3.77 + i * 1.1);
-      const wobble =
-        (Math.sin(wobbleSeed * 3 + i * 0.7) +
-          Math.cos(wobbleSeed * 2 - i * 0.9)) *
-        0.09;
-      const r = baseRadius * (0.97 + 0.13 * wobble);
-      const px = Math.cos(angle) * r;
-      const pz = Math.sin(angle) * r;
-      if (i === 0) s.moveTo(px, pz);
-      else s.lineTo(px, pz);
+      // Simple circular shape for base - wobble will be handled by individual scaling
+      const px = Math.cos(angle) * lakeRadius;
+      const pz = Math.sin(angle) * lakeRadius;
+      if (i === 0) shape.moveTo(px, pz);
+      else shape.lineTo(px, pz);
     }
-    return s;
-  }, [tile.q, tile.r, baseRadius]);
 
-  const geometry = useMemo(
-    () =>
-      new THREE.ExtrudeGeometry(shape, {
-        steps: 1,
-        depth: thickness,
-        bevelEnabled: false,
-      }),
-    [shape, thickness]
-  );
-  geometry.translate(0, -thickness / 2, 0); // center vertically
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+      steps: 1,
+      depth: lakeThickness,
+      bevelEnabled: false,
+    });
+    geometry.translate(0, -lakeThickness / 2, 0); // center vertically
+    return geometry;
+  }, [lakeRadius, lakeThickness]);
+
+  // Update instance matrices
+  useLayoutEffect(() => {
+    if (!instanceRef.current || lakeTiles.length === 0) return;
+
+    lakeTiles.forEach((tile, index) => {
+      const [x, , z] = hexToPosition(tile.q, tile.r, spacing);
+      const y = tile.height * heightScale - 0.13 + lakeThickness / 2;
+
+      // Create slight variation per lake using tile coordinates
+      const wobbleSeed = Math.sin(tile.q * 7.13 + tile.r * 3.77);
+      const scaleVariation = 0.97 + 0.06 * wobbleSeed; // ±3% variation
+
+      const matrix = new THREE.Matrix4();
+      matrix.compose(
+        new THREE.Vector3(x, y, z),
+        new THREE.Quaternion().setFromEuler(
+          new THREE.Euler(-Math.PI / 2, 0, 0)
+        ),
+        new THREE.Vector3(scaleVariation, scaleVariation, 1)
+      );
+      instanceRef.current.setMatrixAt(index, matrix);
+    });
+
+    instanceRef.current.instanceMatrix.needsUpdate = true;
+    instanceRef.current.count = lakeTiles.length;
+  }, [lakeTiles, spacing, heightScale, lakeThickness]);
+
+  if (lakeTiles.length === 0) return null;
 
   return (
-    <mesh position={[x, y, z]} rotation={[-Math.PI / 2, 0, 0]}>
-      <primitive object={geometry} attach="geometry" />
-      <meshStandardMaterial color={color} opacity={1} />
-    </mesh>
+    <instancedMesh
+      ref={instanceRef}
+      args={[baseGeometry, null, lakeTiles.length]}
+    >
+      <meshStandardMaterial color={lakeColor} opacity={1} />
+    </instancedMesh>
   );
 }
 
@@ -152,27 +179,29 @@ function RiverLayer({ riverPaths, spacing, heightScale, tiles }) {
 
   return (
     <>
+      {/* Instanced Lakes */}
+      <MemoInstancedLakes
+        riverPaths={riverPaths}
+        spacing={spacing}
+        heightScale={heightScale}
+        lakeRadius={lakeRadius}
+        lakeThickness={lakeThickness}
+        lakeColor={lakeColor}
+      />
+
+      {/* Individual River Paths */}
       {riverPaths.map((path, i) => {
-        if (path.length < 1) return null;
+        if (path.length < 2) return null; // Need at least 2 tiles for a river path
         return (
-          <React.Fragment key={`river-path-${i}`}>
-            <MemoLakeMesh
-              tile={path[0]}
-              spacing={spacing}
-              heightScale={heightScale}
-              baseRadius={lakeRadius}
-              thickness={lakeThickness}
-              color={lakeColor}
-            />
-            <MemoRiverPathMesh
-              path={path}
-              spacing={spacing}
-              heightScale={heightScale}
-              radius={radius}
-              color={riverStyles.color}
-              tiles={tiles}
-            />
-          </React.Fragment>
+          <MemoRiverPathMesh
+            key={`river-path-${i}`}
+            path={path}
+            spacing={spacing}
+            heightScale={heightScale}
+            radius={radius}
+            color={riverStyles.color}
+            tiles={tiles}
+          />
         );
       })}
     </>
@@ -180,15 +209,23 @@ function RiverLayer({ riverPaths, spacing, heightScale, tiles }) {
 }
 
 const areLakePropsEqual = (prev, next) =>
-  prev.tile.q === next.tile.q &&
-  prev.tile.r === next.tile.r &&
-  prev.baseRadius === next.baseRadius &&
-  prev.thickness === next.thickness &&
+  prev.riverPaths.length === next.riverPaths.length &&
+  prev.spacing === next.spacing &&
   prev.heightScale === next.heightScale &&
-  prev.color === next.color &&
-  prev.spacing === next.spacing;
+  prev.lakeRadius === next.lakeRadius &&
+  prev.lakeThickness === next.lakeThickness &&
+  prev.lakeColor === next.lakeColor &&
+  prev.riverPaths.every(
+    (path, i) =>
+      path.length > 0 &&
+      next.riverPaths[i] &&
+      next.riverPaths[i].length > 0 &&
+      path[0].q === next.riverPaths[i][0].q &&
+      path[0].r === next.riverPaths[i][0].r &&
+      path[0].height === next.riverPaths[i][0].height
+  );
 
-const MemoLakeMesh = React.memo(LakeMesh, areLakePropsEqual);
+const MemoInstancedLakes = React.memo(InstancedLakes, areLakePropsEqual);
 
 const areRiverPropsEqual = (prev, next) =>
   prev.spacing === next.spacing &&
