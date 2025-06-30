@@ -8,6 +8,7 @@ export { endTurnStyles } from "./gameUI/endTurnStyles";
 export { actionsMenuStyles } from "./gameUI/actionsMenuStyles";
 export { loadingScreenStyles } from "./gameUI/loadingScreenStyles";
 export { settlementPanelStyles } from "./gameUI/settlementPanelStyles";
+export { textOverlayStyles } from "./gameUI/textOverlayStyles";
 export {
   tileTypeStyles,
   riverStyles,

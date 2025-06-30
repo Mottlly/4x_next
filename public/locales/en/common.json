@@ -41,5 +41,13 @@
     "Informing next of kin of likely death...",
     "Error(404): No next of kin found...",
     "Transferring crew assets to corporate account for safekeeping..."
-  ]
+  ],
+  "tutorial": {
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "skip": "Skip Tutorial",
+    "progress": "Step {{current}} of {{total}}"
+  }
 }

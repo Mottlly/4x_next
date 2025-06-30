@@ -11,6 +11,7 @@ import FloatingTileInfoPanel from "../gameUI/tileDataNode/FloatingTileInfoPanel"
 import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 import ActionsMenu from "../gameUI/actionsMenu";
+import TutorialSystem, { useTutorial } from "../gameUI/TutorialSystem";
 import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
 import { startUpgrade } from "../../../library/utililies/game/settlements/upgradeUtilities";
 import { computeOutpostInfo } from "../../../library/utililies/game/resources/computeOutpostCap";
@@ -40,6 +41,62 @@ export default function HexBoard({ board: initialBoard }) {
     turn: initialTurn,
     resources: initialResources = [0, 0, 0],
   } = initialBoard;
+
+  // Tutorial steps definition
+  const tutorialSteps = [
+    {
+      title: "Welcome to Your New World!",
+      content:
+        "You've crash-landed on an alien planet. This tutorial will teach you the basics of survival and expansion. Use the Next/Previous buttons or arrow keys to navigate.",
+      position: "center",
+      size: "medium",
+    },
+    {
+      title: "The Hex Board",
+      content:
+        "This is your game board made of hexagonal tiles. Each tile has different terrain types - grasslands, forests, mountains, and water. You can click and drag to move around and zoom in/out with your mouse wheel.",
+      position: "top-left",
+      size: "medium",
+    },
+    {
+      title: "Resource Management",
+      content:
+        "This panel shows your vital resources: Rations (food), Printing Material (construction), and Weapons (defense). You'll need to manage these carefully to survive and expand.",
+      position: "top-right",
+      size: "small",
+    },
+    {
+      title: "Your Units",
+      content:
+        "Look for your starting units on the board - they're your colonists and scouts. Click on a unit to select it and see what actions you can take. Selected units will be highlighted.",
+      position: "center",
+      size: "medium",
+    },
+    {
+      title: "Actions Menu",
+      content:
+        "When you select a unit, this menu appears showing available actions. You can move units, build structures, attack enemies, or perform other actions depending on the unit type.",
+      position: "bottom-right",
+      size: "medium",
+    },
+    {
+      title: "End Turn",
+      content:
+        "When you've finished your actions, click this button to end your turn. Resources are generated, units regain movement, and the world evolves. Time passes on this hostile planet!",
+      position: "bottom",
+      size: "small",
+    },
+    {
+      title: "Ready to Survive!",
+      content:
+        "You now know the basics! Explore the world, gather resources, build settlements, and expand your colony. Remember: this planet is dangerous, so stay alert and good luck!",
+      position: "center",
+      size: "medium",
+    },
+  ];
+
+  // Initialize tutorial
+  const tutorial = useTutorial("game_basics", tutorialSteps, true);
 
   const [board, setBoard] = useState(initialBoard);
   const [currentTurn, setCurrentTurn] = useState(initialTurn ?? 1);
@@ -335,6 +392,16 @@ export default function HexBoard({ board: initialBoard }) {
           opacity: 0,
           transition: "opacity 0.15s",
         }}
+      />
+
+      {/* Tutorial System */}
+      <TutorialSystem
+        steps={tutorial.steps}
+        isActive={tutorial.isActive}
+        onComplete={tutorial.completeTutorial}
+        onSkip={tutorial.skipTutorial}
+        allowSkip={true}
+        theme="game"
       />
     </div>
   );
