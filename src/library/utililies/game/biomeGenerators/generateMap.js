@@ -39,6 +39,9 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
           rawBiome < 0.33 ? "plains" : rawBiome < 0.66 ? "grassland" : "forest";
       }
 
+      // Check for special resource (5% chance)
+      const hasSpecialResource = Math.random() < 0.05;
+
       tiles.push({
         ...defaultTile,
         q,
@@ -47,6 +50,7 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
         height: elevationLevel,
         elevationLevel,
         discovered: false,
+        specialResource: hasSpecialResource ? "special resource" : null,
       });
     }
   }

@@ -80,36 +80,6 @@ export default function GamePage() {
 
   return (
     <div className="h-screen w-screen">
-      {/* Debug tutorial controls - remove in production */}
-      <div
-        style={{
-          position: "fixed",
-          top: "10px",
-          right: "10px",
-          zIndex: 10000,
-          display: "flex",
-          gap: "8px",
-        }}
-      >
-        <button
-          onClick={() => {
-            localStorage.removeItem("tutorial_game_basics_completed");
-            window.location.reload();
-          }}
-          style={{
-            padding: "8px 12px",
-            backgroundColor: "#ef4444",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            fontSize: "12px",
-            cursor: "pointer",
-          }}
-        >
-          Reset Tutorial
-        </button>
-      </div>
-
       <HexBoard board={boardTiles} />
     </div>
   );

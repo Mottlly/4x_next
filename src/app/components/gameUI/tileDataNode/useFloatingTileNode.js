@@ -29,10 +29,11 @@ Object.values(settlementUpgradeOptions).forEach((arr) => {
 export default function useFloatingTileInfo(pieces = []) {
   const infoPanelRef = useRef();
 
-  const showTileInfo = useCallback((tile, pointerEvent) => {
-    if (!infoPanelRef.current) return;
-    if (!tile) {
-      infoPanelRef.current.innerHTML = `
+  const showTileInfo = useCallback(
+    (tile, pointerEvent) => {
+      if (!infoPanelRef.current) return;
+      if (!tile) {
+        infoPanelRef.current.innerHTML = `
         <h2 style="${styleObjToStr(
           floatingTileInfoPanelStyles.heading
         )}">DATA NODE</h2>
@@ -40,19 +41,19 @@ export default function useFloatingTileInfo(pieces = []) {
           floatingTileInfoPanelStyles.noData
         )}">-- NO DATA STREAM --<br/><span style="font-size:12px;">Awaiting sector scan...</span></div>
       `;
-      infoPanelRef.current.style.opacity = 0.7;
-      return;
-    }
+        infoPanelRef.current.style.opacity = 0.7;
+        return;
+      }
 
-    const isFogged = !tile.discovered;
+      const isFogged = !tile.discovered;
 
-    // --- PIECE INFO SECTION ---
-    const piecesOnTile = pieces.filter(
-      (p) => p.q === tile.q && p.r === tile.r
-    );
-    let pieceSection = "";
-    if (piecesOnTile.length > 0) {
-      pieceSection = `
+      // --- PIECE INFO SECTION ---
+      const piecesOnTile = pieces.filter(
+        (p) => p.q === tile.q && p.r === tile.r
+      );
+      let pieceSection = "";
+      if (piecesOnTile.length > 0) {
+        pieceSection = `
         <div style="margin-top:10px;">
           <b>Piece${piecesOnTile.length > 1 ? "s" : ""} on Tile:</b>
           <ul style="margin:4px 0 0 14px;padding:0;">
@@ -69,16 +70,29 @@ export default function useFloatingTileInfo(pieces = []) {
           </ul>
         </div>
       `;
-    }
-    // --- END PIECE INFO SECTION ---
+      }
+      // --- END PIECE INFO SECTION ---
 
-    infoPanelRef.current.innerHTML = `
+      infoPanelRef.current.innerHTML = `
       <h2 style="${styleObjToStr(
         floatingTileInfoPanelStyles.heading
       )}">DATA NODE</h2>
       <div><b>X:</b> ${tile.q} &nbsp; <b>Y:</b> ${tile.r}</div>
       <div><b>Type:</b> ${isFogged ? "?" : tile.type || "water"}</div>
-      ${isFogged ? "" : tile.riverPresent ? `<div><b>River:</b> Present</div>` : ""}
+      ${
+        isFogged
+          ? ""
+          : tile.riverPresent
+          ? `<div><b>River:</b> Present</div>`
+          : ""
+      }
+      ${
+        isFogged
+          ? ""
+          : tile.specialResource
+          ? `<div><b>Special Resource:</b> ${tile.specialResource}</div>`
+          : ""
+      }
       ${
         isFogged
           ? ""
@@ -102,12 +116,14 @@ export default function useFloatingTileInfo(pieces = []) {
         floatingTileInfoPanelStyles.sectorNote
       )}"><em>Sector coordinates ⎯ data stream stabilized</em></div>
     `;
-    infoPanelRef.current.style.opacity = 1;
-    if (pointerEvent) {
-      infoPanelRef.current.style.left = pointerEvent.clientX + 24 + "px";
-      infoPanelRef.current.style.top = pointerEvent.clientY - 24 + "px";
-    }
-  }, [pieces]);
+      infoPanelRef.current.style.opacity = 1;
+      if (pointerEvent) {
+        infoPanelRef.current.style.left = pointerEvent.clientX + 24 + "px";
+        infoPanelRef.current.style.top = pointerEvent.clientY - 24 + "px";
+      }
+    },
+    [pieces]
+  );
 
   return { infoPanelRef, showTileInfo };
 }

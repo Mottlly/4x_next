@@ -152,8 +152,18 @@ export default function HexBoard({ board: initialBoard }) {
     },
   ];
 
-  // Initialize tutorial
-  const tutorial = useTutorial("game_basics", tutorialSteps, true);
+  // Initialize tutorial with unique ID for each game session
+  const [tutorialId] = useState(() => `game_basics_${Date.now()}`);
+  const tutorial = useTutorial(tutorialId, tutorialSteps, true);
+
+  // Start tutorial for new games
+  useEffect(() => {
+    // Small delay to ensure game is fully loaded, then start tutorial
+    const timer = setTimeout(() => {
+      tutorial.startTutorial();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []); // Empty dependency array means this runs once when component mounts
 
   const [board, setBoard] = useState(initialBoard);
   const [currentTurn, setCurrentTurn] = useState(initialTurn ?? 1);

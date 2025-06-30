@@ -18,35 +18,36 @@ import TextOverlay from "@/app/components/gameUI/TextOverlay";
   title="Welcome!"
   content="This is a basic text overlay."
   onClose={() => setVisible(false)}
-/>
+/>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `isVisible` | boolean | `false` | Controls overlay visibility |
-| `title` | string | `""` | Main title text |
-| `content` | string | `""` | Main content text |
-| `position` | string | `"center"` | Position: `center`, `top`, `bottom`, `top-left`, `top-right`, `bottom-left`, `bottom-right` |
-| `size` | string | `"medium"` | Size: `small`, `medium`, `large`, `fullscreen` |
-| `theme` | string | `"game"` | Theme: `dark`, `light`, `game` |
-| `hasCloseButton` | boolean | `true` | Show close button |
-| `hasNextButton` | boolean | `false` | Show next button |
-| `hasPreviousButton` | boolean | `false` | Show previous button |
-| `onClose` | function | `null` | Close callback |
-| `onNext` | function | `null` | Next callback |
-| `onPrevious` | function | `null` | Previous callback |
-| `autoHide` | boolean | `false` | Auto hide after timeout |
-| `autoHideDelay` | number | `5000` | Auto hide delay in milliseconds |
-| `clickOutsideToClose` | boolean | `true` | Close when clicking outside |
-| `animation` | string | `"fade"` | Animation: `fade`, `slide`, `scale` |
-| `customStyles` | object | `{}` | Custom style overrides |
-| `children` | ReactNode | `null` | Custom content instead of title/content |
+| Prop                  | Type      | Default    | Description                                                                                 |
+| --------------------- | --------- | ---------- | ------------------------------------------------------------------------------------------- |
+| `isVisible`           | boolean   | `false`    | Controls overlay visibility                                                                 |
+| `title`               | string    | `""`       | Main title text                                                                             |
+| `content`             | string    | `""`       | Main content text                                                                           |
+| `position`            | string    | `"center"` | Position: `center`, `top`, `bottom`, `top-left`, `top-right`, `bottom-left`, `bottom-right` |
+| `size`                | string    | `"medium"` | Size: `small`, `medium`, `large`, `fullscreen`                                              |
+| `theme`               | string    | `"game"`   | Theme: `dark`, `light`, `game`                                                              |
+| `hasCloseButton`      | boolean   | `true`     | Show close button                                                                           |
+| `hasNextButton`       | boolean   | `false`    | Show next button                                                                            |
+| `hasPreviousButton`   | boolean   | `false`    | Show previous button                                                                        |
+| `onClose`             | function  | `null`     | Close callback                                                                              |
+| `onNext`              | function  | `null`     | Next callback                                                                               |
+| `onPrevious`          | function  | `null`     | Previous callback                                                                           |
+| `autoHide`            | boolean   | `false`    | Auto hide after timeout                                                                     |
+| `autoHideDelay`       | number    | `5000`     | Auto hide delay in milliseconds                                                             |
+| `clickOutsideToClose` | boolean   | `true`     | Close when clicking outside                                                                 |
+| `animation`           | string    | `"fade"`   | Animation: `fade`, `slide`, `scale`                                                         |
+| `customStyles`        | object    | `{}`       | Custom style overrides                                                                      |
+| `children`            | ReactNode | `null`     | Custom content instead of title/content                                                     |
 
 #### Examples
 
 **Simple Notification:**
+
 ```javascript
 <TextOverlay
   isVisible={showNotification}
@@ -61,6 +62,7 @@ import TextOverlay from "@/app/components/gameUI/TextOverlay";
 ```
 
 **Custom Content:**
+
 ```javascript
 <TextOverlay
   isVisible={showCustom}
@@ -82,30 +84,30 @@ A component that manages a sequence of tutorial steps using TextOverlay.
 #### Basic Usage
 
 ```javascript
-import TutorialSystem, { useTutorial } from "@/app/components/gameUI/TutorialSystem";
+import TutorialSystem, {
+  useTutorial,
+} from "@/app/components/gameUI/TutorialSystem";
 
 const tutorialSteps = [
   {
     title: "Step 1",
     content: "This is the first step",
-    position: "center"
+    position: "center",
   },
   {
-    title: "Step 2", 
+    title: "Step 2",
     content: "This is the second step",
-    position: "top-right"
-  }
+    position: "top-right",
+  },
 ];
 
 function MyComponent() {
   const tutorial = useTutorial("my_tutorial", tutorialSteps);
-  
+
   return (
     <div>
-      <button onClick={tutorial.startTutorial}>
-        Start Tutorial
-      </button>
-      
+      <button onClick={tutorial.startTutorial}>Start Tutorial</button>
+
       <TutorialSystem
         steps={tutorial.steps}
         isActive={tutorial.isActive}
@@ -137,13 +139,13 @@ The `useTutorial` hook provides state management for tutorials:
 const tutorial = useTutorial("tutorial_id", steps);
 
 // Available properties and methods:
-tutorial.isActive        // boolean - is tutorial currently running
-tutorial.hasCompleted   // boolean - has user completed this tutorial
-tutorial.startTutorial() // function - start the tutorial
-tutorial.completeTutorial() // function - mark as completed
-tutorial.skipTutorial()  // function - skip and mark as completed
-tutorial.resetTutorial() // function - reset completion status
-tutorial.steps          // array - the tutorial steps
+tutorial.isActive; // boolean - is tutorial currently running
+tutorial.hasCompleted; // boolean - has user completed this tutorial
+tutorial.startTutorial(); // function - start the tutorial
+tutorial.completeTutorial(); // function - mark as completed
+tutorial.skipTutorial(); // function - skip and mark as completed
+tutorial.resetTutorial(); // function - reset completion status
+tutorial.steps; // array - the tutorial steps
 ```
 
 ## Styling and Themes
@@ -164,7 +166,7 @@ You can override styles using the `customStyles` prop:
     backdrop: { backgroundColor: "rgba(255, 0, 0, 0.5)" },
     container: { borderRadius: "20px" },
     title: { color: "#ff0000" },
-    button: { backgroundColor: "#00ff00" }
+    button: { backgroundColor: "#00ff00" },
   }}
 />
 ```
@@ -184,6 +186,7 @@ You can override styles using the `customStyles` prop:
 ## Keyboard Controls
 
 When an overlay is visible:
+
 - `Escape` - Close overlay
 - `Arrow Right` or `Enter` - Next step (if available)
 - `Arrow Left` - Previous step (if available)
@@ -191,6 +194,7 @@ When an overlay is visible:
 ## Accessibility
 
 The components include:
+
 - ARIA labels and roles
 - Keyboard navigation
 - Focus management
@@ -199,6 +203,7 @@ The components include:
 ## Internationalization
 
 The components support i18next translations. Default keys used:
+
 - `tutorial.close` - Close button text
 - `tutorial.next` - Next button text
 - `tutorial.previous` - Previous button text
@@ -209,6 +214,7 @@ The components support i18next translations. Default keys used:
 ## Examples
 
 See `ExampleTutorialUsage.js` for complete working examples of:
+
 - Basic tutorial sequences
 - Standalone notifications
 - Custom styling

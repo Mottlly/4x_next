@@ -4,7 +4,7 @@ import TextOverlay from "./TextOverlay";
 
 /**
  * TutorialSystem Component - Manages a sequence of tutorial steps
- * 
+ *
  * @param {Object} props
  * @param {Array} props.steps - Array of tutorial step objects
  * @param {boolean} props.isActive - Whether the tutorial is currently active
@@ -21,7 +21,7 @@ export default function TutorialSystem({
   onSkip = null,
   allowSkip = true,
   theme = "game",
-  defaultOverlayProps = {}
+  defaultOverlayProps = {},
 }) {
   const { t } = useTranslation("common");
   const [currentStep, setCurrentStep] = useState(0);
@@ -72,10 +72,14 @@ export default function TutorialSystem({
 
   // Get step progress text
   const getProgressText = () => {
-    return t("tutorial.progress", `Step ${currentStep + 1} of ${steps.length}`, {
-      current: currentStep + 1,
-      total: steps.length
-    });
+    return t(
+      "tutorial.progress",
+      `Step ${currentStep + 1} of ${steps.length}`,
+      {
+        current: currentStep + 1,
+        total: steps.length,
+      }
+    );
   };
 
   return (
@@ -84,7 +88,9 @@ export default function TutorialSystem({
       title={currentStepData.title}
       content={
         <div>
-          <div style={{ marginBottom: "12px", fontSize: "0.875rem", opacity: 0.7 }}>
+          <div
+            style={{ marginBottom: "12px", fontSize: "0.875rem", opacity: 0.7 }}
+          >
             {getProgressText()}
           </div>
           <div>{currentStepData.content}</div>
@@ -96,9 +102,13 @@ export default function TutorialSystem({
       hasCloseButton={allowSkip}
       hasNextButton={true}
       hasPreviousButton={!isFirstStep}
-      nextButtonText={isLastStep ? t("tutorial.finish", "Finish") : t("tutorial.next", "Next")}
+      nextButtonText={
+        isLastStep ? t("tutorial.finish", "Finish") : t("tutorial.next", "Next")
+      }
       previousButtonText={t("tutorial.previous", "Previous")}
-      closeButtonText={allowSkip ? t("tutorial.skip", "Skip Tutorial") : undefined}
+      closeButtonText={
+        allowSkip ? t("tutorial.skip", "Skip Tutorial") : undefined
+      }
       onNext={handleNext}
       onPrevious={!isFirstStep ? handlePrevious : null}
       onClose={allowSkip ? handleClose : null}
@@ -107,8 +117,8 @@ export default function TutorialSystem({
       animation="slide"
       customStyles={{
         container: {
-          userSelect: "none"
-        }
+          userSelect: "none",
+        },
       }}
       {...defaultOverlayProps}
       {...currentStepData.overlayProps}
@@ -118,7 +128,7 @@ export default function TutorialSystem({
 
 /**
  * Hook for managing tutorial state
- * 
+ *
  * @param {string} tutorialId - Unique identifier for the tutorial
  * @param {Array} steps - Tutorial steps
  * @param {boolean} autoStart - Whether to automatically start tutorial if not completed
@@ -133,7 +143,7 @@ export function useTutorial(tutorialId, steps = [], autoStart = false) {
     const completed = localStorage.getItem(`tutorial_${tutorialId}_completed`);
     const isCompleted = completed === "true";
     setHasCompleted(isCompleted);
-    
+
     // Auto-start tutorial if not completed and autoStart is true
     if (!isCompleted && autoStart && steps.length > 0) {
       // Small delay to ensure the game is fully loaded
@@ -174,6 +184,6 @@ export function useTutorial(tutorialId, steps = [], autoStart = false) {
     completeTutorial,
     skipTutorial,
     resetTutorial,
-    steps
+    steps,
   };
 }
