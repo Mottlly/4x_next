@@ -39,8 +39,30 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
           rawBiome < 0.33 ? "plains" : rawBiome < 0.66 ? "grassland" : "forest";
       }
 
-      // Check for special resource (5% chance)
+      // Check for special resource (5% chance) - only for land tiles
       const hasSpecialResource = Math.random() < 0.05;
+      
+      // Assign special resource based on tile type (exclude water)
+      let specialResource = null;
+      if (hasSpecialResource && type !== "water") {
+        switch (type) {
+          case "grassland":
+            specialResource = "fertile valley";
+            break;
+          case "plains":
+            specialResource = "ore fields";
+            break;
+          case "forest":
+            specialResource = "plentiful herbivores";
+            break;
+          case "mountain":
+            specialResource = "hidden cache";
+            break;
+          default:
+            specialResource = null;
+            break;
+        }
+      }
 
       tiles.push({
         ...defaultTile,
@@ -50,7 +72,7 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
         height: elevationLevel,
         elevationLevel,
         discovered: false,
-        specialResource: hasSpecialResource ? "special resource" : null,
+        specialResource,
       });
     }
   }
@@ -94,6 +116,8 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
       if (!touchesBorder)
         region.forEach((t) => {
           t.type = "lake";
+          // Remove any special resource when converting to lake
+          t.specialResource = null;
         });
     }
   });

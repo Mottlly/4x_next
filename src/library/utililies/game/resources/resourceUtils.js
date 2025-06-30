@@ -15,6 +15,14 @@ export function computeResourceDelta(board) {
       effect.rations += b.rations;
       effect.printingMaterial += b.printingMaterial;
       effect.weapons += b.weapons;
+      
+      // Add special resource bonuses for resource extractors
+      if (tile.specialResource) {
+        const bonus = getSpecialResourceBonus(tile.specialResource);
+        effect.rations += bonus.rations;
+        effect.printingMaterial += bonus.printingMaterial;
+        effect.weapons += bonus.weapons;
+      }
     } else if (tile.building && buildingEffects[tile.building]) {
       const b = buildingEffects[tile.building];
       effect.rations += b.rations;
@@ -34,6 +42,18 @@ export function computeResourceDelta(board) {
   }
 
   return effect;
+}
+
+// Get special resource bonus for resource extractors
+function getSpecialResourceBonus(specialResource) {
+  const bonuses = {
+    "fertile valley": { rations: 2, printingMaterial: 0, weapons: 0 },
+    "ore fields": { rations: 0, printingMaterial: 2, weapons: 0 },
+    "plentiful herbivores": { rations: 1, printingMaterial: 0, weapons: 0 },
+    "hidden cache": { rations: 0, printingMaterial: 0, weapons: 1 },
+  };
+  
+  return bonuses[specialResource] || { rations: 0, printingMaterial: 0, weapons: 0 };
 }
 
 // resources: [rations, printingMaterial, weapons]
