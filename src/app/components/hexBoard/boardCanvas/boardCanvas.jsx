@@ -4,6 +4,7 @@ import React, { memo, useMemo, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
 import { MapControls } from "@react-three/drei";
 import { hexDistance } from "../../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
+import hexToPosition from "../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 
 import InteractiveBoard from "./interactiveElements";
 import AudioSwitcher from "./audioSwitcher";
@@ -108,12 +109,49 @@ const BoardCanvas = memo(function BoardCanvas({
       .filter(Boolean);
   }, [activeAction, selectedPieceId, pieces, board.hostilePieces, board.tiles]);
 
+  // Calculate camera position to center on player's first piece
+  const cameraPosition = useMemo(() => {
+    // Find the first player piece
+    const firstPiece = pieces.find((piece) => piece);
+
+    if (firstPiece) {
+      // Convert hex coordinates to world position
+      const [x, y, z] = hexToPosition(
+        firstPiece.q,
+        firstPiece.r,
+        board.spacing
+      );
+      // Position camera very close to ground level
+      return [x - 5, 2.5, z - 4];
+    }
+
+    // Fallback to original position if no pieces found
+    return [10, 10, 15];
+  }, [pieces, board.spacing]);
+
+  // Calculate target position to look at the piece
+  const cameraTarget = useMemo(() => {
+    const firstPiece = pieces.find((piece) => piece);
+    if (firstPiece) {
+      const [x, y, z] = hexToPosition(
+        firstPiece.q,
+        firstPiece.r,
+        board.spacing
+      );
+      return [x, 0, z];
+    }
+    return [0, 0, 0];
+  }, [pieces, board.spacing]);
+
   // stabilize callback
   const onTileClickCb = useCallback(onTileClick, [onTileClick]);
 
   return (
     <Canvas
-      camera={{ position: [10, 10, 15] }}
+      camera={{ 
+        position: cameraPosition,
+        fov: 50
+      }}
       style={{ width: "100vw", height: "100vh" }}
       onPointerDown={() => (isDraggingRef.current = true)}
       onPointerUp={() => (isDraggingRef.current = false)}
@@ -236,6 +274,7 @@ const BoardCanvas = memo(function BoardCanvas({
         enableDamping
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 4}
+        target={cameraTarget}
       />
       <AudioSwitcher
         threshold={board.threshold ?? 10}
