@@ -55,8 +55,23 @@ export default function HexBoard({ board: initialBoard }) {
       title: "The Hex Board",
       content:
         "This is your game board made of hexagonal tiles. Each tile has different terrain types - grasslands, forests, mountains, and water. You can click and drag to move around and zoom in/out with your mouse wheel.",
-      position: "top-left",
+      position: "center",
       size: "medium",
+      overlayProps: {
+        customStyles: {
+          backdrop: {
+            justifyContent: "center",
+            alignItems: "center",
+          },
+          container: {
+            position: "absolute",
+            right: "80px",
+            top: "50%",
+            transform: "translateY(-50%)",
+            margin: 0,
+          },
+        },
+      },
     },
     {
       title: "Resource Management",
@@ -64,6 +79,20 @@ export default function HexBoard({ board: initialBoard }) {
         "This panel shows your vital resources: Rations (food), Printing Material (construction), and Weapons (defense). You'll need to manage these carefully to survive and expand.",
       position: "top-right",
       size: "small",
+      overlayProps: {
+        customStyles: {
+          backdrop: {
+            justifyContent: "flex-end",
+            alignItems: "flex-start",
+          },
+          container: {
+            position: "absolute",
+            right: "20px",
+            top: "280px",
+            margin: 0,
+          },
+        },
+      },
     },
     {
       title: "Your Units",
@@ -76,15 +105,43 @@ export default function HexBoard({ board: initialBoard }) {
       title: "Actions Menu",
       content:
         "When you select a unit, this menu appears showing available actions. You can move units, build structures, attack enemies, or perform other actions depending on the unit type.",
-      position: "bottom-right",
+      position: "center",
       size: "medium",
+      overlayProps: {
+        customStyles: {
+          backdrop: {
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+          },
+          container: {
+            position: "absolute",
+            left: "20%",
+            top: "80px",
+            margin: 0,
+          },
+        },
+      },
     },
     {
       title: "End Turn",
       content:
         "When you've finished your actions, click this button to end your turn. Resources are generated, units regain movement, and the world evolves. Time passes on this hostile planet!",
-      position: "bottom",
+      position: "bottom-right",
       size: "small",
+      overlayProps: {
+        customStyles: {
+          backdrop: {
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+          },
+          container: {
+            position: "absolute",
+            right: "20px",
+            bottom: "15%",
+            margin: 0,
+          },
+        },
+      },
     },
     {
       title: "Ready to Survive!",
