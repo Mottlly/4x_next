@@ -41,7 +41,7 @@ export function generateBiomeMap(cols, rows, seed = Math.random()) {
 
       // Check for special resource (5% chance) - only for land tiles
       const hasSpecialResource = Math.random() < 0.05;
-      
+
       // Assign special resource based on tile type (exclude water)
       let specialResource = null;
       if (hasSpecialResource && type !== "water") {

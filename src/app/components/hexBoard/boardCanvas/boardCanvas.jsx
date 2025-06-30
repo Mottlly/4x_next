@@ -148,9 +148,9 @@ const BoardCanvas = memo(function BoardCanvas({
 
   return (
     <Canvas
-      camera={{ 
+      camera={{
         position: cameraPosition,
-        fov: 50
+        fov: 50,
       }}
       style={{ width: "100vw", height: "100vh" }}
       onPointerDown={() => (isDraggingRef.current = true)}

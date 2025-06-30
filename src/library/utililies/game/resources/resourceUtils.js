@@ -15,7 +15,7 @@ export function computeResourceDelta(board) {
       effect.rations += b.rations;
       effect.printingMaterial += b.printingMaterial;
       effect.weapons += b.weapons;
-      
+
       // Add special resource bonuses for resource extractors
       if (tile.specialResource) {
         const bonus = getSpecialResourceBonus(tile.specialResource);
@@ -52,8 +52,10 @@ function getSpecialResourceBonus(specialResource) {
     "plentiful herbivores": { rations: 1, printingMaterial: 0, weapons: 0 },
     "hidden cache": { rations: 0, printingMaterial: 0, weapons: 1 },
   };
-  
-  return bonuses[specialResource] || { rations: 0, printingMaterial: 0, weapons: 0 };
+
+  return (
+    bonuses[specialResource] || { rations: 0, printingMaterial: 0, weapons: 0 }
+  );
 }
 
 // resources: [rations, printingMaterial, weapons]
