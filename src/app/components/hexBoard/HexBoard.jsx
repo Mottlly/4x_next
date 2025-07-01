@@ -18,6 +18,8 @@ import { startUpgrade } from "../../../library/utililies/game/settlements/upgrad
 import { computeOutpostInfo } from "../../../library/utililies/game/resources/computeOutpostCap";
 import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 import useFloatingHostileInfo from "../gameUI/tileDataNode/useFloatingHostileNode";
+import VictoryOverlay from "../gameUI/VictoryOverlay";
+import useVictoryDetection from "./HexBoardFunctions/useVictoryDetection";
 
 // custom hooks
 import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
@@ -198,6 +200,17 @@ export default function HexBoard({ board: initialBoard }) {
   }, [selectedPieceId]);
 
   useRevealTiles(board, pieces, setBoard);
+
+  // Victory detection
+  const { isVictorious, gameStats, resetVictory } = useVictoryDetection(board, pieces, currentTurn);
+  const [showVictoryOverlay, setShowVictoryOverlay] = useState(false);
+
+  // Show victory overlay when victory is achieved
+  useEffect(() => {
+    if (isVictorious) {
+      setShowVictoryOverlay(true);
+    }
+  }, [isVictorious]);
 
   // --- Add this effect to update semi-fogged tiles ---
   useEffect(() => {
@@ -393,6 +406,9 @@ export default function HexBoard({ board: initialBoard }) {
       })
       .filter(Boolean);
   }, [activeAction, selectedPieceId, pieces, board.hostilePieces, board.tiles]);
+
+  // --- End victory detection ---
+
   return (
     <div className="relative w-full h-full" id="game-board">
       <ResourcePanel
@@ -481,6 +497,13 @@ export default function HexBoard({ board: initialBoard }) {
           borderWidth: 5,
           offset: 8,
         }}
+      />
+
+      {/* Victory Overlay */}
+      <VictoryOverlay
+        isVisible={showVictoryOverlay}
+        gameStats={gameStats}
+        onClose={() => setShowVictoryOverlay(false)}
       />
     </div>
   );

@@ -65,11 +65,11 @@ export default function useEndTurn(
 
       // Move and aggro logic
       // Create deep copies of pieces to avoid mutating the original state
-      const friendlyPiecesCopy = pieces.map(piece => ({
+      const friendlyPiecesCopy = pieces.map((piece) => ({
         ...piece,
-        stats: { ...piece.stats }
+        stats: { ...piece.stats },
       }));
-      
+
       const deadFriendlyIds = processHostileActions({
         hostilePieces: newHostilePieces,
         friendlyPieces: friendlyPiecesCopy,
@@ -81,25 +81,58 @@ export default function useEndTurn(
 
       // Update pieces state with health changes and remove dead pieces
       setPieces((prevPieces) => {
-        return prevPieces.map(piece => {
-          // Find the corresponding piece in the copy that was processed
-          const processedPiece = friendlyPiecesCopy.find(p => p.id === piece.id);
-          if (processedPiece && !deadFriendlyIds.includes(piece.id)) {
-            // Update health if it changed
-            return {
-              ...piece,
-              stats: {
-                ...piece.stats,
-                currentHealth: processedPiece.stats.currentHealth
-              }
-            };
-          }
-          return piece;
-        }).filter(piece => !deadFriendlyIds.includes(piece.id));
+        return prevPieces
+          .map((piece) => {
+            // Find the corresponding piece in the copy that was processed
+            const processedPiece = friendlyPiecesCopy.find(
+              (p) => p.id === piece.id
+            );
+            if (processedPiece && !deadFriendlyIds.includes(piece.id)) {
+              // Update health if it changed
+              return {
+                ...piece,
+                stats: {
+                  ...piece.stats,
+                  currentHealth: processedPiece.stats.currentHealth,
+                },
+              };
+            }
+            return piece;
+          })
+          .filter((piece) => !deadFriendlyIds.includes(piece.id));
       });
-      
+
       if (deadFriendlyIds.length > 0) {
-        console.log(`Removed ${deadFriendlyIds.length} dead friendly pieces:`, deadFriendlyIds);
+        console.log(
+          `Removed ${deadFriendlyIds.length} dead friendly pieces:`,
+          deadFriendlyIds
+        );
+      }
+
+      // Filter out dead hostile pieces (including fortresses with 0 health)
+      const aliveHostilePieces = newHostilePieces.filter(piece => {
+        if (piece.stats && typeof piece.stats.currentHealth === 'number') {
+          return piece.stats.currentHealth > 0;
+        }
+        return true; // Keep pieces without health stats
+      });
+
+      // Remove raiders whose home fortress is dead
+      const aliveFortressIds = aliveHostilePieces
+        .filter(piece => piece.type === 'hostileFortress')
+        .map(fortress => fortress.id);
+      
+      const survivingHostilePieces = aliveHostilePieces.filter(piece => {
+        if (piece.type === 'Raider' && piece.homeFortressId) {
+          return aliveFortressIds.includes(piece.homeFortressId);
+        }
+        return true;
+      });
+
+      // Log if any hostile pieces were removed
+      if (survivingHostilePieces.length < newHostilePieces.length) {
+        const deadCount = newHostilePieces.length - survivingHostilePieces.length;
+        console.log(`Removed ${deadCount} dead hostile pieces (including orphaned raiders)`);
       }
 
       return {
@@ -107,7 +140,7 @@ export default function useEndTurn(
         turn: newTurn,
         resources: newResources,
         tiles: processUpgrades(prev.tiles, currentTurn + 1),
-        hostilePieces: newHostilePieces,
+        hostilePieces: survivingHostilePieces,
       };
     });
 

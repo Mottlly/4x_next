@@ -101,17 +101,26 @@ export default function useAttackHandler(
           // --- FIX: Also update the hostile piece's health if it's a fortress ---
           let newHostilePieces = prev.hostilePieces;
           if (isFortressTile) {
-            newHostilePieces = prev.hostilePieces.map((h) =>
-              h.q === tile.q && h.r === tile.r && h.type === "hostileFortress"
-                ? {
-                    ...h,
-                    stats: {
-                      ...h.stats,
-                      currentHealth: h.stats.currentHealth - damage,
-                    },
-                  }
-                : h
-            );
+            newHostilePieces = prev.hostilePieces
+              .map((h) =>
+                h.q === tile.q && h.r === tile.r && h.type === "hostileFortress"
+                  ? {
+                      ...h,
+                      stats: {
+                        ...h.stats,
+                        currentHealth: h.stats.currentHealth - damage,
+                      },
+                    }
+                  : h
+              )
+              .filter((h) => {
+                // Remove dead fortresses
+                if (h.type === "hostileFortress" && h.stats?.currentHealth <= 0) {
+                  console.log(`🏰 Hostile fortress at (${h.q}, ${h.r}) destroyed!`);
+                  return false;
+                }
+                return true;
+              });
           }
           return {
             ...prev,

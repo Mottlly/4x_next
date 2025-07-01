@@ -115,17 +115,17 @@ export function createPiece(type, overrides = {}) {
   if (!base) {
     throw new Error(`Unknown piece type: ${type}`);
   }
-  
+
   // Create deep copies of nested objects to avoid shared references
-  const piece = { 
-    ...base, 
+  const piece = {
+    ...base,
     attacked: false,
     stats: { ...base.stats }, // Deep copy stats
     abilities: { ...base.abilities }, // Deep copy abilities
     movementCosts: { ...base.movementCosts }, // Deep copy movementCosts
-    ...overrides 
+    ...overrides,
   };
-  
+
   // If overrides contains nested objects, ensure they are also deep copied
   if (overrides.stats) {
     piece.stats = { ...base.stats, ...overrides.stats };
@@ -136,6 +136,6 @@ export function createPiece(type, overrides = {}) {
   if (overrides.movementCosts) {
     piece.movementCosts = { ...base.movementCosts, ...overrides.movementCosts };
   }
-  
+
   return piece;
 }

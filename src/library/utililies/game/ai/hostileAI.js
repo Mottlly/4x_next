@@ -7,23 +7,28 @@ import { hexDistance } from "../tileUtilities/Positioning/distanceFinder";
  */
 function hostileAttackFriendly(hostilePiece, friendlyPiece, deadFriendlyIds) {
   if (!hostilePiece.stats || !friendlyPiece.stats) return false;
-  
+
   const attackValue = hostilePiece.stats.attack || 1;
   const defenseValue = friendlyPiece.stats.defense || 0;
   const damage = Math.max(1, attackValue - defenseValue);
-  
+
   // Apply damage to friendly piece
-  const previousHealth = friendlyPiece.stats.currentHealth || friendlyPiece.stats.health;
+  const previousHealth =
+    friendlyPiece.stats.currentHealth || friendlyPiece.stats.health;
   friendlyPiece.stats.currentHealth = Math.max(0, previousHealth - damage);
-  
-  console.log(`${hostilePiece.type} (${hostilePiece.id}) attacked ${friendlyPiece.type} (${friendlyPiece.id}) for ${damage} damage! Health: ${previousHealth} -> ${friendlyPiece.stats.currentHealth}`);
-  
+
+  console.log(
+    `${hostilePiece.type} (${hostilePiece.id}) attacked ${friendlyPiece.type} (${friendlyPiece.id}) for ${damage} damage! Health: ${previousHealth} -> ${friendlyPiece.stats.currentHealth}`
+  );
+
   // Check if friendly piece died
   if (friendlyPiece.stats.currentHealth <= 0) {
-    console.log(`${friendlyPiece.type} (${friendlyPiece.id}) was killed by ${hostilePiece.type}!`);
+    console.log(
+      `${friendlyPiece.type} (${friendlyPiece.id}) was killed by ${hostilePiece.type}!`
+    );
     deadFriendlyIds.push(friendlyPiece.id);
   }
-  
+
   return true;
 }
 
@@ -113,7 +118,7 @@ export function processHostileActions({
       if (distToTarget === 1) {
         // Attack the friendly piece
         hostileAttackFriendly(piece, aggroTarget, deadFriendlyIds);
-        
+
         piece.aggro = true;
         piece.aggroTarget = aggroTarget.id;
         // Mark as having moved/acted this turn by not allowing further movement
@@ -147,7 +152,7 @@ export function processHostileActions({
       if (best) {
         piece.q = best.q;
         piece.r = best.r;
-        
+
         // After moving, check if now adjacent and attack
         const newDistToTarget = hexDistance(piece, aggroTarget);
         if (newDistToTarget === 1) {
