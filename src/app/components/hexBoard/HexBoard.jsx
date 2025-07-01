@@ -55,43 +55,28 @@ export default function HexBoard({ board: initialBoard }) {
       title: "The Hex Board",
       content:
         "This is your game board made of hexagonal tiles. Each tile has different terrain types - grasslands, forests, mountains, and water. You can click and drag to move around and zoom in/out with your mouse wheel.",
-      position: "center",
+      position: "top-right",
       size: "medium",
-      overlayProps: {
-        customStyles: {
-          backdrop: {
-            justifyContent: "center",
-            alignItems: "center",
-          },
-          container: {
-            position: "absolute",
-            right: "80px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            margin: 0,
-          },
-        },
+      highlightId: "game-board",
+      highlightProps: {
+        highlightColor: "#3b82f6",
+        borderWidth: 4,
+        animated: true,
+        offset: 8,
       },
     },
     {
       title: "Resource Management",
       content:
         "This panel shows your vital resources: Rations (food), Printing Material (construction), and Weapons (defense). You'll need to manage these carefully to survive and expand.",
-      position: "top-right",
-      size: "small",
-      overlayProps: {
-        customStyles: {
-          backdrop: {
-            justifyContent: "flex-end",
-            alignItems: "flex-start",
-          },
-          container: {
-            position: "absolute",
-            right: "20px",
-            top: "280px",
-            margin: 0,
-          },
-        },
+      position: "bottom-center",
+      size: "medium",
+      highlightId: "resource-panel",
+      highlightProps: {
+        highlightColor: "#ef4444",
+        borderWidth: 3,
+        animated: true,
+        offset: 6,
       },
     },
     {
@@ -105,42 +90,28 @@ export default function HexBoard({ board: initialBoard }) {
       title: "Actions Menu",
       content:
         "When you select a unit, this menu appears showing available actions. You can move units, build structures, attack enemies, or perform other actions depending on the unit type.",
-      position: "center",
+      position: "bottom-left",
       size: "medium",
-      overlayProps: {
-        customStyles: {
-          backdrop: {
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-          },
-          container: {
-            position: "absolute",
-            left: "20%",
-            top: "80px",
-            margin: 0,
-          },
-        },
+      highlightId: "actions-menu",
+      highlightProps: {
+        highlightColor: "#059669",
+        borderWidth: 3,
+        animated: true,
+        offset: 4,
       },
     },
     {
       title: "End Turn",
       content:
         "When you've finished your actions, click this button to end your turn. Resources are generated, units regain movement, and the world evolves. Time passes on this hostile planet!",
-      position: "bottom-right",
-      size: "small",
-      overlayProps: {
-        customStyles: {
-          backdrop: {
-            justifyContent: "flex-end",
-            alignItems: "flex-end",
-          },
-          container: {
-            position: "absolute",
-            right: "20px",
-            bottom: "15%",
-            margin: 0,
-          },
-        },
+      position: "bottom-left",
+      size: "medium",
+      highlightId: "end-turn-button",
+      highlightProps: {
+        highlightColor: "#f59e0b",
+        borderWidth: 3,
+        animated: true,
+        offset: 6,
       },
     },
     {
@@ -387,7 +358,7 @@ export default function HexBoard({ board: initialBoard }) {
       .filter(Boolean);
   }, [activeAction, selectedPieceId, pieces, board.hostilePieces, board.tiles]);
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" id="game-board">
       <ResourcePanel
         resources={resources}
         outpostInfo={outpostInfo}
@@ -469,6 +440,11 @@ export default function HexBoard({ board: initialBoard }) {
         onSkip={tutorial.skipTutorial}
         allowSkip={true}
         theme="game"
+        defaultHighlightProps={{
+          animated: true,
+          borderWidth: 3,
+          offset: 6,
+        }}
       />
     </div>
   );

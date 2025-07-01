@@ -1,18 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import TextOverlay from "./TextOverlay";
+import TutorialHighlight from "./TutorialHighlight";
 
 /**
  * TutorialSystem Component - Manages a sequence of tutorial steps
  *
  * @param {Object} props
- * @param {Array} props.steps - Array of tutorial step objects
+ * @param {Array} props.steps - Array of tutorial step objects with optional highlight properties
  * @param {boolean} props.isActive - Whether the tutorial is currently active
  * @param {Function} props.onComplete - Callback when tutorial is completed
  * @param {Function} props.onSkip - Callback when tutorial is skipped
  * @param {boolean} props.allowSkip - Whether the tutorial can be skipped
  * @param {string} props.theme - Theme for overlays ('dark', 'light', 'game')
  * @param {Object} props.defaultOverlayProps - Default props to pass to all overlays
+ * @param {Object} props.defaultHighlightProps - Default props to pass to all highlights
+ * 
+ * Step object structure:
+ * {
+ *   title: string,
+ *   content: string,
+ *   position?: string,
+ *   size?: string,
+ *   overlayProps?: object,
+ *   highlightTarget?: string, // CSS selector for element to highlight
+ *   highlightId?: string, // Element ID to highlight (alternative to selector)
+ *   highlightProps?: object, // Custom highlight properties
+ *   showHighlight?: boolean // Whether to show highlight for this step (default: true if target specified)
+ * }
  */
 export default function TutorialSystem({
   steps = [],
@@ -22,6 +37,7 @@ export default function TutorialSystem({
   allowSkip = true,
   theme = "game",
   defaultOverlayProps = {},
+  defaultHighlightProps = {},
 }) {
   const { t } = useTranslation("common");
   const [currentStep, setCurrentStep] = useState(0);
@@ -70,6 +86,12 @@ export default function TutorialSystem({
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;
 
+  // Determine if we should show highlight for current step
+  const shouldShowHighlight = currentStepData && (
+    currentStepData.showHighlight !== false && 
+    (currentStepData.highlightTarget || currentStepData.highlightId)
+  );
+
   // Get step progress text
   const getProgressText = () => {
     return t(
@@ -83,46 +105,60 @@ export default function TutorialSystem({
   };
 
   return (
-    <TextOverlay
-      isVisible={isVisible}
-      title={currentStepData.title}
-      content={
-        <div>
-          <div
-            style={{ marginBottom: "12px", fontSize: "0.875rem", opacity: 0.7 }}
-          >
-            {getProgressText()}
+    <>
+      {/* Tutorial Highlight */}
+      {shouldShowHighlight && (
+        <TutorialHighlight
+          targetSelector={currentStepData.highlightTarget}
+          targetId={currentStepData.highlightId}
+          isActive={isVisible}
+          {...defaultHighlightProps}
+          {...(currentStepData.highlightProps || {})}
+        />
+      )}
+
+      {/* Tutorial Overlay */}
+      <TextOverlay
+        isVisible={isVisible}
+        title={currentStepData.title}
+        content={
+          <div>
+            <div
+              style={{ marginBottom: "12px", fontSize: "0.875rem", opacity: 0.7 }}
+            >
+              {getProgressText()}
+            </div>
+            <div>{currentStepData.content}</div>
           </div>
-          <div>{currentStepData.content}</div>
-        </div>
-      }
-      position={currentStepData.position || "center"}
-      size={currentStepData.size || "medium"}
-      theme={theme}
-      hasCloseButton={allowSkip}
-      hasNextButton={true}
-      hasPreviousButton={!isFirstStep}
-      nextButtonText={
-        isLastStep ? t("tutorial.finish", "Finish") : t("tutorial.next", "Next")
-      }
-      previousButtonText={t("tutorial.previous", "Previous")}
-      closeButtonText={
-        allowSkip ? t("tutorial.skip", "Skip Tutorial") : undefined
-      }
-      onNext={handleNext}
-      onPrevious={!isFirstStep ? handlePrevious : null}
-      onClose={allowSkip ? handleClose : null}
-      clickOutsideToClose={false}
-      transparentBackdrop={true}
-      animation="slide"
-      customStyles={{
-        container: {
-          userSelect: "none",
-        },
-      }}
-      {...defaultOverlayProps}
-      {...currentStepData.overlayProps}
-    />
+        }
+        position={currentStepData.position || "center"}
+        size={currentStepData.size || "medium"}
+        theme={theme}
+        hasCloseButton={allowSkip}
+        hasNextButton={true}
+        hasPreviousButton={!isFirstStep}
+        nextButtonText={
+          isLastStep ? t("tutorial.finish", "Finish") : t("tutorial.next", "Next")
+        }
+        previousButtonText={t("tutorial.previous", "Previous")}
+        closeButtonText={
+          allowSkip ? t("tutorial.skip", "Skip Tutorial") : undefined
+        }
+        onNext={handleNext}
+        onPrevious={!isFirstStep ? handlePrevious : null}
+        onClose={allowSkip ? handleClose : null}
+        clickOutsideToClose={false}
+        transparentBackdrop={true}
+        animation="slide"
+        customStyles={{
+          container: {
+            userSelect: "none",
+          },
+        }}
+        {...defaultOverlayProps}
+        {...currentStepData.overlayProps}
+      />
+    </>
   );
 }
 

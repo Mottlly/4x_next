@@ -1,103 +1,190 @@
-# Text Overlay and Tutorial System
+# Tutorial System with Highlighting
 
-This documentation covers the text overlay and tutorial system components that can be used to create in-game tutorials, notifications, and help overlays.
+An enhanced tutorial system for React applications that provides guided tutorials with optional element highlighting capabilities.
+
+## Features
+
+- **Step-by-step tutorials** with navigation controls
+- **Element highlighting** with customizable red borders around UI components
+- **Responsive design** that works across different screen sizes
+- **Automatic positioning** that follows elements even when scrolling or resizing
+- **Keyboard navigation** support (Arrow keys, Enter, Escape)
+- **Persistent state** using localStorage
+- **Multiple positioning options** for overlays
+- **Customizable themes** and styling
+- **Animation support** with pulsing highlights
 
 ## Components
 
-### 1. TextOverlay
+### TutorialSystem
+Main component for managing tutorial sequences with automatic highlighting.
 
-A flexible overlay component for displaying text content over the game interface.
+### TutorialHighlight
+Standalone component for highlighting specific UI elements.
 
-#### Basic Usage
+### TextOverlay
+Flexible overlay component for displaying tutorial content.
 
-```javascript
-import TextOverlay from "@/app/components/gameUI/TextOverlay";
+## Basic Usage
 
-<TextOverlay
-  isVisible={true}
-  title="Welcome!"
-  content="This is a basic text overlay."
-  onClose={() => setVisible(false)}
-/>;
-```
+### 1. Simple Tutorial with Highlighting
 
-#### Props
+```jsx
+import TutorialSystem, { useTutorial } from './TutorialSystem';
 
-| Prop                  | Type      | Default    | Description                                                                                 |
-| --------------------- | --------- | ---------- | ------------------------------------------------------------------------------------------- |
-| `isVisible`           | boolean   | `false`    | Controls overlay visibility                                                                 |
-| `title`               | string    | `""`       | Main title text                                                                             |
-| `content`             | string    | `""`       | Main content text                                                                           |
-| `position`            | string    | `"center"` | Position: `center`, `top`, `bottom`, `top-left`, `top-right`, `bottom-left`, `bottom-right` |
-| `size`                | string    | `"medium"` | Size: `small`, `medium`, `large`, `fullscreen`                                              |
-| `theme`               | string    | `"game"`   | Theme: `dark`, `light`, `game`                                                              |
-| `hasCloseButton`      | boolean   | `true`     | Show close button                                                                           |
-| `hasNextButton`       | boolean   | `false`    | Show next button                                                                            |
-| `hasPreviousButton`   | boolean   | `false`    | Show previous button                                                                        |
-| `onClose`             | function  | `null`     | Close callback                                                                              |
-| `onNext`              | function  | `null`     | Next callback                                                                               |
-| `onPrevious`          | function  | `null`     | Previous callback                                                                           |
-| `autoHide`            | boolean   | `false`    | Auto hide after timeout                                                                     |
-| `autoHideDelay`       | number    | `5000`     | Auto hide delay in milliseconds                                                             |
-| `clickOutsideToClose` | boolean   | `true`     | Close when clicking outside                                                                 |
-| `animation`           | string    | `"fade"`   | Animation: `fade`, `slide`, `scale`                                                         |
-| `customStyles`        | object    | `{}`       | Custom style overrides                                                                      |
-| `children`            | ReactNode | `null`     | Custom content instead of title/content                                                     |
-
-#### Examples
-
-**Simple Notification:**
-
-```javascript
-<TextOverlay
-  isVisible={showNotification}
-  title="Achievement Unlocked!"
-  content="You completed your first tutorial!"
-  position="top-right"
-  size="small"
-  autoHide={true}
-  autoHideDelay={3000}
-  onClose={() => setShowNotification(false)}
-/>
-```
-
-**Custom Content:**
-
-```javascript
-<TextOverlay
-  isVisible={showCustom}
-  position="center"
-  onClose={() => setShowCustom(false)}
->
-  <div>
-    <h2>Custom Content</h2>
-    <p>You can put any React content here!</p>
-    <button onClick={doSomething}>Action Button</button>
-  </div>
-</TextOverlay>
-```
-
-### 2. TutorialSystem
-
-A component that manages a sequence of tutorial steps using TextOverlay.
-
-#### Basic Usage
-
-```javascript
-import TutorialSystem, {
-  useTutorial,
-} from "@/app/components/gameUI/TutorialSystem";
-
-const tutorialSteps = [
+const steps = [
   {
-    title: "Step 1",
-    content: "This is the first step",
+    title: "Welcome!",
+    content: "This is your first tutorial step.",
     position: "center",
+    size: "medium"
   },
   {
-    title: "Step 2",
-    content: "This is the second step",
-    position: "top-right",
+    title: "Resource Panel",
+    content: "This panel shows your vital resources.",
+    position: "bottom-center",
+    size: "medium",
+    highlightId: "resource-panel", // Highlights element with this ID
+    highlightProps: {
+      highlightColor: "#ef4444",
+      animated: true
+    }
+  }
+];
+
+function MyComponent() {
+  const tutorial = useTutorial("my_tutorial", steps, true); // auto-start
+
+  return (
+    <div>
+      <div id="resource-panel">Resource Panel Content</div>
+      
+      <TutorialSystem
+        steps={tutorial.steps}
+        isActive={tutorial.isActive}
+        onComplete={tutorial.completeTutorial}
+        onSkip={tutorial.skipTutorial}
+      />
+    </div>
+  );
+}
+```
+
+### 2. Tutorial with Different Highlight Targets
+
+```jsx
+const advancedSteps = [
+  {
+    title: "Game Board",
+    content: "This is where the action happens.",
+    highlightTarget: ".game-board", // CSS selector
+    highlightProps: {
+      highlightColor: "#3b82f6", // Blue highlight
+      borderWidth: 4
+    }
+  },
+  {
+    title: "Actions Menu",
+    content: "Use this menu for game actions.",
+    highlightTarget: "[data-component='actions-menu']", // Data attribute
+    highlightProps: {
+      highlightColor: "#059669", // Green highlight
+      animated: true,
+      offset: 8
+    }
+  }
+];
+```
+
+## Step Configuration
+
+Each tutorial step supports the following properties:
+
+```jsx
+{
+  // Required
+  title: "Step Title",
+  content: "Step description text",
+  
+  // Optional Overlay Properties
+  position: "center", // center, top, bottom, top-left, top-right, bottom-left, bottom-right
+  size: "medium", // small, medium, large, fullscreen
+  overlayProps: {}, // Additional props for TextOverlay
+  
+  // Optional Highlight Properties
+  highlightTarget: ".css-selector", // CSS selector for target element
+  highlightId: "element-id", // Element ID (alternative to selector)
+  showHighlight: true, // Whether to show highlight (default: true if target specified)
+  highlightProps: {
+    highlightColor: "#ef4444", // Border color (default: red)
+    borderWidth: 3, // Border thickness (default: 3)
+    offset: 4, // Distance from element (default: 4)
+    animated: true, // Enable pulsing animation (default: true)
+    borderRadius: 8, // Border radius (default: 8)
+    zIndex: 9999 // Z-index (default: 9999)
+  }
+}
+```
+
+## Targeting Elements
+
+### Method 1: Element ID
+```jsx
+// Add ID to your component
+<div id="resource-panel">...</div>
+
+// Reference in tutorial step
+{
+  title: "Resources",
+  content: "Manage your resources here.",
+  highlightId: "resource-panel"
+}
+```
+
+### Method 2: CSS Class
+```jsx
+// Add class to your component
+<div className="game-board">...</div>
+
+// Reference in tutorial step
+{
+  title: "Game Board",
+  content: "This is the game board.",
+  highlightTarget: ".game-board"
+}
+```
+
+### Method 3: Data Attributes
+```jsx
+// Add data attribute to your component
+<div data-component="actions-menu">...</div>
+
+// Reference in tutorial step
+{
+  title: "Actions",
+  content: "Access game actions here.",
+  highlightTarget: "[data-component='actions-menu']"
+}
+```
+
+## Best Practices
+
+### 1. Element Targeting
+- Use unique IDs for reliable targeting
+- Avoid targeting elements that might not exist
+- Test highlighting on different screen sizes
+
+### 2. Positioning
+- Place overlays to avoid covering highlighted elements
+- Use `bottom-center` position when highlighting top elements
+- Use `top-center` position when highlighting bottom elements
+
+### 3. Performance
+- The system uses efficient DOM querying and event handling
+- Highlights automatically clean up when components unmount
+- Use `showHighlight: false` to disable highlighting for specific steps
+
+This enhanced tutorial system provides a seamless way to guide users through your application with visual highlights that adapt to different screen sizes and maintain perfect positioning.
   },
 ];
 

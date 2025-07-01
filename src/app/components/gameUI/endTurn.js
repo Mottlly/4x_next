@@ -4,7 +4,7 @@ import { endTurnStyles } from "@/library/styles/stylesIndex";
 // A sci-fi–styled circular "Next Turn" button with neon glow
 export default function NextTurnButton({ currentTurn, onNext }) {
   return (
-    <div className={endTurnStyles.container}>
+    <div className={endTurnStyles.container} id="end-turn-button">
       <button onClick={onNext} className={endTurnStyles.button}>
         <span className={endTurnStyles.turnText}>Turn: {currentTurn} </span>
       </button>

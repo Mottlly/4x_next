@@ -20,7 +20,7 @@ export default function ResourcePanel({
   };
 
   return (
-    <div className={resourcePanelStyles.container}>
+    <div className={resourcePanelStyles.container} id="resource-panel">
       <div className={resourcePanelStyles.panel} style={{ minWidth: 300 }}>
         <ul
           className="flex flex-row items-end justify-center gap-8 w-full"

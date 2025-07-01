@@ -13,7 +13,7 @@ export default function ActionsMenu({
   if (!selectedPiece) return null;
 
   return (
-    <div className={actionsMenuStyles.container}>
+    <div className={actionsMenuStyles.container} id="actions-menu">
       <div className={actionsMenuStyles.actionsRow}>
         {availableActions.map((action) => {
           const { icon: Icon, tooltip, buttonClass } = actionDetails[action];
