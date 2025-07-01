@@ -1,4 +1,5 @@
 import React from "react";
+import { Flag, Package, Printer, Sword } from "lucide-react";
 import TextOverlay from "./TextOverlay";
 import TutorialSystem, { useTutorial } from "./TutorialSystem";
 import TutorialHighlight, { useTutorialHighlight } from "./TutorialHighlight";
@@ -11,50 +12,89 @@ export default function ExampleTutorialUsage() {
   const gameTutorialSteps = [
     {
       title: "Welcome to the Game!",
-      content: "This tutorial will guide you through the basics of playing the game. You can navigate using the Previous/Next buttons or use your arrow keys.",
+      content:
+        "This tutorial will guide you through the basics of playing the game. You can navigate using the Previous/Next buttons or use your arrow keys.",
       position: "center",
-      size: "medium"
+      size: "medium",
     },
     {
       title: "The Game Board",
-      content: "This is the hex-based game board where all the action happens. Each tile represents different terrain types with various resources and strategic value.",
+      content:
+        "This is the hex-based game board where all the action happens. Each tile represents different terrain types with various resources and strategic value.",
       position: "top-left",
       size: "medium",
       highlightTarget: ".hex-board", // CSS selector for game board
       highlightProps: {
-        highlightColor: "#3b82f6", // Blue highlight for board
-        borderWidth: 4
-      }
+        borderWidth: 6,
+        offset: 6,
+        useScreenCenterForBoard: true,
+      },
     },
     {
       title: "Resource Management",
-      content: "Keep an eye on your resources here. You'll need to manage food, production, and other resources to expand your civilization.",
+      content: (
+        <div>
+          <p style={{ marginBottom: "16px" }}>
+            Keep an eye on your resources here. You&apos;ll need to manage these
+            carefully to survive and expand:
+          </p>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Flag size={20} style={{ color: "#60a5fa" }} />
+              <span>
+                <strong>Outpost Capacity:</strong> Current outposts vs. maximum
+                limit
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Package size={20} style={{ color: "#34d399" }} />
+              <span>
+                <strong>Rations:</strong> Food for your population
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Printer size={20} style={{ color: "#fbbf24" }} />
+              <span>
+                <strong>Printing Material:</strong> Construction resources
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Sword size={20} style={{ color: "#f87171" }} />
+              <span>
+                <strong>Weapons:</strong> Defense resources
+              </span>
+            </div>
+          </div>
+        </div>
+      ),
       position: "bottom-center",
-      size: "medium",
+      size: "large",
       highlightId: "resource-panel", // ID of resource panel
       highlightProps: {
-        highlightColor: "#ef4444", // Red highlight
         animated: true,
-        offset: 6
-      }
+        offset: 8,
+      },
     },
     {
-      title: "Actions Menu", 
-      content: "Use this menu to perform various actions like building settlements, moving units, or managing your civilization.",
+      title: "Actions Menu",
+      content:
+        "Use this menu to perform various actions like building settlements, moving units, or managing your civilization.",
       position: "bottom-left",
       size: "medium",
       highlightTarget: "[data-component='actions-menu']", // Data attribute selector
       highlightProps: {
-        highlightColor: "#059669", // Green highlight
-        borderWidth: 3
-      }
+        borderWidth: 5,
+      },
     },
     {
       title: "Tutorial Complete!",
-      content: "You're ready to start playing! Remember, you can access help and settings from the main menu at any time.",
+      content:
+        "You're ready to start playing! Remember, you can access help and settings from the main menu at any time.",
       position: "center",
-      size: "medium"
-    }
+      size: "medium",
+    },
   ];
 
   // Use the tutorial hook
@@ -70,9 +110,9 @@ export default function ExampleTutorialUsage() {
   return (
     <div style={{ padding: "20px", minHeight: "100vh" }}>
       <h1>Tutorial System Demo</h1>
-      
+
       <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
-        <button 
+        <button
           onClick={tutorial.startTutorial}
           disabled={tutorial.isActive}
           style={{
@@ -81,63 +121,63 @@ export default function ExampleTutorialUsage() {
             color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: tutorial.isActive ? "not-allowed" : "pointer"
+            cursor: tutorial.isActive ? "not-allowed" : "pointer",
           }}
         >
           Start Game Tutorial
         </button>
 
-        <button 
+        <button
           onClick={() => setShowWelcome(true)}
           style={{
             padding: "10px 20px",
             backgroundColor: "#3b82f6",
-            color: "white", 
+            color: "white",
             border: "none",
             borderRadius: "6px",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           Show Welcome Message
         </button>
 
-        <button 
+        <button
           onClick={() => setShowNotification(true)}
           style={{
             padding: "10px 20px",
             backgroundColor: "#f59e0b",
             color: "white",
-            border: "none", 
+            border: "none",
             borderRadius: "6px",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           Show Notification
         </button>
 
-        <button 
+        <button
           onClick={tutorial.resetTutorial}
           style={{
             padding: "10px 20px",
             backgroundColor: "#ef4444",
             color: "white",
             border: "none",
-            borderRadius: "6px", 
-            cursor: "pointer"
+            borderRadius: "6px",
+            cursor: "pointer",
           }}
         >
           Reset Tutorial
         </button>
 
-        <button 
+        <button
           onClick={resourceHighlight.toggleHighlight}
           style={{
             padding: "10px 20px",
             backgroundColor: "#8b5cf6",
             color: "white",
             border: "none",
-            borderRadius: "6px", 
-            cursor: "pointer"
+            borderRadius: "6px",
+            cursor: "pointer",
           }}
         >
           Toggle Resource Highlight
@@ -145,32 +185,78 @@ export default function ExampleTutorialUsage() {
       </div>
 
       <div style={{ marginBottom: "20px" }}>
-        <p>Tutorial Status: {tutorial.hasCompleted ? "Completed" : "Not Started"}</p>
+        <p>
+          Tutorial Status: {tutorial.hasCompleted ? "Completed" : "Not Started"}
+        </p>
         <p>Tutorial Active: {tutorial.isActive ? "Yes" : "No"}</p>
-        <p>Resource Highlight: {resourceHighlight.isActive ? "Active" : "Inactive"}</p>
+        <p>
+          Resource Highlight:{" "}
+          {resourceHighlight.isActive ? "Active" : "Inactive"}
+        </p>
       </div>
 
       {/* Mock Game UI Elements for demonstration */}
       <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
         {/* Mock Resource Panel */}
-        <div 
+        <div
           id="resource-panel"
           style={{
             background: "#1f2937",
             color: "white",
             padding: "16px",
             borderRadius: "8px",
-            minWidth: "200px"
+            minWidth: "200px",
           }}
         >
           <h3>Resources</h3>
-          <div>Food: 100</div>
-          <div>Material: 50</div>
-          <div>Weapons: 25</div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              margin: "8px 0",
+            }}
+          >
+            <Flag size={16} style={{ color: "#60a5fa" }} />
+            <span>Outposts: 2/5</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              margin: "8px 0",
+            }}
+          >
+            <Package size={16} style={{ color: "#34d399" }} />
+            <span>Rations: 100</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              margin: "8px 0",
+            }}
+          >
+            <Printer size={16} style={{ color: "#fbbf24" }} />
+            <span>Material: 50</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              margin: "8px 0",
+            }}
+          >
+            <Sword size={16} style={{ color: "#f87171" }} />
+            <span>Weapons: 25</span>
+          </div>
         </div>
 
         {/* Mock Game Board */}
-        <div 
+        <div
           className="hex-board"
           style={{
             background: "#374151",
@@ -181,27 +267,39 @@ export default function ExampleTutorialUsage() {
             minHeight: "200px",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           <div>🗺️ Game Board</div>
         </div>
 
         {/* Mock Actions Menu */}
-        <div 
+        <div
           data-component="actions-menu"
           style={{
             background: "#065f46",
             color: "white",
             padding: "16px",
             borderRadius: "8px",
-            minWidth: "150px"
+            minWidth: "150px",
           }}
         >
           <h3>Actions</h3>
-          <button style={{ display: "block", margin: "8px 0", padding: "4px 8px" }}>Build</button>
-          <button style={{ display: "block", margin: "8px 0", padding: "4px 8px" }}>Move</button>
-          <button style={{ display: "block", margin: "8px 0", padding: "4px 8px" }}>Trade</button>
+          <button
+            style={{ display: "block", margin: "8px 0", padding: "4px 8px" }}
+          >
+            Build
+          </button>
+          <button
+            style={{ display: "block", margin: "8px 0", padding: "4px 8px" }}
+          >
+            Move
+          </button>
+          <button
+            style={{ display: "block", margin: "8px 0", padding: "4px 8px" }}
+          >
+            Trade
+          </button>
         </div>
       </div>
 
@@ -215,8 +313,8 @@ export default function ExampleTutorialUsage() {
         theme="game"
         defaultHighlightProps={{
           animated: true,
-          borderWidth: 3,
-          offset: 6
+          borderWidth: 5,
+          offset: 8,
         }}
       />
 

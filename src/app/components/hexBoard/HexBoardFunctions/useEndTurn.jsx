@@ -64,14 +64,43 @@ export default function useEndTurn(
       });
 
       // Move and aggro logic
-      processHostileActions({
+      // Create deep copies of pieces to avoid mutating the original state
+      const friendlyPiecesCopy = pieces.map(piece => ({
+        ...piece,
+        stats: { ...piece.stats }
+      }));
+      
+      const deadFriendlyIds = processHostileActions({
         hostilePieces: newHostilePieces,
-        friendlyPieces: pieces, // <-- use the up-to-date pieces prop
+        friendlyPieces: friendlyPiecesCopy,
         tiles: prev.tiles,
         fortressAggroRadius: 4, // or whatever you want
         basePatrolRadius: 2,
         patrolRadiusPerRaider: 1,
       });
+
+      // Update pieces state with health changes and remove dead pieces
+      setPieces((prevPieces) => {
+        return prevPieces.map(piece => {
+          // Find the corresponding piece in the copy that was processed
+          const processedPiece = friendlyPiecesCopy.find(p => p.id === piece.id);
+          if (processedPiece && !deadFriendlyIds.includes(piece.id)) {
+            // Update health if it changed
+            return {
+              ...piece,
+              stats: {
+                ...piece.stats,
+                currentHealth: processedPiece.stats.currentHealth
+              }
+            };
+          }
+          return piece;
+        }).filter(piece => !deadFriendlyIds.includes(piece.id));
+      });
+      
+      if (deadFriendlyIds.length > 0) {
+        console.log(`Removed ${deadFriendlyIds.length} dead friendly pieces:`, deadFriendlyIds);
+      }
 
       return {
         ...prev,

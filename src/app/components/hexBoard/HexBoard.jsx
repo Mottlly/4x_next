@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import { Flag, Package, Printer, Sword } from "lucide-react";
 import { allowedActionsByType } from "../../../library/utililies/game/gamePieces/actionsDictator";
 import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
@@ -59,24 +60,61 @@ export default function HexBoard({ board: initialBoard }) {
       size: "medium",
       highlightId: "game-board",
       highlightProps: {
-        highlightColor: "#3b82f6",
-        borderWidth: 4,
+        borderWidth: 6,
         animated: true,
-        offset: 8,
+        offset: 6,
+        useScreenCenterForBoard: true,
       },
     },
     {
       title: "Resource Management",
-      content:
-        "This panel shows your vital resources: Rations (food), Printing Material (construction), and Weapons (defense). You'll need to manage these carefully to survive and expand.",
+      content: (
+        <div>
+          <p style={{ marginBottom: "16px" }}>
+            This panel shows your vital resources. You&apos;ll need to manage
+            these carefully to survive and expand:
+          </p>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Flag size={20} style={{ color: "#60a5fa" }} />
+              <span>
+                <strong>Outpost Capacity:</strong> Shows how many outposts you
+                have vs. your maximum limit
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Package size={20} style={{ color: "#34d399" }} />
+              <span>
+                <strong>Rations:</strong> Food needed to sustain your population
+                and units
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Printer size={20} style={{ color: "#fbbf24" }} />
+              <span>
+                <strong>Printing Material:</strong> Construction resources for
+                building structures
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Sword size={20} style={{ color: "#f87171" }} />
+              <span>
+                <strong>Weapons:</strong> Defense resources for protecting your
+                colony
+              </span>
+            </div>
+          </div>
+        </div>
+      ),
       position: "bottom-center",
-      size: "medium",
+      size: "large",
       highlightId: "resource-panel",
       highlightProps: {
-        highlightColor: "#ef4444",
-        borderWidth: 3,
+        borderWidth: 5,
         animated: true,
-        offset: 6,
+        offset: 8,
       },
     },
     {
@@ -94,10 +132,9 @@ export default function HexBoard({ board: initialBoard }) {
       size: "medium",
       highlightId: "actions-menu",
       highlightProps: {
-        highlightColor: "#059669",
-        borderWidth: 3,
+        borderWidth: 5,
         animated: true,
-        offset: 4,
+        offset: 6,
       },
     },
     {
@@ -108,10 +145,9 @@ export default function HexBoard({ board: initialBoard }) {
       size: "medium",
       highlightId: "end-turn-button",
       highlightProps: {
-        highlightColor: "#f59e0b",
-        borderWidth: 3,
+        borderWidth: 5,
         animated: true,
-        offset: 6,
+        offset: 8,
       },
     },
     {
@@ -442,8 +478,8 @@ export default function HexBoard({ board: initialBoard }) {
         theme="game"
         defaultHighlightProps={{
           animated: true,
-          borderWidth: 3,
-          offset: 6,
+          borderWidth: 5,
+          offset: 8,
         }}
       />
     </div>

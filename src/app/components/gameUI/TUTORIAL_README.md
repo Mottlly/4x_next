@@ -5,7 +5,7 @@ An enhanced tutorial system for React applications that provides guided tutorial
 ## Features
 
 - **Step-by-step tutorials** with navigation controls
-- **Element highlighting** with customizable red borders around UI components
+- **Element highlighting** with customizable yellow borders around UI components
 - **Responsive design** that works across different screen sizes
 - **Automatic positioning** that follows elements even when scrolling or resizing
 - **Keyboard navigation** support (Arrow keys, Enter, Escape)
@@ -17,12 +17,15 @@ An enhanced tutorial system for React applications that provides guided tutorial
 ## Components
 
 ### TutorialSystem
+
 Main component for managing tutorial sequences with automatic highlighting.
 
 ### TutorialHighlight
+
 Standalone component for highlighting specific UI elements.
 
 ### TextOverlay
+
 Flexible overlay component for displaying tutorial content.
 
 ## Basic Usage
@@ -30,14 +33,14 @@ Flexible overlay component for displaying tutorial content.
 ### 1. Simple Tutorial with Highlighting
 
 ```jsx
-import TutorialSystem, { useTutorial } from './TutorialSystem';
+import TutorialSystem, { useTutorial } from "./TutorialSystem";
 
 const steps = [
   {
     title: "Welcome!",
     content: "This is your first tutorial step.",
     position: "center",
-    size: "medium"
+    size: "medium",
   },
   {
     title: "Resource Panel",
@@ -47,9 +50,9 @@ const steps = [
     highlightId: "resource-panel", // Highlights element with this ID
     highlightProps: {
       highlightColor: "#ef4444",
-      animated: true
-    }
-  }
+      animated: true,
+    },
+  },
 ];
 
 function MyComponent() {
@@ -58,7 +61,7 @@ function MyComponent() {
   return (
     <div>
       <div id="resource-panel">Resource Panel Content</div>
-      
+
       <TutorialSystem
         steps={tutorial.steps}
         isActive={tutorial.isActive}
@@ -80,8 +83,8 @@ const advancedSteps = [
     highlightTarget: ".game-board", // CSS selector
     highlightProps: {
       highlightColor: "#3b82f6", // Blue highlight
-      borderWidth: 4
-    }
+      borderWidth: 4,
+    },
   },
   {
     title: "Actions Menu",
@@ -90,9 +93,9 @@ const advancedSteps = [
     highlightProps: {
       highlightColor: "#059669", // Green highlight
       animated: true,
-      offset: 8
-    }
-  }
+      offset: 8,
+    },
+  },
 ];
 ```
 
@@ -105,22 +108,22 @@ Each tutorial step supports the following properties:
   // Required
   title: "Step Title",
   content: "Step description text",
-  
+
   // Optional Overlay Properties
   position: "center", // center, top, bottom, top-left, top-right, bottom-left, bottom-right
   size: "medium", // small, medium, large, fullscreen
   overlayProps: {}, // Additional props for TextOverlay
-  
+
   // Optional Highlight Properties
   highlightTarget: ".css-selector", // CSS selector for target element
   highlightId: "element-id", // Element ID (alternative to selector)
   showHighlight: true, // Whether to show highlight (default: true if target specified)
   highlightProps: {
-    highlightColor: "#ef4444", // Border color (default: red)
-    borderWidth: 3, // Border thickness (default: 3)
-    offset: 4, // Distance from element (default: 4)
+    highlightColor: "#fbbf24", // Border color (default: yellow)
+    borderWidth: 5, // Border thickness (default: 5)
+    offset: 12, // Distance from element (default: 12)
     animated: true, // Enable pulsing animation (default: true)
-    borderRadius: 8, // Border radius (default: 8)
+    borderRadius: 12, // Border radius (default: 12)
     zIndex: 9999 // Z-index (default: 9999)
   }
 }
@@ -129,6 +132,7 @@ Each tutorial step supports the following properties:
 ## Targeting Elements
 
 ### Method 1: Element ID
+
 ```jsx
 // Add ID to your component
 <div id="resource-panel">...</div>
@@ -142,6 +146,7 @@ Each tutorial step supports the following properties:
 ```
 
 ### Method 2: CSS Class
+
 ```jsx
 // Add class to your component
 <div className="game-board">...</div>
@@ -155,6 +160,7 @@ Each tutorial step supports the following properties:
 ```
 
 ### Method 3: Data Attributes
+
 ```jsx
 // Add data attribute to your component
 <div data-component="actions-menu">...</div>
@@ -167,44 +173,64 @@ Each tutorial step supports the following properties:
 }
 ```
 
-## Best Practices
+## Tutorial Content with React Components
 
-### 1. Element Targeting
-- Use unique IDs for reliable targeting
-- Avoid targeting elements that might not exist
-- Test highlighting on different screen sizes
+You can use React components and JSX directly in tutorial steps for rich content with icons, formatting, and interactive elements:
 
-### 2. Positioning
-- Place overlays to avoid covering highlighted elements
-- Use `bottom-center` position when highlighting top elements
-- Use `top-center` position when highlighting bottom elements
+```jsx
+import { Flag, Package, Printer, Sword } from "lucide-react";
 
-### 3. Performance
-- The system uses efficient DOM querying and event handling
-- Highlights automatically clean up when components unmount
-- Use `showHighlight: false` to disable highlighting for specific steps
-
-This enhanced tutorial system provides a seamless way to guide users through your application with visual highlights that adapt to different screen sizes and maintain perfect positioning.
+const tutorialSteps = [
+  {
+    title: "Resource Management",
+    content: (
+      <div>
+        <p style={{ marginBottom: "16px" }}>
+          This panel shows your vital resources. You&apos;ll need to manage
+          these carefully:
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Flag size={20} style={{ color: "#60a5fa" }} />
+            <span>
+              <strong>Outpost Capacity:</strong> Current outposts vs. maximum
+              limit
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Package size={20} style={{ color: "#34d399" }} />
+            <span>
+              <strong>Rations:</strong> Food for your population
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Printer size={20} style={{ color: "#fbbf24" }} />
+            <span>
+              <strong>Printing Material:</strong> Construction resources
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <Sword size={20} style={{ color: "#f87171" }} />
+            <span>
+              <strong>Weapons:</strong> Defense resources
+            </span>
+          </div>
+        </div>
+      </div>
+    ),
+    position: "bottom-center",
+    size: "large",
+    highlightId: "resource-panel",
   },
 ];
-
-function MyComponent() {
-  const tutorial = useTutorial("my_tutorial", tutorialSteps);
-
-  return (
-    <div>
-      <button onClick={tutorial.startTutorial}>Start Tutorial</button>
-
-      <TutorialSystem
-        steps={tutorial.steps}
-        isActive={tutorial.isActive}
-        onComplete={tutorial.completeTutorial}
-        onSkip={tutorial.skipTutorial}
-      />
-    </div>
-  );
-}
 ```
+
+### Benefits of Rich Content
+
+- **Icons**: Visual representation helps users identify resources quickly
+- **Formatting**: Bold text, colors, and spacing improve readability
+- **Consistency**: Use the same icons as your actual UI components
+- **Accessibility**: Proper contrast and sizing for better user experience
 
 #### Tutorial Step Object
 
@@ -315,3 +341,31 @@ See `ExampleTutorialUsage.js` for complete working examples of:
 4. **Persist completion state** - Don't show the same tutorial repeatedly
 5. **Test on different screen sizes** - Ensure overlays work on mobile/tablet
 6. **Use appropriate themes** - Match your game's visual style
+
+## Preventing Scrollbars
+
+The highlight system includes automatic viewport boundary detection to prevent unwanted scrollbars:
+
+- **Automatic boundary detection**: Highlights stay within the current viewport
+- **Smart positioning**: If an offset would push the highlight off-screen, it's automatically adjusted
+- **Responsive constraints**: Works across different screen sizes and orientations
+- **Smooth transitions**: Positioning adjustments use smooth animations
+
+### How It Works
+
+```javascript
+// The system automatically:
+// 1. Detects viewport boundaries
+// 2. Calculates if highlight would overflow
+// 3. Adjusts position and size to fit within bounds
+// 4. Maintains visual impact while preventing scroll issues
+
+// No configuration needed - it works automatically!
+```
+
+### Best Practices for Scroll Prevention
+
+1. **Use reasonable offsets**: Keep offset values between 4-12px for most cases
+2. **Test on mobile**: Smaller screens are more prone to overflow
+3. **Consider element positioning**: Elements near screen edges need smaller offsets
+4. **Monitor performance**: Viewport calculations are optimized but still have minimal overhead

@@ -182,17 +182,41 @@ export function createHostilePiece(type: string, overrides: any = {}) {
   const base = HOSTILE_PIECE_BANK[type];
   if (!base) throw new Error(`Unknown hostile type: ${type}`);
   
-  // Initialize currentHealth to the same value as health if not provided
+  // Create deep copies of nested objects to avoid shared references
   const stats = {
     ...base.stats,
     currentHealth: base.stats.health,
     ...(overrides.stats || {})
   };
   
+  const abilities = {
+    ...base.abilities,
+    ...(overrides.abilities || {})
+  };
+  
+  const movementCosts = {
+    ...base.movementCosts,
+    ...(overrides.movementCosts || {})
+  };
+  
+  const aiBehavior = {
+    ...base.aiBehavior,
+    ...(overrides.aiBehavior || {})
+  };
+  
+  const spawnConfig = {
+    ...base.spawnConfig,
+    ...(overrides.spawnConfig || {})
+  };
+  
   return { 
     ...base, 
     ...overrides, 
     stats,
+    abilities,
+    movementCosts,
+    aiBehavior,
+    spawnConfig,
     id: overrides.id || uuidv4() 
   };
 }

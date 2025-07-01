@@ -15,7 +15,7 @@ import TutorialHighlight from "./TutorialHighlight";
  * @param {string} props.theme - Theme for overlays ('dark', 'light', 'game')
  * @param {Object} props.defaultOverlayProps - Default props to pass to all overlays
  * @param {Object} props.defaultHighlightProps - Default props to pass to all highlights
- * 
+ *
  * Step object structure:
  * {
  *   title: string,
@@ -87,10 +87,10 @@ export default function TutorialSystem({
   const isLastStep = currentStep === steps.length - 1;
 
   // Determine if we should show highlight for current step
-  const shouldShowHighlight = currentStepData && (
-    currentStepData.showHighlight !== false && 
-    (currentStepData.highlightTarget || currentStepData.highlightId)
-  );
+  const shouldShowHighlight =
+    currentStepData &&
+    currentStepData.showHighlight !== false &&
+    (currentStepData.highlightTarget || currentStepData.highlightId);
 
   // Get step progress text
   const getProgressText = () => {
@@ -124,7 +124,11 @@ export default function TutorialSystem({
         content={
           <div>
             <div
-              style={{ marginBottom: "12px", fontSize: "0.875rem", opacity: 0.7 }}
+              style={{
+                marginBottom: "12px",
+                fontSize: "0.875rem",
+                opacity: 0.7,
+              }}
             >
               {getProgressText()}
             </div>
@@ -138,7 +142,9 @@ export default function TutorialSystem({
         hasNextButton={true}
         hasPreviousButton={!isFirstStep}
         nextButtonText={
-          isLastStep ? t("tutorial.finish", "Finish") : t("tutorial.next", "Next")
+          isLastStep
+            ? t("tutorial.finish", "Finish")
+            : t("tutorial.next", "Next")
         }
         previousButtonText={t("tutorial.previous", "Previous")}
         closeButtonText={
