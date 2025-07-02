@@ -110,8 +110,8 @@ export default function useEndTurn(
       }
 
       // Filter out dead hostile pieces (including fortresses with 0 health)
-      const aliveHostilePieces = newHostilePieces.filter(piece => {
-        if (piece.stats && typeof piece.stats.currentHealth === 'number') {
+      const aliveHostilePieces = newHostilePieces.filter((piece) => {
+        if (piece.stats && typeof piece.stats.currentHealth === "number") {
           return piece.stats.currentHealth > 0;
         }
         return true; // Keep pieces without health stats
@@ -119,11 +119,11 @@ export default function useEndTurn(
 
       // Remove raiders whose home fortress is dead
       const aliveFortressIds = aliveHostilePieces
-        .filter(piece => piece.type === 'hostileFortress')
-        .map(fortress => fortress.id);
-      
-      const survivingHostilePieces = aliveHostilePieces.filter(piece => {
-        if (piece.type === 'Raider' && piece.homeFortressId) {
+        .filter((piece) => piece.type === "hostileFortress")
+        .map((fortress) => fortress.id);
+
+      const survivingHostilePieces = aliveHostilePieces.filter((piece) => {
+        if (piece.type === "Raider" && piece.homeFortressId) {
           return aliveFortressIds.includes(piece.homeFortressId);
         }
         return true;
@@ -131,8 +131,11 @@ export default function useEndTurn(
 
       // Log if any hostile pieces were removed
       if (survivingHostilePieces.length < newHostilePieces.length) {
-        const deadCount = newHostilePieces.length - survivingHostilePieces.length;
-        console.log(`Removed ${deadCount} dead hostile pieces (including orphaned raiders)`);
+        const deadCount =
+          newHostilePieces.length - survivingHostilePieces.length;
+        console.log(
+          `Removed ${deadCount} dead hostile pieces (including orphaned raiders)`
+        );
       }
 
       return {

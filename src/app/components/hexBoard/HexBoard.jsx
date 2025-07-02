@@ -2,41 +2,37 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Flag, Package, Printer, Sword } from "lucide-react";
+import { Canvas } from "@react-three/fiber";
 import { allowedActionsByType } from "../../../library/utililies/game/gamePieces/actionsDictator";
 import { getBuildOptionsForType } from "../../../library/utililies/game/gamePieces/schemas/buildBank";
 import BoardCanvas from "./boardCanvas/boardCanvas";
 import NextTurnButton from "../gameUI/endTurn";
 import SettlementPanel from "../gameUI/settlementTile";
 import ResourcePanel from "../gameUI/resourcePanel";
-import FloatingTileInfoPanel from "../gameUI/tileDataNode/FloatingTileInfoPanel";
-import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
-import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
 import ActionsMenu from "../gameUI/actionsMenu";
-import TutorialSystem, { useTutorial } from "../gameUI/TutorialSystem";
-import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
-import { startUpgrade } from "../../../library/utililies/game/settlements/upgradeUtilities";
-import { computeOutpostInfo } from "../../../library/utililies/game/resources/computeOutpostCap";
-import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
-import useFloatingHostileInfo from "../gameUI/tileDataNode/useFloatingHostileNode";
+import CompendiumButton from "../gameUI/CompendiumButton";
+import CompendiumOverlay from "../gameUI/CompendiumOverlay";
 import VictoryOverlay from "../gameUI/VictoryOverlay";
-import useVictoryDetection from "./HexBoardFunctions/useVictoryDetection";
-
-// custom hooks
-import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
-import useEndTurn from "./HexBoardFunctions/useEndTurn";
+import TutorialSystem, { useTutorial } from "../gameUI/TutorialSystem";
+import useFloatingTileInfo from "../gameUI/tileDataNode/useFloatingTileNode";
+import FloatingTileInfoPanel from "../gameUI/tileDataNode/FloatingTileInfoPanel";
+import useFloatingHostileInfo from "../gameUI/tileDataNode/useFloatingHostileNode";
 import useRevealTiles from "./HexBoardFunctions/useRevealTiles";
-import useUnlockAudio from "./HexBoardFunctions/useUnlockAudio";
+import useMoveHandler from "./HexBoardFunctions/useMoveHandler";
 import useAttackHandler from "./HexBoardFunctions/useAttackHandler";
-
-// extracted functions
-import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
+import useEndTurn from "./HexBoardFunctions/useEndTurn";
+import useVictoryDetection from "./HexBoardFunctions/useVictoryDetection";
+import useUnlockAudio from "./HexBoardFunctions/useUnlockAudio";
+import { createPiece } from "../../../library/utililies/game/gamePieces/schemas/pieceBank";
 import { handleAction } from "./HexBoardFunctions/handleAction";
 import { handleBuildOption } from "./HexBoardFunctions/handleBuildOption";
-import {
-  subtractResources,
-  computeResourceDelta,
-} from "../../../library/utililies/game/resources/resourceUtils";
 import { handleBuildUnit } from "../../../library/utililies/game/gamePieces/handleBuildUnit";
+import { handleTileClick } from "./HexBoardFunctions/handleTileClick";
+import { startUpgrade } from "../../../library/utililies/game/settlements/upgradeUtilities";
+import { computeOutpostInfo } from "../../../library/utililies/game/resources/computeOutpostCap";
+import { computeResourceDelta } from "../../../library/utililies/game/resources/resourceUtils";
+import { getTilesWithSemiFog } from "../../../library/utililies/game/tileUtilities/lineOfSight/getTilesWithSemiFog";
+import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 
 export default function HexBoard({ board: initialBoard }) {
   const {
@@ -153,6 +149,19 @@ export default function HexBoard({ board: initialBoard }) {
       },
     },
     {
+      title: "Game Compendium",
+      content:
+        "Need to look up stats or information about units, buildings, or terrain? Click this question mark button to open the comprehensive game compendium with 3D previews!",
+      position: "center-left",
+      size: "medium",
+      highlightTarget: ".compendium-button", // We'll add this class to the button
+      highlightProps: {
+        borderWidth: 5,
+        animated: true,
+        offset: 8,
+      },
+    },
+    {
       title: "Ready to Survive!",
       content:
         "You now know the basics! Explore the world, gather resources, build settlements, and expand your colony. Remember: this planet is dangerous, so stay alert and good luck!",
@@ -195,6 +204,9 @@ export default function HexBoard({ board: initialBoard }) {
     weapons: initialResources[2],
   });
 
+  // Compendium state
+  const [isCompendiumOpen, setIsCompendiumOpen] = useState(false);
+
   useEffect(() => {
     setActiveAction(selectedPieceId ? "move" : null);
   }, [selectedPieceId]);
@@ -202,7 +214,11 @@ export default function HexBoard({ board: initialBoard }) {
   useRevealTiles(board, pieces, setBoard);
 
   // Victory detection
-  const { isVictorious, gameStats, resetVictory } = useVictoryDetection(board, pieces, currentTurn);
+  const { isVictorious, gameStats, resetVictory } = useVictoryDetection(
+    board,
+    pieces,
+    currentTurn
+  );
   const [showVictoryOverlay, setShowVictoryOverlay] = useState(false);
 
   // Show victory overlay when victory is achieved
@@ -417,6 +433,9 @@ export default function HexBoard({ board: initialBoard }) {
         resourceDelta={resourceDelta}
       />
 
+      {/* Compendium Button */}
+      <CompendiumButton onClick={() => setIsCompendiumOpen(true)} />
+
       <BoardCanvas
         board={board}
         pieces={pieces}
@@ -431,8 +450,8 @@ export default function HexBoard({ board: initialBoard }) {
         hostilePieceHover={showHostileInfo}
       />
 
-      {/* Floating info panel */}
-      <FloatingTileInfoPanel ref={infoPanelRef} />
+      {/* Floating info panel - hidden when compendium is open */}
+      {!isCompendiumOpen && <FloatingTileInfoPanel ref={infoPanelRef} />}
 
       {/* Actions menu (centered at top) */}
       <ActionsMenu
@@ -456,6 +475,12 @@ export default function HexBoard({ board: initialBoard }) {
           currentTurn={currentTurn}
         />
       )}
+
+      {/* Compendium overlay */}
+      <CompendiumOverlay
+        isVisible={isCompendiumOpen}
+        onClose={() => setIsCompendiumOpen(false)}
+      />
 
       <audio
         ref={sciFiAudioRef}
@@ -504,6 +529,12 @@ export default function HexBoard({ board: initialBoard }) {
         isVisible={showVictoryOverlay}
         gameStats={gameStats}
         onClose={() => setShowVictoryOverlay(false)}
+      />
+
+      {/* Compendium Overlay */}
+      <CompendiumOverlay
+        isVisible={isCompendiumOpen}
+        onClose={() => setIsCompendiumOpen(false)}
       />
     </div>
   );

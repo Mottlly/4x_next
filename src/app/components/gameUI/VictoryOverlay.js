@@ -1,11 +1,7 @@
 import React from "react";
 import { Trophy, Star, Target, Clock, Users } from "lucide-react";
 
-export default function VictoryOverlay({ 
-  isVisible, 
-  onClose, 
-  gameStats = {} 
-}) {
+export default function VictoryOverlay({ isVisible, onClose, gameStats = {} }) {
   if (!isVisible) return null;
 
   const {
@@ -14,7 +10,7 @@ export default function VictoryOverlay({
     settlementsBuilt = 0,
     resourcesGathered = 0,
     hostilesPieces = 0,
-    hostileFortressesDestroyed = 1
+    hostileFortressesDestroyed = 1,
   } = gameStats;
 
   return (
@@ -41,8 +37,9 @@ export default function VictoryOverlay({
               Congratulations, Commander!
             </h2>
             <p className="text-lg text-yellow-200 leading-relaxed">
-              Your strategic leadership and tactical prowess have secured this hostile planet for humanity. 
-              The threat has been neutralized, and your colony can now thrive in peace.
+              Your strategic leadership and tactical prowess have secured this
+              hostile planet for humanity. The threat has been neutralized, and
+              your colony can now thrive in peace.
             </p>
           </div>
 
@@ -53,39 +50,57 @@ export default function VictoryOverlay({
                 <Clock className="w-6 h-6 text-yellow-300" />
                 <span className="text-yellow-200 font-semibold">Turns</span>
               </div>
-              <div className="text-2xl font-bold text-yellow-100">{turnsPlayed}</div>
+              <div className="text-2xl font-bold text-yellow-100">
+                {turnsPlayed}
+              </div>
             </div>
 
             <div className="bg-black bg-opacity-30 rounded-lg p-4 border-2 border-yellow-600">
               <div className="flex items-center gap-3 mb-2">
                 <Users className="w-6 h-6 text-yellow-300" />
-                <span className="text-yellow-200 font-semibold">Units Built</span>
+                <span className="text-yellow-200 font-semibold">
+                  Units Built
+                </span>
               </div>
-              <div className="text-2xl font-bold text-yellow-100">{totalPiecesBuilt}</div>
+              <div className="text-2xl font-bold text-yellow-100">
+                {totalPiecesBuilt}
+              </div>
             </div>
 
             <div className="bg-black bg-opacity-30 rounded-lg p-4 border-2 border-yellow-600">
               <div className="flex items-center gap-3 mb-2">
                 <Star className="w-6 h-6 text-yellow-300" />
-                <span className="text-yellow-200 font-semibold">Settlements</span>
+                <span className="text-yellow-200 font-semibold">
+                  Settlements
+                </span>
               </div>
-              <div className="text-2xl font-bold text-yellow-100">{settlementsBuilt}</div>
+              <div className="text-2xl font-bold text-yellow-100">
+                {settlementsBuilt}
+              </div>
             </div>
 
             <div className="bg-black bg-opacity-30 rounded-lg p-4 border-2 border-yellow-600">
               <div className="flex items-center gap-3 mb-2">
                 <Target className="w-6 h-6 text-yellow-300" />
-                <span className="text-yellow-200 font-semibold">Fortresses Destroyed</span>
+                <span className="text-yellow-200 font-semibold">
+                  Fortresses Destroyed
+                </span>
               </div>
-              <div className="text-2xl font-bold text-yellow-100">{hostileFortressesDestroyed}</div>
+              <div className="text-2xl font-bold text-yellow-100">
+                {hostileFortressesDestroyed}
+              </div>
             </div>
 
             <div className="bg-black bg-opacity-30 rounded-lg p-4 border-2 border-yellow-600 md:col-span-2">
               <div className="flex items-center gap-3 mb-2">
                 <Trophy className="w-6 h-6 text-yellow-300" />
-                <span className="text-yellow-200 font-semibold">Resources Gathered</span>
+                <span className="text-yellow-200 font-semibold">
+                  Resources Gathered
+                </span>
               </div>
-              <div className="text-2xl font-bold text-yellow-100">{resourcesGathered}</div>
+              <div className="text-2xl font-bold text-yellow-100">
+                {resourcesGathered}
+              </div>
             </div>
           </div>
 
@@ -96,28 +111,32 @@ export default function VictoryOverlay({
             </h3>
             <div className="flex justify-center items-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star 
-                  key={star} 
+                <Star
+                  key={star}
                   className={`w-8 h-8 ${
-                    star <= Math.min(5, Math.max(1, 6 - Math.floor(turnsPlayed / 10)))
-                      ? 'text-yellow-300 fill-yellow-300' 
-                      : 'text-gray-500'
-                  }`} 
+                    star <=
+                    Math.min(5, Math.max(1, 6 - Math.floor(turnsPlayed / 10)))
+                      ? "text-yellow-300 fill-yellow-300"
+                      : "text-gray-500"
+                  }`}
                 />
               ))}
             </div>
             <p className="text-center text-yellow-200 mt-2">
-              {turnsPlayed <= 20 ? "Outstanding Leadership!" :
-               turnsPlayed <= 40 ? "Excellent Strategy!" :
-               turnsPlayed <= 60 ? "Good Command!" :
-               "Mission Accomplished!"}
+              {turnsPlayed <= 20
+                ? "Outstanding Leadership!"
+                : turnsPlayed <= 40
+                ? "Excellent Strategy!"
+                : turnsPlayed <= 60
+                ? "Good Command!"
+                : "Mission Accomplished!"}
             </p>
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => window.location.href = '/menu'}
+              onClick={() => (window.location.href = "/menu")}
               className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
               Return to Menu

@@ -115,8 +115,13 @@ export default function useAttackHandler(
               )
               .filter((h) => {
                 // Remove dead fortresses
-                if (h.type === "hostileFortress" && h.stats?.currentHealth <= 0) {
-                  console.log(`🏰 Hostile fortress at (${h.q}, ${h.r}) destroyed!`);
+                if (
+                  h.type === "hostileFortress" &&
+                  h.stats?.currentHealth <= 0
+                ) {
+                  console.log(
+                    `🏰 Hostile fortress at (${h.q}, ${h.r}) destroyed!`
+                  );
                   return false;
                 }
                 return true;

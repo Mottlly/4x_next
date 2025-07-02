@@ -9,6 +9,7 @@ export { actionsMenuStyles } from "./gameUI/actionsMenuStyles";
 export { loadingScreenStyles } from "./gameUI/loadingScreenStyles";
 export { settlementPanelStyles } from "./gameUI/settlementPanelStyles";
 export { textOverlayStyles } from "./gameUI/textOverlayStyles";
+export { compendiumStyles, compendiumButtonStyles } from "./gameUI/compendiumStyles";
 export {
   tileTypeStyles,
   riverStyles,
