@@ -115,10 +115,30 @@ function HouseIcon({ color = "#111" }) {
   );
 }
 
+// Simple flag icon for colony settlement
+function FlagIcon({ color = "#111" }) {
+  const scale = 1.45; // Increased scale for larger icon
+  return (
+    <group scale={[scale, scale, scale]}>
+      {/* Flag pole */}
+      <mesh position={[0, 0, 0]}>
+        <cylinderGeometry args={[0.008, 0.008, 0.14, 8]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Flag */}
+      <mesh position={[0.055, 0.035, 0]}>
+        <boxGeometry args={[0.11, 0.06, 0.01]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+    </group>
+  );
+}
+
 const ICONS = {
   resource_extractor: FactoryIcon,
   sensor_suite: SensorSuiteIcon,
   reconstructed_shelter: HouseIcon,
+  colony_settlement: FlagIcon,
 };
 
 export default function BuildingFloatingIcon({

@@ -25,7 +25,7 @@ export function handleBuildOption(
     }
   }
 
-  if (buildingKey === "reconstructed_shelter") {
+  if (buildingKey === "reconstructed_shelter" || buildingKey === "colony_settlement") {
     setPieces((prev) => prev.filter((p) => p.id !== pieceId));
     setSelectedPieceId(null);
     setBoard((prev) => ({

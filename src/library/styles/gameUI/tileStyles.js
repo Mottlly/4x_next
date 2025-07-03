@@ -74,6 +74,7 @@ export const buildingTypeStyles = {
   reconstructed_shelter: { color: "#9b59b6" },
   resource_extractor: { color: "#27ae60" },
   sensor_suite: { color: "#5f27cd" },
+  colony_settlement: { color: "#e67e22" },
   default: { color: "#c2a465" },
 };
 

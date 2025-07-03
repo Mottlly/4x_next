@@ -4,7 +4,7 @@ export const allowedActionsByType = {
   Pod: ["move", "build"],
   Scout: ["move", "attack", "fortify", "scout"],
   Engineer: ["move", "build", "fortify"],
-  Armed_Settler: ["move", "attack", "fortify"],
+  Armed_Settler: ["move", "fortify", "build"],
   Security: ["move", "attack", "fortify"],
 };
 

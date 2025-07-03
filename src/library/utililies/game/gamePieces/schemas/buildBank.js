@@ -1,4 +1,4 @@
-import { Home, Database, Satellite } from "lucide-react";
+import { Home, Database, Satellite, Flag } from "lucide-react";
 
 // Add default stats to each building option
 export const buildingOptions = {
@@ -23,11 +23,23 @@ export const buildingOptions = {
     vision: 3,
     stats: { health: 6, attack: 0, defense: 1 },
   },
+  colony_settlement: {
+    label: "Settle Colony",
+    icon: Flag,
+    buttonClass: "hover:bg-orange-700 border-orange-500",
+    vision: 2,
+    stats: { health: 15, attack: 0, defense: 3 },
+  },
 };
 
 export const buildingEffects = {
   reconstructed_shelter: {
     rations: 1,
+    printingMaterial: 1,
+    weapons: 0,
+  },
+  colony_settlement: {
+    rations: 2,
     printingMaterial: 1,
     weapons: 0,
   },
@@ -41,6 +53,7 @@ export const buildingEffects = {
 export const buildOptions_byUnitType = {
   Pod: ["reconstructed_shelter"],
   Engineer: ["resource_extractor", "sensor_suite"],
+  Armed_Settler: ["colony_settlement"],
 };
 
 export function getResourceExtractorEffect(tile) {

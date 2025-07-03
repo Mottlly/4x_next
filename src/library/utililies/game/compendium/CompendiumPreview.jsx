@@ -10,6 +10,7 @@ import EngineerMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/me
 import RaiderMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/RaiderMeepleGroup";
 import ArmedSettlerMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/ArmedSettlerMeepleGroup";
 import SecurityMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/SecurityMeepleGroup";
+import ColonySettlementMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/colonySettlementMesh";
 import ReconstructedShelterMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/reconstructedShelterMesh";
 import ResourceExtractorMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/resourceExtractorMesh";
 import SensorSuiteMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/SensorSuiteMesh";
@@ -292,6 +293,12 @@ function renderBuildingModel(modelData) {
       return (
         <RotatingModel>
           <SensorSuiteMesh scale={1.2} />
+        </RotatingModel>
+      );
+    case "colony_settlement":
+      return (
+        <RotatingModel>
+          <ColonySettlementMesh scale={1.2} />
         </RotatingModel>
       );
     default:

@@ -4,6 +4,8 @@ export function computeOutpostInfo(board) {
   for (const tile of board.tiles) {
     if (tile.building === "reconstructed_shelter") {
       max += 3;
+    } else if (tile.building === "colony_settlement") {
+      max += 3; // Colony settlements provide same capacity as reconstructed shelters
     } else if (
       tile.building === "resource_extractor" ||
       tile.building === "sensor_suite"

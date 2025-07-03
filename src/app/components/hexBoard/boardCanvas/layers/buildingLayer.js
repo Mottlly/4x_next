@@ -6,6 +6,7 @@ import ReconstructedShelterMesh from "../models/buildings/reconstructedShelterMe
 import ResourceExtractorMesh from "../models/buildings/resourceExtractorMesh";
 import SensorSuiteMesh from "../models/buildings/SensorSuiteMesh";
 import HostileFortressMesh from "../models/buildings/hostileFortressMesh";
+import ColonySettlementMesh from "../models/buildings/colonySettlementMesh";
 
 const HealthBar = ({
   health,
@@ -92,6 +93,9 @@ function BuildingLayer({ tiles, spacing, heightScale }) {
             break;
           case "sensor_suite":
             geom = <SensorSuiteMesh scale={spacing * 0.7} />;
+            break;
+          case "colony_settlement":
+            geom = <ColonySettlementMesh scale={spacing * 0.7} />;
             break;
           case "hostileFortress":
             geom = <HostileFortressMesh scale={spacing * 0.7} />;

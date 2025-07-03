@@ -5,4 +5,10 @@ export const settlementTypes = [
     description:
       "A basic settlement that provides shelter and basic resources.",
   },
+  {
+    key: "colony_settlement",
+    label: "Colony Settlement", 
+    description:
+      "An established colony that provides enhanced resources and population capacity.",
+  },
 ];

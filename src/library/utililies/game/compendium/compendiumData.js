@@ -208,6 +208,8 @@ function getBuildingDescription(key) {
       "Advanced machinery that harvests resources from the surrounding terrain. Essential for sustained colony growth.",
     sensor_suite:
       "High-tech surveillance equipment providing extended vision. Crucial for early detection of threats and exploration.",
+    colony_settlement:
+      "Established colony settlement with enhanced infrastructure. Provides greater resource generation and population capacity than basic shelters.",
   };
   return descriptions[key] || "A structure that supports your colony's growth.";
 }
@@ -217,6 +219,11 @@ function getBuildingGameEffects(key, building) {
   if (key === "reconstructed_shelter") {
     effects.push("Allows recruitment of Scout, Engineer, and Security units");
     effects.push("Provides population capacity for colony growth");
+  }
+  if (key === "colony_settlement") {
+    effects.push("Enhanced settlement with improved resource generation");
+    effects.push("Increased population capacity and defensive capabilities");
+    effects.push("Built by Armed Settlers to establish permanent colonies");
   }
   if (key === "resource_extractor") {
     effects.push("Generates resources each turn based on terrain type");
@@ -234,6 +241,7 @@ function getBuildingGameEffects(key, building) {
 function getBuildingResourceGeneration(key) {
   if (key === "resource_extractor") return "Varies by terrain type";
   if (key === "reconstructed_shelter") return "Population capacity";
+  if (key === "colony_settlement") return "Enhanced population and resources";
   return "None";
 }
 
