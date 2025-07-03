@@ -172,3 +172,98 @@ export const RaiderSword = (
     </mesh>
   </group>
 );
+
+// Simple hat accessory for Armed_Settler
+export const Hat = (
+  <group>
+    {/* Hat crown - positioned higher to avoid clipping */}
+    <mesh position={[0, 0.44, 0]}>
+      <cylinderGeometry args={[0.13, 0.13, 0.08, 16]} />
+      <meshStandardMaterial color="#4a5d23" />
+    </mesh>
+    {/* Hat brim */}
+    <mesh position={[0, 0.40, 0]}>
+      <cylinderGeometry args={[0.17, 0.17, 0.02, 16]} />
+      <meshStandardMaterial color="#4a5d23" />
+    </mesh>
+  </group>
+);
+
+// Army helmet accessory for Security
+export const ArmyHelmet = (
+  <group>
+    {/* Helmet dome */}
+    <mesh position={[0, 0.41, 0]}>
+      <sphereGeometry args={[0.14, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2]} />
+      <meshStandardMaterial color="#2d5016" />
+    </mesh>
+    {/* Chin strap */}
+    <mesh position={[0, 0.35, 0.12]}>
+      <boxGeometry args={[0.08, 0.01, 0.02]} />
+      <meshStandardMaterial color="#1a2e0b" />
+    </mesh>
+  </group>
+);
+
+// Backpack accessory for Armed_Settler (on back)
+export const Backpack = (
+  <group>
+    {/* Main backpack body - doubled in size and moved further back */}
+    <mesh position={[0, 0.18, -0.16]}>
+      <boxGeometry args={[0.20, 0.28, 0.12]} />
+      <meshStandardMaterial color="#2d5016" />
+    </mesh>
+    {/* Bedroll on top - longer to avoid fighting with backpack mesh */}
+    <mesh position={[0, 0.33, -0.16]} rotation={[0, 0, Math.PI / 2]}>
+      <cylinderGeometry args={[0.07, 0.07, 0.26, 12]} />
+      <meshStandardMaterial color="#D2B48C" />
+    </mesh>
+    {/* Left strap - adjusted for larger backpack */}
+    <mesh position={[-0.07, 0.14, -0.11]}>
+      <boxGeometry args={[0.03, 0.20, 0.015]} />
+      <meshStandardMaterial color="#1a2e0b" />
+    </mesh>
+    {/* Right strap - adjusted for larger backpack */}
+    <mesh position={[0.07, 0.14, -0.11]}>
+      <boxGeometry args={[0.03, 0.20, 0.015]} />
+      <meshStandardMaterial color="#1a2e0b" />
+    </mesh>
+  </group>
+);
+
+// Bandolier accessory for Security (across chest)
+export const Bandolier = (
+  <group>
+    {/* Main strap - much larger to cover entire torso */}
+    <mesh position={[0.02, 0.18, 0.11]} rotation={[0, 0, -Math.PI / 6]}>
+      <boxGeometry args={[0.35, 0.05, 0.03]} />
+      <meshStandardMaterial color="#4a3728" />
+    </mesh>
+    {/* Ammunition pouches - larger and spread across entire strap */}
+    <mesh position={[-0.08, 0.28, 0.12]} rotation={[0, 0, -Math.PI / 6]}>
+      <boxGeometry args={[0.05, 0.04, 0.04]} />
+      <meshStandardMaterial color="#2d2520" />
+    </mesh>
+    <mesh position={[-0.02, 0.23, 0.12]} rotation={[0, 0, -Math.PI / 6]}>
+      <boxGeometry args={[0.05, 0.04, 0.04]} />
+      <meshStandardMaterial color="#2d2520" />
+    </mesh>
+    <mesh position={[0.04, 0.18, 0.12]} rotation={[0, 0, -Math.PI / 6]}>
+      <boxGeometry args={[0.05, 0.04, 0.04]} />
+      <meshStandardMaterial color="#2d2520" />
+    </mesh>
+    <mesh position={[0.10, 0.13, 0.12]} rotation={[0, 0, -Math.PI / 6]}>
+      <boxGeometry args={[0.05, 0.04, 0.04]} />
+      <meshStandardMaterial color="#2d2520" />
+    </mesh>
+    <mesh position={[0.16, 0.08, 0.12]} rotation={[0, 0, -Math.PI / 6]}>
+      <boxGeometry args={[0.05, 0.04, 0.04]} />
+      <meshStandardMaterial color="#2d2520" />
+    </mesh>
+    {/* Buckle at center - larger */}
+    <mesh position={[0.02, 0.18, 0.125]}>
+      <boxGeometry args={[0.04, 0.03, 0.02]} />
+      <meshStandardMaterial color="#8B5C2A" />
+    </mesh>
+  </group>
+);

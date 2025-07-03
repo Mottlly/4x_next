@@ -15,14 +15,11 @@ export default function CompendiumButton({ onClick, className = "" }) {
         title="Open Game Compendium"
         aria-label="Open Game Compendium"
       >
-        <HelpCircle 
-          size={24} 
-          className={compendiumButtonStyles.icon}
-        />
-        
+        <HelpCircle size={24} className={compendiumButtonStyles.icon} />
+
         {/* Glow effect */}
         <div className={compendiumButtonStyles.glow}></div>
-        
+
         {/* Tooltip */}
         <div className={compendiumButtonStyles.tooltip}>
           Game Compendium

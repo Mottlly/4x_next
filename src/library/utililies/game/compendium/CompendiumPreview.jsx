@@ -8,10 +8,18 @@ import Pod from "@/app/components/hexBoard/boardCanvas/models/pieces/Pod";
 import ScoutMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/ScoutMeepleGroup";
 import EngineerMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/EngineerMeepleGroup";
 import RaiderMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/RaiderMeepleGroup";
+import ArmedSettlerMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/ArmedSettlerMeepleGroup";
+import SecurityMeepleGroup from "@/app/components/hexBoard/boardCanvas/models/meeples/SecurityMeepleGroup";
 import ReconstructedShelterMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/reconstructedShelterMesh";
 import ResourceExtractorMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/resourceExtractorMesh";
 import SensorSuiteMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/SensorSuiteMesh";
 import HostileFortressMesh from "@/app/components/hexBoard/boardCanvas/models/buildings/hostileFortressMesh";
+
+// Import terrain models
+import PineTreeMesh from "@/app/components/hexBoard/boardCanvas/models/terrain/pineTreeMesh";
+import MountainMesh from "@/app/components/hexBoard/boardCanvas/models/terrain/mountainMesh";
+import TallGrassPatch from "@/app/components/hexBoard/boardCanvas/models/terrain/tallGrassPatch";
+import BerryBush from "@/app/components/hexBoard/boardCanvas/models/terrain/berryBush";
 
 /**
  * 3D Preview component for compendium entries
@@ -21,66 +29,92 @@ import HostileFortressMesh from "@/app/components/hexBoard/boardCanvas/models/bu
 // Rotating wrapper for models
 function RotatingModel({ children, autoRotate = true }) {
   const groupRef = useRef();
-  
+
   useFrame((state, delta) => {
     if (autoRotate && groupRef.current) {
       groupRef.current.rotation.y += delta * 0.3;
     }
   });
-  
+
   return <group ref={groupRef}>{children}</group>;
 }
 
 // Terrain tile component
 function TerrainTile({ type, color }) {
   const tileRef = useRef();
-  
+
   useFrame((state, delta) => {
     if (tileRef.current) {
       tileRef.current.rotation.y += delta * 0.2;
     }
   });
-  
+
   // Get terrain-specific geometry
   const getTerrainGeometry = (terrainType) => {
-    switch(terrainType) {
+    switch (terrainType) {
       case "mountain":
       case "impassable mountain":
         return (
           <group>
-            {/* Base cylinder */}
+            {/* Base hexagon */}
             <mesh position={[0, 0, 0]}>
               <cylinderGeometry args={[1, 1, 0.3, 6]} />
               <meshStandardMaterial color={color} />
             </mesh>
-            {/* Mountain peak */}
-            <mesh position={[0, 0.5, 0]}>
-              <coneGeometry args={[0.7, 0.8, 6]} />
-              <meshStandardMaterial color={color} />
-            </mesh>
+            {/* Mountain meshes */}
+            <MountainMesh position={[0.2, 0.15, 0.3]} scale={0.8} />
+            <MountainMesh position={[-0.4, 0.15, -0.2]} scale={0.6} />
+            <MountainMesh position={[0.3, 0.15, -0.4]} scale={0.7} />
           </group>
         );
       case "forest":
         return (
           <group>
-            {/* Base */}
+            {/* Base hexagon */}
             <mesh position={[0, 0, 0]}>
               <cylinderGeometry args={[1, 1, 0.3, 6]} />
               <meshStandardMaterial color={color} />
             </mesh>
-            {/* Trees */}
-            <mesh position={[0.3, 0.6, 0.2]}>
-              <coneGeometry args={[0.15, 0.8, 8]} />
-              <meshStandardMaterial color="#228b22" />
+            {/* Pine trees scattered across the tile */}
+            <PineTreeMesh position={[0.3, 0.15, 0.2]} scale={0.8} />
+            <PineTreeMesh position={[-0.2, 0.15, -0.3]} scale={0.6} />
+            <PineTreeMesh position={[0.1, 0.15, -0.1]} scale={0.9} />
+            <PineTreeMesh position={[-0.4, 0.15, 0.3]} scale={0.7} />
+            <PineTreeMesh position={[0.4, 0.15, -0.4]} scale={0.5} />
+            <PineTreeMesh position={[-0.1, 0.15, 0.4]} scale={0.8} />
+            {/* Add some berry bushes for variation */}
+            <BerryBush position={[0.5, 0.15, 0.1]} scale={0.6} />
+            <BerryBush position={[-0.3, 0.15, 0.5]} scale={0.4} />
+          </group>
+        );
+      case "grassland":
+        return (
+          <group>
+            {/* Base hexagon */}
+            <mesh position={[0, 0, 0]}>
+              <cylinderGeometry args={[1, 1, 0.3, 6]} />
+              <meshStandardMaterial color={color} />
             </mesh>
-            <mesh position={[-0.2, 0.5, -0.3]}>
-              <coneGeometry args={[0.12, 0.6, 8]} />
-              <meshStandardMaterial color="#32cd32" />
+            {/* Grass patches */}
+            <TallGrassPatch position={[0.2, 0.15, 0.3]} scale={0.8} />
+            <TallGrassPatch position={[-0.3, 0.15, -0.2]} scale={0.6} />
+            <TallGrassPatch position={[0.4, 0.15, -0.4]} scale={0.7} />
+            <TallGrassPatch position={[-0.4, 0.15, 0.4]} scale={0.5} />
+            <TallGrassPatch position={[0.1, 0.15, -0.1]} scale={0.9} />
+          </group>
+        );
+      case "plains":
+        return (
+          <group>
+            {/* Base hexagon */}
+            <mesh position={[0, 0, 0]}>
+              <cylinderGeometry args={[1, 1, 0.3, 6]} />
+              <meshStandardMaterial color={color} />
             </mesh>
-            <mesh position={[0.1, 0.7, -0.1]}>
-              <coneGeometry args={[0.18, 0.9, 8]} />
-              <meshStandardMaterial color="#228b22" />
-            </mesh>
+            {/* Scattered grass patches */}
+            <TallGrassPatch position={[0.3, 0.15, 0.2]} scale={0.4} />
+            <TallGrassPatch position={[-0.2, 0.15, -0.3]} scale={0.3} />
+            <TallGrassPatch position={[0.1, 0.15, 0.4]} scale={0.5} />
           </group>
         );
       case "water":
@@ -88,8 +122,8 @@ function TerrainTile({ type, color }) {
         return (
           <mesh position={[0, 0, 0]}>
             <cylinderGeometry args={[1, 1, 0.2, 6]} />
-            <meshPhysicalMaterial 
-              color={color} 
+            <meshPhysicalMaterial
+              color={color}
               transparent
               opacity={0.8}
               roughness={0.1}
@@ -106,12 +140,8 @@ function TerrainTile({ type, color }) {
         );
     }
   };
-  
-  return (
-    <group ref={tileRef}>
-      {getTerrainGeometry(type)}
-    </group>
-  );
+
+  return <group ref={tileRef}>{getTerrainGeometry(type)}</group>;
 }
 
 // Main preview component
@@ -139,7 +169,7 @@ function CompendiumPreview({ modelType, modelData, className = "" }) {
         );
     }
   };
-  
+
   return (
     <div className={`w-full h-full ${className}`}>
       <Canvas
@@ -150,17 +180,17 @@ function CompendiumPreview({ modelType, modelData, className = "" }) {
           <ambientLight intensity={0.4} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
           <directionalLight position={[-5, 3, -5]} intensity={0.3} />
-          
+
           {renderModel()}
-          
-          <OrbitControls 
+
+          <OrbitControls
             enablePan={false}
             enableZoom={true}
             minDistance={2}
             maxDistance={8}
             maxPolarAngle={Math.PI / 2}
           />
-          
+
           <Environment preset="dawn" />
         </Suspense>
       </Canvas>
@@ -170,7 +200,7 @@ function CompendiumPreview({ modelType, modelData, className = "" }) {
 
 function renderPieceModel(modelData) {
   const { type, color } = modelData;
-  
+
   switch (type) {
     case "Pod":
       return (
@@ -191,13 +221,15 @@ function renderPieceModel(modelData) {
         </RotatingModel>
       );
     case "Security":
+      return (
+        <RotatingModel>
+          <SecurityMeepleGroup color={color} edgeColor="#222" />
+        </RotatingModel>
+      );
     case "Armed_Settler":
       return (
         <RotatingModel>
-          <mesh>
-            <cylinderGeometry args={[0.3, 0.3, 0.6, 16]} />
-            <meshStandardMaterial color={color} />
-          </mesh>
+          <ArmedSettlerMeepleGroup color={color} edgeColor="#222" />
         </RotatingModel>
       );
     default:
@@ -214,7 +246,7 @@ function renderPieceModel(modelData) {
 
 function renderHostileModel(modelData) {
   const { type, color } = modelData;
-  
+
   switch (type) {
     case "Raider":
       return (
@@ -242,7 +274,7 @@ function renderHostileModel(modelData) {
 
 function renderBuildingModel(modelData) {
   const { type, color } = modelData;
-  
+
   switch (type) {
     case "reconstructed_shelter":
       return (

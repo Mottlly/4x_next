@@ -24,16 +24,24 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
 
   // Get unique categories and subcategories for filters
   const categories = useMemo(() => {
-    const cats = ["All", ...new Set(compendiumData.map(item => item.category))];
+    const cats = [
+      "All",
+      ...new Set(compendiumData.map((item) => item.category)),
+    ];
     return cats.sort();
   }, []);
 
   const subcategories = useMemo(() => {
     if (selectedCategory === "All") {
-      return ["All", ...new Set(compendiumData.map(item => item.subcategory))];
+      return [
+        "All",
+        ...new Set(compendiumData.map((item) => item.subcategory)),
+      ];
     }
-    const filtered = compendiumData.filter(item => item.category === selectedCategory);
-    return ["All", ...new Set(filtered.map(item => item.subcategory))];
+    const filtered = compendiumData.filter(
+      (item) => item.category === selectedCategory
+    );
+    return ["All", ...new Set(filtered.map((item) => item.subcategory))];
   }, [selectedCategory]);
 
   // Filter and sort data
@@ -43,21 +51,24 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
     // Filter by search term
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(item =>
-        item.name.toLowerCase().includes(term) ||
-        item.description.toLowerCase().includes(term) ||
-        item.gameEffects.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(term) ||
+          item.description.toLowerCase().includes(term) ||
+          item.gameEffects.toLowerCase().includes(term)
       );
     }
 
     // Filter by category
     if (selectedCategory !== "All") {
-      filtered = filtered.filter(item => item.category === selectedCategory);
+      filtered = filtered.filter((item) => item.category === selectedCategory);
     }
 
     // Filter by subcategory
     if (selectedSubcategory !== "All") {
-      filtered = filtered.filter(item => item.subcategory === selectedSubcategory);
+      filtered = filtered.filter(
+        (item) => item.subcategory === selectedSubcategory
+      );
     }
 
     // Sort data
@@ -153,28 +164,36 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
                   }}
                   className={compendiumStyles.filterSelect}
                 >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className={compendiumStyles.filterLabel}>Subcategory</label>
+                <label className={compendiumStyles.filterLabel}>
+                  Subcategory
+                </label>
                 <select
                   value={selectedSubcategory}
                   onChange={(e) => setSelectedSubcategory(e.target.value)}
                   className={compendiumStyles.filterSelect}
                 >
-                  {subcategories.map(subcat => (
-                    <option key={subcat} value={subcat}>{subcat}</option>
+                  {subcategories.map((subcat) => (
+                    <option key={subcat} value={subcat}>
+                      {subcat}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <label className={compendiumStyles.filterLabel}>Sort By</label>
+                  <label className={compendiumStyles.filterLabel}>
+                    Sort By
+                  </label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
@@ -209,7 +228,8 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
 
           {/* Results Count */}
           <div className={compendiumStyles.resultsCount}>
-            {filteredData.length} {filteredData.length === 1 ? 'entry' : 'entries'}
+            {filteredData.length}{" "}
+            {filteredData.length === 1 ? "entry" : "entries"}
           </div>
         </div>
 
@@ -219,7 +239,11 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
             <div
               key={entry.id}
               onClick={() => setSelectedEntry(entry)}
-              className={selectedEntry?.id === entry.id ? compendiumStyles.entryItemSelected : compendiumStyles.entryItem}
+              className={
+                selectedEntry?.id === entry.id
+                  ? compendiumStyles.entryItemSelected
+                  : compendiumStyles.entryItem
+              }
             >
               <div className={compendiumStyles.entryHeader}>
                 <h3 className={compendiumStyles.entryName}>{entry.name}</h3>
@@ -250,7 +274,9 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
             <div className={compendiumStyles.detailHeader}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h1 className={compendiumStyles.detailTitle}>{selectedEntry.name}</h1>
+                  <h1 className={compendiumStyles.detailTitle}>
+                    {selectedEntry.name}
+                  </h1>
                   <div className={compendiumStyles.detailBadges}>
                     <span className={compendiumStyles.primaryBadge}>
                       {selectedEntry.category}
@@ -296,12 +322,18 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
                   <div className={compendiumStyles.infoSection}>
                     <h3 className={compendiumStyles.infoTitle}>Statistics</h3>
                     <div className={compendiumStyles.statsContainer}>
-                      {Object.entries(selectedEntry.stats).map(([key, value]) => (
-                        <div key={key} className={compendiumStyles.statItem}>
-                          <span className={compendiumStyles.statLabel}>{key}</span>
-                          <span className={compendiumStyles.statValue}>{value}</span>
-                        </div>
-                      ))}
+                      {Object.entries(selectedEntry.stats).map(
+                        ([key, value]) => (
+                          <div key={key} className={compendiumStyles.statItem}>
+                            <span className={compendiumStyles.statLabel}>
+                              {key}
+                            </span>
+                            <span className={compendiumStyles.statValue}>
+                              {value}
+                            </span>
+                          </div>
+                        )
+                      )}
                     </div>
                   </div>
 
@@ -318,7 +350,9 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
                   {/* Movement Costs */}
                   {selectedEntry.movementCosts && (
                     <div className={compendiumStyles.infoSection}>
-                      <h3 className={compendiumStyles.infoTitle}>Movement Costs</h3>
+                      <h3 className={compendiumStyles.infoTitle}>
+                        Movement Costs
+                      </h3>
                       <p className={compendiumStyles.infoText}>
                         {selectedEntry.movementCosts}
                       </p>
@@ -328,7 +362,9 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
                   {/* Upkeep */}
                   {selectedEntry.upkeep && (
                     <div className={compendiumStyles.infoSection}>
-                      <h3 className={compendiumStyles.infoTitle}>Upkeep Costs</h3>
+                      <h3 className={compendiumStyles.infoTitle}>
+                        Upkeep Costs
+                      </h3>
                       <p className={compendiumStyles.infoText}>
                         {selectedEntry.upkeep}
                       </p>
@@ -343,8 +379,13 @@ export default function CompendiumOverlay({ isVisible, onClose }) {
           <div className={compendiumStyles.noSelection}>
             <div className={compendiumStyles.noSelectionContent}>
               <Search size={64} className="mx-auto mb-4 opacity-50" />
-              <h3 className={compendiumStyles.noSelectionTitle}>Select an entry to view details</h3>
-              <p className={compendiumStyles.noSelectionText}>Choose an item from the list on the left to see its stats, description, and 3D preview.</p>
+              <h3 className={compendiumStyles.noSelectionTitle}>
+                Select an entry to view details
+              </h3>
+              <p className={compendiumStyles.noSelectionText}>
+                Choose an item from the list on the left to see its stats,
+                description, and 3D preview.
+              </p>
             </div>
           </div>
         )}
