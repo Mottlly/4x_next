@@ -29,8 +29,15 @@ export default function ResourcePanel({
                 {resources.rations}
               </span>
               {resourceDelta.rations !== 0 && (
-                <span className={`text-xs opacity-90 ml-1 ${resourceDelta.rations > 0 ? "text-green-400" : "text-red-400"}`}>
-                  ({resourceDelta.rations > 0 ? "+" : ""}{resourceDelta.rations})
+                <span
+                  className={`text-xs opacity-90 ml-1 ${
+                    resourceDelta.rations > 0
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  ({resourceDelta.rations > 0 ? "+" : ""}
+                  {resourceDelta.rations})
                 </span>
               )}
             </div>
@@ -42,8 +49,15 @@ export default function ResourcePanel({
                 {resources.printingMaterial}
               </span>
               {resourceDelta.printingMaterial !== 0 && (
-                <span className={`text-xs opacity-90 ml-1 ${resourceDelta.printingMaterial > 0 ? "text-green-400" : "text-red-400"}`}>
-                  ({resourceDelta.printingMaterial > 0 ? "+" : ""}{resourceDelta.printingMaterial})
+                <span
+                  className={`text-xs opacity-90 ml-1 ${
+                    resourceDelta.printingMaterial > 0
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  ({resourceDelta.printingMaterial > 0 ? "+" : ""}
+                  {resourceDelta.printingMaterial})
                 </span>
               )}
             </div>
@@ -55,8 +69,15 @@ export default function ResourcePanel({
                 {resources.weapons}
               </span>
               {resourceDelta.weapons !== 0 && (
-                <span className={`text-xs opacity-90 ml-1 ${resourceDelta.weapons > 0 ? "text-green-400" : "text-red-400"}`}>
-                  ({resourceDelta.weapons > 0 ? "+" : ""}{resourceDelta.weapons})
+                <span
+                  className={`text-xs opacity-90 ml-1 ${
+                    resourceDelta.weapons > 0
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  ({resourceDelta.weapons > 0 ? "+" : ""}
+                  {resourceDelta.weapons})
                 </span>
               )}
             </div>

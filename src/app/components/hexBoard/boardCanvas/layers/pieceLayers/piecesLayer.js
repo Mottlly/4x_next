@@ -7,6 +7,8 @@ import { Edges } from "@react-three/drei";
 import ScoutMeepleGroup from "../../models/meeples/ScoutMeepleGroup";
 import EngineerMeepleGroup from "../../models/meeples/EngineerMeepleGroup";
 import RaiderMeepleGroup from "../../models/meeples/RaiderMeepleGroup";
+import ArmedSettlerMeepleGroup from "../../models/meeples/ArmedSettlerMeepleGroup";
+import SecurityMeepleGroup from "../../models/meeples/SecurityMeepleGroup";
 import Pod from "../../models/pieces/Pod";
 import UnitFloatingIcon from "../../models/icons/UnitFloatingIcon";
 import Meeple from "../../models/meeples/Meeple";
@@ -128,6 +130,10 @@ const Piece = React.memo(function Piece({
         <ScoutMeepleGroup color={style.color} edgeColor="#222" />
       ) : p.type === "Engineer" ? (
         <EngineerMeepleGroup color={style.color} edgeColor="#222" />
+      ) : p.type === "Armed_Settler" ? (
+        <ArmedSettlerMeepleGroup color={style.color} edgeColor="#222" />
+      ) : p.type === "Security" ? (
+        <SecurityMeepleGroup color={style.color} edgeColor="#222" />
       ) : p.type === "Raider" ? (
         <RaiderMeepleGroup color={style.color} edgeColor="#222" />
       ) : (

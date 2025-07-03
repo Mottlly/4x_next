@@ -68,9 +68,12 @@ export function computeResourceChange(board) {
     weapons: board.resources?.[2] ?? 0,
   };
   const after = {
-    rations: before.rations + effect.rations,
-    printingMaterial: before.printingMaterial + effect.printingMaterial,
-    weapons: before.weapons + effect.weapons,
+    rations: Math.max(0, before.rations + effect.rations),
+    printingMaterial: Math.max(
+      0,
+      before.printingMaterial + effect.printingMaterial
+    ),
+    weapons: Math.max(0, before.weapons + effect.weapons),
   };
 
   console.log("[Resource] Before:", before);
@@ -80,10 +83,18 @@ export function computeResourceChange(board) {
   return [after.rations, after.printingMaterial, after.weapons];
 }
 
+export function canAffordCost(resources, cost) {
+  return (
+    resources.rations >= (cost.rations || 0) &&
+    resources.printingMaterial >= (cost.printingMaterial || 0) &&
+    resources.weapons >= (cost.weapons || 0)
+  );
+}
+
 export function subtractResources(resources, cost) {
   return {
-    rations: resources.rations - (cost.rations || 0),
-    printingMaterial: resources.printingMaterial - (cost.printingMaterial || 0),
-    weapons: resources.weapons - (cost.weapons || 0),
+    rations: Math.max(0, resources.rations - (cost.rations || 0)),
+    printingMaterial: Math.max(0, resources.printingMaterial - (cost.printingMaterial || 0)),
+    weapons: Math.max(0, resources.weapons - (cost.weapons || 0)),
   };
 }

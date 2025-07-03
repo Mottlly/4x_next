@@ -8,6 +8,7 @@ import {
   Eye,
   HardHat,
   BadgeCheck,
+  Backpack,
 } from "lucide-react";
 import { getAvailableUpgrades } from "../../../library/utililies/game/settlements/upgradeUtilities";
 import { settlementPanelStyles } from "@/library/styles/stylesIndex";
@@ -17,6 +18,7 @@ const unitIcons = {
   scout: Eye,
   engineer: HardHat,
   security: BadgeCheck,
+  armed_settler: Backpack,
 };
 
 export default function SettlementPanel({

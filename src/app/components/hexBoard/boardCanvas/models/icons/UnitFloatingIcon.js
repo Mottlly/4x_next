@@ -107,6 +107,84 @@ function SwordIcon({ color = "#000" }) {
   );
 }
 
+// Simple flag icon for ArmedSettler
+function FlagIcon({ color = "#000" }) {
+  return (
+    <group>
+      {/* Flag pole */}
+      <mesh position={[0, 0.02, 0]}>
+        <cylinderGeometry args={[0.008, 0.008, 0.12, 8]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Flag */}
+      <mesh position={[0.025, 0.055, 0]}>
+        <boxGeometry args={[0.05, 0.03, 0.008]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+      {/* Flag triangle detail */}
+      <mesh position={[0.055, 0.04, 0]}>
+        <coneGeometry args={[0.015, 0.03, 3]} />
+        <meshStandardMaterial color={color} />
+      </mesh>
+    </group>
+  );
+}
+
+// Simple shield icon for Security - using crossed swords instead
+function ShieldIcon({ color = "#000" }) {
+  return (
+    <group>
+      {/* First sword - diagonal from bottom-left to top-right */}
+      <group rotation={[0, 0, Math.PI / 4]} position={[0.04, -0.04, 0]}>
+        {/* Blade */}
+        <mesh position={[0, 0.055, 0]}>
+          <boxGeometry args={[0.015, 0.2, 0.03]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        {/* Crossguard */}
+        <mesh position={[0, 0.005, 0]}>
+          <boxGeometry args={[0.04, 0.012, 0.015]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        {/* Handle */}
+        <mesh position={[0, -0.015, 0]}>
+          <cylinderGeometry args={[0.01, 0.01, 0.025, 8]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        {/* Pommel */}
+        <mesh position={[0, -0.032, 0]}>
+          <sphereGeometry args={[0.012, 8, 8]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      </group>
+
+      {/* Second sword - diagonal from top-left to bottom-right (flipped) */}
+      <group rotation={[0, 0, -Math.PI / 4]} position={[-0.04, -0.04, 0]}>
+        {/* Blade */}
+        <mesh position={[0, 0.055, 0]}>
+          <boxGeometry args={[0.015, 0.2, 0.015]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        {/* Crossguard */}
+        <mesh position={[0, 0.005, 0]}>
+          <boxGeometry args={[0.04, 0.012, 0.015]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        {/* Handle */}
+        <mesh position={[0, -0.015, 0]}>
+          <cylinderGeometry args={[0.01, 0.01, 0.025, 8]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        {/* Pommel */}
+        <mesh position={[0, -0.032, 0]}>
+          <sphereGeometry args={[0.012, 8, 8]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 // Simple castle icon for hostile fortress, moved down to fit inside background
 function CastleIcon({ color = "#000" }) {
   return (
@@ -187,6 +265,8 @@ const ICONS = {
   Pod: ShuttleIcon,
   Scout: BinocularsIcon,
   Engineer: HammerIcon,
+  Armed_Settler: FlagIcon,
+  Security: ShieldIcon,
   Raider: SwordIcon,
   hostileFortress: CastleIcon,
   // Add more mappings for other unit types here
