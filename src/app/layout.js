@@ -1,5 +1,8 @@
 "use client"; // Ensure this file runs in the client environment
 
+// Force dynamic rendering to prevent static generation timeout
+export const dynamic = 'force-dynamic';
+
 import { Geist, Geist_Mono } from "next/font/google";
 import { SessionProvider } from "next-auth/react"; // ✅ Import SessionProvider for NextAuth
 import "./globals.css";

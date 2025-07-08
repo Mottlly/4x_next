@@ -9,26 +9,13 @@ import { generateGoodyHuts } from "../../../library/utililies/game/goodyHuts/gen
 import { generateHostileFortress } from "../../../library/utililies/game/biomeGenerators/generateHostileFortress";
 import { hexDistance } from "../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 
-const getBoardQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/boardTable/getBoard.sql"),
-  "utf8"
-);
-const getBoardByGameIDQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/boardTable/getBoardByGameID.sql"),
-  "utf8"
-);
-const postBoardQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/boardTable/postBoard.sql"),
-  "utf8"
-);
-const patchBoardQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/boardTable/patchBoard.sql"),
-  "utf8"
-);
-const deleteBoardQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/boardTable/deleteboard.sql"),
-  "utf8"
-);
+// Function to read SQL queries lazily
+function readSQLQuery(filename) {
+  return fs.readFileSync(
+    path.join(process.cwd(), "src/library/sql/boardTable", filename),
+    "utf8"
+  );
+}
 
 // ── GET by id or game_id
 export async function GET(req) {
@@ -43,7 +30,7 @@ export async function GET(req) {
     );
   }
 
-  const query = id ? getBoardQuery : getBoardByGameIDQuery;
+  const query = id ? readSQLQuery("getBoard.sql") : readSQLQuery("getBoardByGameID.sql");
   const params = id ? [id] : [game_id];
 
   try {
@@ -121,7 +108,7 @@ export async function POST(req) {
       resources: [20, 3, 3],
     };
 
-    const { rows: inserted } = await pool.query(postBoardQuery, [
+    const { rows: inserted } = await pool.query(readSQLQuery("postBoard.sql"), [
       user_id,
       game_id,
       JSON.stringify(boardState),
@@ -165,7 +152,7 @@ export async function PATCH(req) {
       neutralPieces: (newBoard.neutralPieces || []).map((p) => ({ ...p })), // <-- optional
     };
 
-    const { rows: updated } = await pool.query(patchBoardQuery, [
+    const { rows: updated } = await pool.query(readSQLQuery("patchBoard.sql"), [
       JSON.stringify(boardToSave),
       board_id,
     ]);
@@ -204,7 +191,7 @@ export async function DELETE(req) {
       );
     }
 
-    const result = await pool.query(deleteBoardQuery, [board_id]);
+    const result = await pool.query(readSQLQuery("deleteboard.sql"), [board_id]);
     if (result.rowCount === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
     }
