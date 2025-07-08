@@ -26,7 +26,7 @@ const patchBoardQuery = fs.readFileSync(
   "utf8"
 );
 const deleteBoardQuery = fs.readFileSync(
-  path.join(process.cwd(), "src/library/sql/boardTable/deleteBoard.sql"),
+  path.join(process.cwd(), "src/library/sql/boardTable/deleteboard.sql"),
   "utf8"
 );
 
