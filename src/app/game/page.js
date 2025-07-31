@@ -3,7 +3,6 @@
 // Force dynamic rendering to prevent static generation timeout
 export const dynamic = "force-dynamic";
 
-import i18n from "../../i18n";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -11,9 +10,11 @@ import { useEffect, useState } from "react";
 import HexBoard from "@/app/components/hexBoard/HexBoard";
 import { useUserData } from "../../library/utililies/hooks/useUserData";
 import LoadingScreen from "../components/gameUI/loadingScreen";
+import i18n from "../../i18n";
 
 export default function GamePage() {
-  const { t } = useTranslation();
+  const [isI18nReady, setIsI18nReady] = useState(false);
+  const { t, ready } = useTranslation();
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,6 +25,22 @@ export default function GamePage() {
   const [board, setBoard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Initialize i18n
+  useEffect(() => {
+    const initI18n = async () => {
+      try {
+        if (!i18n.isInitialized) {
+          await i18n.init();
+        }
+        setIsI18nReady(true);
+      } catch (err) {
+        console.error('Failed to initialize i18n:', err);
+        setIsI18nReady(true); // Continue anyway with fallback
+      }
+    };
+    initI18n();
+  }, []);
 
   // redirect if not signed in
   useEffect(() => {
@@ -68,15 +85,18 @@ export default function GamePage() {
     fetchOrCreate();
   }, [status, session, userData, gameID]);
 
+  // Don't render until i18n is ready
+  if (!isI18nReady || !ready) return <LoadingScreen />;
+  
   if (loading) return <LoadingScreen />;
   if (error)
     return (
       <div>
-        {t("gamePage.LoadingError")}: {error}
+        {t("gamePage.LoadingError", "Loading Error")}: {error}
       </div>
     );
   if (!board || !Array.isArray(board.tiles)) {
-    return <div>{t("gamePage.NoMapData")}</div>;
+    return <div>{t("gamePage.NoMapData", "No map data available")}</div>;
   }
 
   const boardTiles = { ...board };
