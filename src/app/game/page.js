@@ -1,7 +1,7 @@
 "use client";
 
 // Force dynamic rendering to prevent static generation timeout
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import i18n from "../../i18n";
 import { useSession } from "next-auth/react";

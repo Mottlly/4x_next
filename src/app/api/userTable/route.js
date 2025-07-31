@@ -45,7 +45,9 @@ export async function GET(req) {
     console.log("🔹 Fetching user from database:", auth_id);
 
     // ✅ Execute the query and log the result
-    const result = await pool.query(readSQLQuery("getUserAuthId.sql"), [auth_id]);
+    const result = await pool.query(readSQLQuery("getUserAuthId.sql"), [
+      auth_id,
+    ]);
 
     if (result.rows.length === 0) {
       console.warn("⚠️ No user found for auth_id:", auth_id);
@@ -75,7 +77,9 @@ export async function POST(req) {
     const auth_id = token.sub;
     console.log("🔹 Creating user:", auth_id);
 
-    const newUser = await pool.query(readSQLQuery("insertAuth0User.sql"), [auth_id]);
+    const newUser = await pool.query(readSQLQuery("insertAuth0User.sql"), [
+      auth_id,
+    ]);
     return NextResponse.json(
       { message: "User created.", user: newUser.rows[0] },
       { status: 201 }
@@ -108,7 +112,9 @@ export async function DELETE(req) {
 
     console.log("Deleting user:", auth_id);
 
-    const roleResult = await pool.query(readSQLQuery("getUserAuthId.sql"), [requestorAuthId]);
+    const roleResult = await pool.query(readSQLQuery("getUserAuthId.sql"), [
+      requestorAuthId,
+    ]);
     if (roleResult.rows.length === 0 || roleResult.rows[0].role !== "admin") {
       return NextResponse.json(
         { error: "Access denied. Admins only." },
@@ -116,7 +122,9 @@ export async function DELETE(req) {
       );
     }
 
-    const deleteResult = await pool.query(readSQLQuery("deleteUser.sql"), [auth_id]);
+    const deleteResult = await pool.query(readSQLQuery("deleteUser.sql"), [
+      auth_id,
+    ]);
     if (deleteResult.rowCount === 0) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }

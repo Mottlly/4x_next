@@ -22,7 +22,9 @@ export async function GET(req) {
   try {
     if (id) {
       // Fetch game by ID
-      const { rows } = await pool.query(readSQLQuery("getGameDetails.sql"), [id]);
+      const { rows } = await pool.query(readSQLQuery("getGameDetails.sql"), [
+        id,
+      ]);
       if (rows.length === 0)
         return NextResponse.json({ error: "Game not found." }, { status: 404 });
       return NextResponse.json(rows[0], { status: 200 });
@@ -41,7 +43,9 @@ export async function GET(req) {
 
       console.log("🔹 Fetching most recent game for user:", auth_id);
 
-      const latestGame = await pool.query(readSQLQuery("getLatestGame.sql"), [auth_id]);
+      const latestGame = await pool.query(readSQLQuery("getLatestGame.sql"), [
+        auth_id,
+      ]);
 
       if (latestGame.rows.length === 0) {
         return NextResponse.json({ error: "No game found." }, { status: 404 });
@@ -78,13 +82,17 @@ export async function POST(req) {
 
     console.log("🔹 Checking for User:", user_id);
 
-    const userCheckResult = await pool.query(readSQLQuery("userCheck.sql"), [session.user.id]);
+    const userCheckResult = await pool.query(readSQLQuery("userCheck.sql"), [
+      session.user.id,
+    ]);
     if (userCheckResult.rows.length === 0)
       return NextResponse.json({ error: "User not found." }, { status: 404 });
 
     console.log("🔹 Creating game for user:", user_id);
 
-    const newGame = await pool.query(readSQLQuery("insertGame.sql"), [session.user.id]);
+    const newGame = await pool.query(readSQLQuery("insertGame.sql"), [
+      session.user.id,
+    ]);
 
     const token = await getToken({ req });
     if (token) {
@@ -111,7 +119,9 @@ export async function DELETE(req) {
       return NextResponse.json({ error: "Game ID required." }, { status: 400 });
 
     console.log("Deleting game:", game_id);
-    const deleteResult = await pool.query(readSQLQuery("deleteGame.sql"), [game_id]);
+    const deleteResult = await pool.query(readSQLQuery("deleteGame.sql"), [
+      game_id,
+    ]);
 
     if (deleteResult.rowCount === 0)
       return NextResponse.json({ error: "Game not found." }, { status: 404 });

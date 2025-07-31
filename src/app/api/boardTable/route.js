@@ -30,7 +30,9 @@ export async function GET(req) {
     );
   }
 
-  const query = id ? readSQLQuery("getBoard.sql") : readSQLQuery("getBoardByGameID.sql");
+  const query = id
+    ? readSQLQuery("getBoard.sql")
+    : readSQLQuery("getBoardByGameID.sql");
   const params = id ? [id] : [game_id];
 
   try {
@@ -191,7 +193,9 @@ export async function DELETE(req) {
       );
     }
 
-    const result = await pool.query(readSQLQuery("deleteboard.sql"), [board_id]);
+    const result = await pool.query(readSQLQuery("deleteboard.sql"), [
+      board_id,
+    ]);
     if (result.rowCount === 0) {
       return NextResponse.json({ error: "Board not found." }, { status: 404 });
     }

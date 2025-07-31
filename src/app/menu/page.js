@@ -1,7 +1,7 @@
 "use client";
 
 // Force dynamic rendering to prevent static generation timeout
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { useTranslation } from "react-i18next";
 import { useSession } from "next-auth/react";
