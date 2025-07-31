@@ -7,10 +7,6 @@ const nextConfig = {
       "s.gravatar.com", // Auth0 default fallback
     ],
   },
-  experimental: {
-    esmExternals: 'loose',
-  },
-  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', 'three-stdlib'],
 };
 
 export default nextConfig;

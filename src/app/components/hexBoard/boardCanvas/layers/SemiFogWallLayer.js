@@ -3,7 +3,7 @@ import hexToPosition from "../../../../../library/utililies/game/tileUtilities/P
 import getNeighborsAxial from "../../../../../library/utililies/game/tileUtilities/Positioning/getNeighbors";
 import { semiFogStyles } from "@/library/styles/stylesIndex";
 import { extend, useFrame } from "@react-three/fiber";
-import { shaderMaterial } from "@react-three/drei";
+import { shaderMaterial } from "@react-three/drei/helpers/shaderMaterial";
 
 // Shader: copy from SemiFogBestagon (lower alpha)
 const SemiFogHexShaderMaterial = shaderMaterial(

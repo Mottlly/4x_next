@@ -1,5 +1,5 @@
 import React from "react";
-import { Edges } from "@react-three/drei";
+import { Edges } from "@react-three/drei/web/Edges";
 
 // Binoculars accessory for a scout meeple
 export const Binoculars = (

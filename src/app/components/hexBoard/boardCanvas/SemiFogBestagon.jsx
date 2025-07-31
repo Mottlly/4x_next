@@ -2,7 +2,8 @@
 
 import React, { useRef } from "react";
 import { extend, useFrame } from "@react-three/fiber";
-import { shaderMaterial, Edges } from "@react-three/drei";
+import { shaderMaterial } from "@react-three/drei/helpers/shaderMaterial";
+import { Edges } from "@react-three/drei/web/Edges";
 
 // Match main fog's color/noise, but lower alpha for semi-fog
 const SemiFogHexShaderMaterial = shaderMaterial(

@@ -1,6 +1,7 @@
 import React, { Suspense, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei/web/OrbitControls";
+import { Environment } from "@react-three/drei/staging/Environment";
 import * as THREE from "three";
 
 // Import 3D models
