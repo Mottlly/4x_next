@@ -25,6 +25,16 @@ const nextConfig = {
 
     return config;
   },
+  // Force specific pages to be dynamic
+  async redirects() {
+    return [];
+  },
+  // Prevent static optimization for pages that need runtime data
+  exportPathMap: async function (defaultPathMap) {
+    // Remove game page from static generation
+    const { '/game': removed, ...pathMap } = defaultPathMap;
+    return pathMap;
+  },
 };
 
 export default nextConfig;
