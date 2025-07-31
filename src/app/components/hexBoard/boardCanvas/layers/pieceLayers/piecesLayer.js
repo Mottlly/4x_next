@@ -3,7 +3,7 @@ import { a, useSpring } from "@react-spring/three";
 import { useFrame } from "@react-three/fiber";
 import hexToPosition from "../../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { pieceTypeStyles } from "@/library/styles/stylesIndex";
-import { Edges } from "@react-three/drei/web/Edges";
+import { Edges } from "@react-three/drei";
 import ScoutMeepleGroup from "../../models/meeples/ScoutMeepleGroup";
 import EngineerMeepleGroup from "../../models/meeples/EngineerMeepleGroup";
 import RaiderMeepleGroup from "../../models/meeples/RaiderMeepleGroup";

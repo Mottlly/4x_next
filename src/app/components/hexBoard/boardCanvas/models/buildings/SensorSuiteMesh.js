@@ -1,5 +1,5 @@
 import React from "react";
-import { Edges } from "@react-three/drei/web/Edges";
+import { Edges } from "@react-three/drei";
 import BuildingFloatingIcon from "../icons/BuildingFloatingIcon";
 
 // SmallHouse reused from reconstructedShelterMesh.js

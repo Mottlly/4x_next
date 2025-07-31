@@ -1,5 +1,5 @@
 import { extend } from "@react-three/fiber";
-import { shaderMaterial } from "@react-three/drei/helpers/shaderMaterial";
+import { shaderMaterial } from "@react-three/drei";
 
 // Shared fog shader material for consistent fog effects across components
 export const FogHexShaderMaterial = shaderMaterial(

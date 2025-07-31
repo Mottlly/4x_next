@@ -4,7 +4,7 @@ import hexToPosition from "../../../../../library/utililies/game/tileUtilities/P
 import getNeighborsAxial from "../../../../../library/utililies/game/tileUtilities/Positioning/getNeighbors";
 import { fogStyles } from "@/library/styles/stylesIndex";
 import { extend, useFrame } from "@react-three/fiber";
-import { shaderMaterial } from "@react-three/drei/helpers/shaderMaterial";
+import { shaderMaterial } from "@react-three/drei";
 
 // Define material with unique name for instanced fog wall layer
 const InstancedFogWallShaderMaterial = shaderMaterial(

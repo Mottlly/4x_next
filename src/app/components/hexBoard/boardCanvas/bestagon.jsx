@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useMemo } from "react";
-import { Edges } from "@react-three/drei/web/Edges";
+import { Edges } from "@react-three/drei";
 import { tileTypeStyles } from "@/library/styles/stylesIndex";
 import getNeighborHeights from "@/library/utililies/game/tileUtilities/getNeighborHeights";
 import whichVerticesShouldSlope from "@/library/utililies/game/tileUtilities/whichVerticesShouldSlope";

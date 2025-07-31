@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useLayoutEffect } from "react";
 import { extend, useFrame } from "@react-three/fiber";
-import { shaderMaterial } from "@react-three/drei/helpers/shaderMaterial";
+import { shaderMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import hexToPosition from "../../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 import { fogStyles } from "@/library/styles/stylesIndex";

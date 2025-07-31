@@ -2,7 +2,7 @@
 
 import React, { memo, useMemo, useRef, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
-import { MapControls } from "@react-three/drei/web/MapControls";
+import { MapControls } from "@react-three/drei";
 import { hexDistance } from "../../../../library/utililies/game/tileUtilities/Positioning/distanceFinder";
 import hexToPosition from "../../../../library/utililies/game/tileUtilities/Positioning/positionFinder";
 

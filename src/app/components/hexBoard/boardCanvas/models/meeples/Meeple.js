@@ -1,5 +1,5 @@
 import React from "react";
-import { Edges } from "@react-three/drei/web/Edges";
+import { Edges } from "@react-three/drei";
 
 const Meeple = ({
   color = "#228b22",
@@ -9,7 +9,11 @@ const Meeple = ({
   rotation = 0,
   accessories = null,
 }) => (
-  <group position={position} scale={[scale, scale, scale]} rotation={[0, rotation, 0]}>
+  <group
+    position={position}
+    scale={[scale, scale, scale]}
+    rotation={[0, rotation, 0]}
+  >
     {/* Body */}
     <mesh position={[0, 0.09, 0]}>
       <boxGeometry args={[0.36, 0.38, 0.18]} />
